@@ -52,6 +52,7 @@ function M.test_zeta()
 
     BufferDumpAppend("## INPUT_EDITABLE")
     BufferDumpAppend(input_editable)
+    -- hey, any value in retrieving cursor position?
     input_editable = input_editable:gsub(tag_cursor_here, "")
     BufferDumpAppend("## INPUT_EDITABLE (sans <|user_cursor_is_here|>)")
     BufferDumpAppend(input_editable)
