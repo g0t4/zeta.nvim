@@ -1,6 +1,6 @@
 local M = {}
 
-vim.print("hello world")
+function M.setup()
+end
 
 return M
-
