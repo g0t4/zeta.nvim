@@ -93,6 +93,7 @@ function M.test_zeta()
     BufferDumpAppend(ldiff:to_html())
     -- woa cool... splits into chunks: "same", "out", "in"
     --    where out = delete, in = insert
+    --    also chunks appear to be word level for ins/del (multiword for same)?
     for _, chunk in ipairs(ldiff) do
         -- show each chunk on its own line:
         --   PRN add BufferDumpLines (so we don't vim.inspect the lines into a single line string)
