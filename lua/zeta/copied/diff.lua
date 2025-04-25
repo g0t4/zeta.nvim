@@ -1,3 +1,6 @@
+---
+--- FYI original source: https://github.com/LuaDist/diff/blob/master/diff/lua/diff.lua
+---
 -----------------------------------------------------------------------------
 -- Provides functions for diffing text.
 --

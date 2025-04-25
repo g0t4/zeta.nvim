@@ -26,7 +26,8 @@ function M.show_diff_extmarks()
     BufferDumpAppend(ldiff)
     -- "same", "out", "in"
     -- ** SUPER USEFUL vim.iter
-    BufferDumpArray(vim.iter(ldiff):take(10))
+    -- BufferDumpArray(vim.iter(ldiff):take(10))
+    BufferDumpAppend(ldiff:to_html())
     -- vim.iter(ldiff):each(function(k, chunk)
     --     BufferDumpAppend(chunk)
     -- end)
@@ -40,15 +41,88 @@ function M.show_diff_extmarks()
     vim.api.nvim_set_hl(0, hl_inserted, { fg = "#00ff00", }) -- ctermfg = "green"
     vim.api.nvim_set_hl(0, hl_deleted, { fg = "#ff0000", }) -- ctermfg = "red"
 
+    local lines = vim.iter(ldiff):fold({ {} }, function(accum, key, value)
+        local chunk = value
+        if chunk == nil then
+            BufferDumpAppend("nil chunk: " .. tostring(key))
+        elseif type(chunk) == "function" then
+            -- TODO can I delete the to_html... or how can I avoid iterating it too?
+            BufferDumpAppend("func chunk: " .. tostring(key))
+        else
+            BufferDumpAppend("chunk", chunk)
+            -- each chunk has has two strings: { "text\nfoo\nbar", "type" }
+            --   type == "same", "in", "out"
+            -- text must be split on new line into an array
+            --  when \n is encountered, start a new line in the accum
+            local current_line = accum[#accum]
+            local text = chunk[1]
+            local type = chunk[2]
+            local type_hlgroup = hl_same
+            -- TODO confirm in/out/same?
+            if type == "in" then
+                type_hlgroup = hl_inserted
+            elseif type == "out" then
+                -- TODO .. if there is an out, is it followed by the corresponding in? that replaced it?
+                type_hlgroup = hl_deleted
+            end
+            if not text:find("\n") then
+                -- no new lines, so we just tack on to end of current line
+                local len_text = #text
+                if len_text > 0 then
+                    table.insert(current_line, { text, type_hlgroup })
+                end
+            else
+                local splits = vim.split(text, "\n")
+                for _, piece in ipairs(splits) do
+                    -- FYI often v will be empty (i.e. a series of newlines)... do not exclude these empty lines!
+                    BufferDumpAppend("  " .. piece)
+                    local len_text = #piece
+                    if len_text > 0 then
+                        -- don't add empty pieces, just make sure we add the lines (even if empty)
+                        table.insert(current_line, { piece, type_hlgroup })
+                    end
+                    -- start a new, empty line (even if last piece was empty)
+                    current_line = {}
+                    accum[#accum + 1] = current_line
+                    -- next piece will be first, which could be next in splits OR a subsequent chunk
+                end
+            end
+        end
+        return accum
+    end)
+
+    BufferDumpAppend("## lines")
+    vim.print(lines)
+    for k, v in ipairs(lines) do
+        BufferDumpAppend(vim.inspect(v))
+    end
+
+    do return end
+
+    if #lines < 1 then
+        BufferDumpAppend("no lines")
+        return
+    end
+
+    -- FYI this removes first line from lines
+    local first_line = table.remove(lines, 1)
+    -- thus lines == rest of lines
+
     -- * extmark
     local ns_id = vim.api.nvim_create_namespace('zeta_diff')
-    local bufnr = GetBufferDumpNumber()
-    local mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, 4, 0, {
+    local bufnr, window_id = GetBufferDumpNumbers()
+    local num_lines = vim.api.nvim_buf_line_count(bufnr)
+    local to_row_1based = num_lines
+    local to_col_0based = 0
+    vim.api.nvim_win_set_cursor(window_id, { to_row_1based, to_col_0based })
+    local ext_mark_row_0based = to_row_1based - 1 - 20
+    local mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, ext_mark_row_0based, 0, {
         hl_mode = "combine",
-        virt_text = { { "twat waffl3", hl_inserted } }, -- line of extmark
+        virt_text = first_line,
+        virt_lines = lines, -- rest after first
+        -- virt_text = { { "twat waffl3", hl_inserted } }, -- line of extmark
         -- virt_lines = virt_lines, -- lines below
-        virt_text_pos = "eol", -- "eol", "inline"
-        -- virt_text_pos = "overlay",
+        virt_text_pos = "overlay", -- "overlay", "eol", "inline"
     })
 end
 

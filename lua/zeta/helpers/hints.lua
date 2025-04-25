@@ -9,4 +9,4 @@ _G.BufferDumpClear = _G.BufferDumpClear
 ---@type fun(array)
 _G.BufferDumpArray = _G.BufferDumpArray
 ---@type fun()
-_G.GetBufferDumpNumber = _G.GetBufferDumpNumber
+_G.GetBufferDumpNumbers = _G.GetBufferDumpNumbers
