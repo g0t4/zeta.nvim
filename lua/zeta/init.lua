@@ -9,24 +9,24 @@ _G.BufferDumpAppend = _G.BufferDumpAppend
 
 
 
-local edit_start = "<|editable_region_start|>"
-local edit_end = "<|editable_region_end|>"
-local cursor_here = "<|user_cursor_is_here|>"
-local start_of_file = "<|start_of_file|>"
+local tag_edit_start = "<|editable_region_start|>"
+local tag_edit_end = "<|editable_region_end|>"
+local tag_cursor_here = "<|user_cursor_is_here|>"
+local tag_start_of_file = "<|start_of_file|>"
 
 
 
 ---@param text string
 local function get_editable(text)
-    local start_index = text:find(edit_start)
-    local end_index = text:find(edit_end)
+    local start_index = text:find(tag_edit_start)
+    local end_index = text:find(tag_edit_end)
     if start_index == nil
         or end_index == nil
         or start_index < 0
         or end_index < start_index then
         return nil
     end
-    start_index = start_index + #edit_start
+    start_index = start_index + #tag_edit_start
     end_index = end_index - 1
     return text:sub(start_index, end_index)
 end
@@ -47,7 +47,13 @@ function M.test_zeta()
     -- BufferDumpAppend(input_excerpt)
     local input_editable = get_editable(input_excerpt)
     local output_editable = get_editable(output_excerpt)
+    assert(input_editable ~= nil)
+    assert(output_editable ~= nil)
+
     BufferDumpAppend("## INPUT_EDITABLE")
+    BufferDumpAppend(input_editable)
+    input_editable = input_editable:gsub(tag_cursor_here, "")
+    BufferDumpAppend("## INPUT_EDITABLE (sans <|user_cursor_is_here|>)")
     BufferDumpAppend(input_editable)
     BufferDumpAppend("\n\n## OUTPUT_EDITABLE")
     BufferDumpAppend(output_editable)
