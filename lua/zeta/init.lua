@@ -25,8 +25,8 @@ function M.show_diff_extmarks()
     local ldiff = luadiff.diff(input_editable, output_editable)
     BufferDumpAppend(ldiff)
     -- "same", "out", "in"
-    BufferDumpArray(vim.iter(ldiff):take(10))
     -- ** SUPER USEFUL vim.iter
+    BufferDumpArray(vim.iter(ldiff):take(10))
     -- vim.iter(ldiff):each(function(k, chunk)
     --     BufferDumpAppend(chunk)
     -- end)

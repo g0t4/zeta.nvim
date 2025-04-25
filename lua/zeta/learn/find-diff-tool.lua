@@ -61,11 +61,11 @@ function M.test_zeta()
     -- woa cool... splits into chunks: "same", "out", "in"
     --    where out = delete, in = insert
     --    also chunks appear to be word level for ins/del (multiword for same)?
-    for _, chunk in ipairs(ldiff) do
+    vim.iter(ldiff):each(function(k, chunk)
         -- show each chunk on its own line:
-        --   PRN add BufferDumpLines (so we don't vim.inspect the lines into a single line string)
         BufferDumpAppend(chunk)
-    end
+    end)
+
     local chunks_dump_sample = [[
 { "\nlocal M = {}\n\nfunction M.add(a, b)\n    return a + b\nend", "same" }
 { "\n\n\n\n\n\n", "out" }
@@ -100,10 +100,6 @@ end<del>
     </ins><ins>return</ins><ins> </ins><ins>a</ins><ins> </ins><ins>-</ins><ins> </ins><ins>b</ins><ins>
 </ins><ins>end</ins><ins>
 ]]
-end
-
-function M.setup()
-    vim.keymap.set("n", "<leader>z", M.test_zeta, {})
 end
 
 return M
