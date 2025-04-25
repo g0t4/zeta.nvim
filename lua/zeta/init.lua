@@ -23,11 +23,9 @@ function M.show_diff_extmarks()
     local ldiff = luadiff.diff(input_editable, output_editable)
     BufferDumpAppend(ldiff)
     -- "same", "out", "in"
-    for _, chunk in ipairs(ldiff) do
-        -- show each chunk on its own line:
-        --   PRN add BufferDumpLines (so we don't vim.inspect the lines into a single line string)
-        BufferDumpAppend(chunk)
-    end
+    vim.iter(ldiff):each(function(k, v)
+        BufferDumpAppend(v)
+    end)
 end
 
 function M.setup()
