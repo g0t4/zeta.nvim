@@ -86,9 +86,6 @@ function M.test_zeta()
 ]]
 
     local ldiff = luadiff.diff(input_editable, output_editable)
-    BufferDumpAppend(type(ldiff))
-    vim.print(ldiff)
-    BufferDumpAppend(vim.islist(ldiff))
     BufferDumpAppend(ldiff)
     BufferDumpAppend(ldiff:to_html())
     -- woa cool... splits into chunks: "same", "out", "in"
