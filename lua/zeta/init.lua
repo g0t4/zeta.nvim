@@ -85,7 +85,53 @@ function M.test_zeta()
 +end
 ]]
 
-    BufferDumpAppend(luadiff.diff(input_editable, output_editable))
+    local ldiff = luadiff.diff(input_editable, output_editable)
+    BufferDumpAppend(type(ldiff))
+    vim.print(ldiff)
+    BufferDumpAppend(vim.islist(ldiff))
+    BufferDumpAppend(ldiff)
+    BufferDumpAppend(ldiff:to_html())
+    -- woa cool... splits into chunks: "same", "out", "in"
+    --    where out = delete, in = insert
+    for _, chunk in ipairs(ldiff) do
+        -- show each chunk on its own line:
+        --   PRN add BufferDumpLines (so we don't vim.inspect the lines into a single line string)
+        BufferDumpAppend(chunk)
+    end
+    local chunks_dump_sample = [[
+{ "\nlocal M = {}\n\nfunction M.add(a, b)\n    return a + b\nend", "same" }
+{ "\n\n\n\n\n\n", "out" }
+{ "\n\n", "in" }
+{ "function", "in" }
+{ " ", "in" }
+{ "M.subtract(a,", "in" }
+{ " ", "in" }
+{ "b)", "in" }
+{ "\n    ", "in" }
+{ "return", "in" }
+]]
+
+
+
+    -- and can map to html too (good to visualize):
+    --  no tags around text == same, otherwise tags <del></del> and <ins></ins> wrap each chunk
+    local html_sample = [[
+local M = {}
+
+function M.add(a, b)
+    return a + b
+end<del>
+
+
+
+
+
+</del><ins>
+
+</ins><ins>function</ins><ins> </ins><ins>M.subtract(a,</ins><ins> </ins><ins>b)</ins><ins>
+    </ins><ins>return</ins><ins> </ins><ins>a</ins><ins> </ins><ins>-</ins><ins> </ins><ins>b</ins><ins>
+</ins><ins>end</ins><ins>
+]]
 end
 
 function M.setup()
