@@ -1,3 +1,4 @@
+local luadiff = require("zeta.copied.diff")
 local M = {}
 
 -- tmp type hints for my dump func (so I can avoid using :messages)
@@ -83,6 +84,8 @@ function M.test_zeta()
 +    return a / b
 +end
 ]]
+
+    BufferDumpAppend(luadiff.diff(input_editable, output_editable))
 end
 
 function M.setup()
