@@ -45,6 +45,9 @@ function M.test_zeta()
     local output_excerpt = response_decoded.output_excerpt
     -- BufferDumpAppend("## INPUT_EXCERPT")
     -- BufferDumpAppend(input_excerpt)
+    -- BufferDumpAppend("\n\n\n## OUTPUT_EXCERPT")
+    -- BufferDumpAppend(output_excerpt)
+
     local input_editable = get_editable(input_excerpt)
     local output_editable = get_editable(output_excerpt)
     assert(input_editable ~= nil)
@@ -59,8 +62,6 @@ function M.test_zeta()
     BufferDumpAppend("\n\n## OUTPUT_EDITABLE")
     BufferDumpAppend(output_editable)
 
-    -- BufferDumpAppend("\n\n\n## OUTPUT_EXCERPT")
-    -- BufferDumpAppend(output_excerpt)
 end
 
 function M.setup()
