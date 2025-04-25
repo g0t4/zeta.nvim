@@ -62,6 +62,27 @@ function M.test_zeta()
     BufferDumpAppend("\n\n## OUTPUT_EDITABLE")
     BufferDumpAppend(output_editable)
 
+    vdiff = vim.diff(input_editable, output_editable)
+    BufferDumpAppend("\n\n## vim diff")
+    BufferDumpAppend(vdiff)
+
+    ref_vdiff = [[
+@@ -7,0 +8,7 @@
++function M.subtract(a, b)
++    return a - b
++end
++
++function M.multiply(a, b)
++    return a * b
++end
+@@ -8,0 +16,6 @@
++function M.divide(a, b)
++    if b == 0 then
++        error("Division by zero")
++    end
++    return a / b
++end
+]]
 end
 
 function M.setup()
