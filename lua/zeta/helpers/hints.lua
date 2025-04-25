@@ -4,4 +4,5 @@
 _G.BufferDump = _G.BufferDump
 ---@type fun(...)
 _G.BufferDumpAppend = _G.BufferDumpAppend
-
+---@type fun()
+_G.BufferDumpClear = _G.BufferDumpClear
