@@ -30,6 +30,26 @@ function M.show_diff_extmarks()
     -- vim.iter(ldiff):each(function(k, chunk)
     --     BufferDumpAppend(chunk)
     -- end)
+
+    -- * highlight groups
+    local hl_same = "zeta-same"
+    local hl_inserted = "zeta-inserted"
+    local hl_deleted = "zeta-deleted"
+    -- 0 == global namespace (otherwise have to activate them if not global ns on hlgroup)
+    vim.api.nvim_set_hl(0, hl_same, {}) -- for now just keep it as is
+    vim.api.nvim_set_hl(0, hl_inserted, { fg = "#00ff00", }) -- ctermfg = "green"
+    vim.api.nvim_set_hl(0, hl_deleted, { fg = "#ff0000", }) -- ctermfg = "red"
+
+    -- * extmark
+    local ns_id = vim.api.nvim_create_namespace('zeta_diff')
+    local bufnr = GetBufferDumpNumber()
+    local mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, 4, 0, {
+        hl_mode = "combine",
+        virt_text = { { "twat waffl3", hl_inserted } }, -- line of extmark
+        -- virt_lines = virt_lines, -- lines below
+        virt_text_pos = "eol", -- "eol", "inline"
+        -- virt_text_pos = "overlay",
+    })
 end
 
 function M.setup()
