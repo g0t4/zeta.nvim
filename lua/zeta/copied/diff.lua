@@ -53,9 +53,11 @@ local function quick_LeastCommonSubsequence(old_tokens, new_tokens)
     setmetatable(matrix, matrix_of_zeros)
 
     for i = 1, num_old_tokens + 1 do
+        -- for each old token:
         local ci1 = matrix[i + 1]
         local ci = matrix[i]
         for j = 1, num_new_tokens + 1 do
+            -- for each new token:
             if old_tokens[i - 1] == new_tokens[j - 1] then
                 ci1[j + 1] = ci[j] + 1
             else
