@@ -29,13 +29,13 @@ print(other[3]) -- nil
 
 
 before = [[
-function M.add(a, b)
+function M.add(a, b )
     return a + b
 end
 ]]
 
 after = [[
-function M.add(a, b, c)
+function M.add(a, b, c, d)
     return a + b
 end
 ]]
