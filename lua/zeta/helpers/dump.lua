@@ -36,6 +36,9 @@ function inspect(object)
             return "{}"
         end
         return "{ " .. table.concat(items, ", ") .. " }"
+    elseif type(object) == "string" then
+        local escaped = object:gsub('"', '\\"')
+        return '"' .. escaped .. '"'
     else
         -- PRN udf?
         return tostring(object)
@@ -43,16 +46,14 @@ function inspect(object)
 end
 
 --%%
-
--- function tests()
---     -- lists:
---     assert(tbl_is_list({ 1, 2, 3 }))
---     assert(tbl_is_list({}))
---     -- not lists:
---     assert(tbl_is_list({ a = 1, b = 2, [3] = 4 }) == false)
 --
---     my_inspect({}) -- "{ }"
---     my_inspect({ 1, 2, 3 }) --  == "{ 1, 2, 3, }"
---     my_inspect({ a = 1, b = 2, [3] = 4 })
--- end
--- tests()
+-- -- lists:
+-- assert(tbl_is_list({ 1, 2, 3 }))
+-- assert(tbl_is_list({}))
+-- -- not lists:
+-- assert(tbl_is_list({ a = 1, b = 2, [3] = 4 }) == false)
+--
+-- inspect({}) -- "{ }"
+-- inspect({ 1, 2, 3 }) --  == "{ 1, 2, 3, }"
+-- inspect({ a = 1, b = 2, [3] = 4 })
+-- inspect({ a = 'foo" the bar' })
