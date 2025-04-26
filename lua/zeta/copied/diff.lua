@@ -33,12 +33,18 @@ local function quick_LCS(old_tokens, new_tokens)
     -- Build matrix on demand
     local C = {}
     local setmetatable = setmetatable
+
+    -- mt_tbl is a table that by default sets the value of every key to 0 on first use
+    --   table of zeros
     local mt_tbl = {
         __index = function(t, k)
             t[k] = 0
             return 0
         end
     }
+    -- mt_C is a
+    --   table of table of zeros
+    --   * matrix of zeros
     local mt_C = {
         __index = function(t, k)
             local tbl = {}
@@ -48,6 +54,7 @@ local function quick_LCS(old_tokens, new_tokens)
         end
     }
     setmetatable(C, mt_C)
+
     local max = math.max
     for i = 1, num_old_tokens + 1 do
         local ci1 = C[i + 1]
