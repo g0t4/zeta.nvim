@@ -56,8 +56,8 @@ local function quick_LeastCommonSubsequence(old_tokens, new_tokens)
 
     for i = 1, num_old_tokens + 1 do
         -- for each old token:
-        local ci1 = matrix[i + 1]
-        local ci = matrix[i]
+        local row_i_next = matrix[i + 1]
+        local row_i = matrix[i]
         local old_token_hrm = old_tokens[i - 1]
         print("i = " .. inspect(i) .. " = " .. inspect(old_token_hrm))
         for j = 1, num_new_tokens + 1 do
@@ -65,9 +65,9 @@ local function quick_LeastCommonSubsequence(old_tokens, new_tokens)
             local new_token_hrm = new_tokens[j - 1]
             print("  j = " .. inspect(j) .. " = " .. inspect(new_token_hrm))
             if old_token_hrm == new_token_hrm then
-                ci1[j + 1] = ci[j] + 1
+                row_i_next[j + 1] = row_i[j] + 1
             else
-                ci1[j + 1] = math.max(ci1[j], ci[j + 1])
+                row_i_next[j + 1] = math.max(row_i_next[j], row_i[j + 1])
             end
         end
     end
