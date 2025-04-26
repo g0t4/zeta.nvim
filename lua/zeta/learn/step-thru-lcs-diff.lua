@@ -12,9 +12,9 @@ function M.add(a, b, c)
 end
 ]]
 
-local diff = luadiff.diff(before, after)
+local _diff = luadiff.diff(before, after)
 
-local after2 = [[
+local _after2 = [[
 function M.add(a, b, c)
     return a + b + c
 end
