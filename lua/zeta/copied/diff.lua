@@ -36,7 +36,7 @@ local function quick_LCS(old_tokens, new_tokens)
 
     -- mt_tbl is a table that by default sets the value of every key to 0 on first use
     --   table of zeros
-    local mt_table_of_zeros = {
+    local table_of_zeros = {
         __index = function(t, k)
             t[k] = 0
             return 0
@@ -45,15 +45,15 @@ local function quick_LCS(old_tokens, new_tokens)
     -- mt_C is a
     --   table of table of zeros
     --   * matrix of zeros
-    local mt_matrix_of_zeros = {
+    local matrix_of_zeros = {
         __index = function(t, k)
             local tbl = {}
-            setmetatable(tbl, mt_table_of_zeros)
+            setmetatable(tbl, table_of_zeros)
             t[k] = tbl
             return tbl
         end
     }
-    setmetatable(C, mt_matrix_of_zeros)
+    setmetatable(C, matrix_of_zeros)
 
     local max = math.max
     for i = 1, num_old_tokens + 1 do
