@@ -1,32 +1,38 @@
 // from: https://github.com/puremourning/vimspector/tree/master/support/test/lua/simple
+// config reference:
+//   https://puremourning.github.io/vimspector/configuration.html#specifying-a-default-configuration
 {
-  "$schema": "https://puremourning.github.io/vimspector/schema/vimspector.schema.json#",
-  "configurations": {
-    "lua": {
-      "adapter": "lua-local",
-      "configuration": {
-        "request": "launch",
-        "type": "lua-local",
-        "cwd": "${workspaceFolder}",
-        "program": {
-          "lua": "lua",
-          "file": "lua/zeta/learn/step-thru-lcs-diff.lua",
-          "stopOnEntry": false
+    "$schema": "https://puremourning.github.io/vimspector/schema/vimspector.schema.json#",
+    "configurations": {
+        "lua": {
+            "adapter": "lua-local",
+            "autoselect": false,
+            "default": false,
+            "configuration": {
+                "request": "launch",
+                "type": "lua-local",
+                "cwd": "${workspaceFolder}",
+                "program": {
+                    "lua": "lua",
+                    "file": "lua/zeta/learn/step-thru-lcs-diff.lua",
+                    "stopOnEntry": false
+                }
+            }
+        },
+        "luajit": {
+            "adapter": "lua-local",
+            "default": true,
+            "filetypes": [ "lua" ],
+            "configuration": {
+                "request": "launch",
+                "type": "lua-local",
+                "cwd": "${workspaceFolder}",
+                "program": {
+                    "lua": "luajit",
+                    "file": "lua/zeta/learn/step-thru-lcs-diff.lua",
+                    "stopOnEntry": false
+                }
+            }
         }
-      }
-    },
-    "luajit": {
-      "adapter": "lua-local",
-      "configuration": {
-        "request": "launch",
-        "type": "lua-local",
-        "cwd": "${workspaceFolder}",
-        "program": {
-          "lua": "luajit",
-          "file": "lua/zeta/learn/step-thru-lcs-diff.lua",
-          "stopOnEntry": false
-        }
-      }
     }
-  }
 }
