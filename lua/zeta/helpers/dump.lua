@@ -41,6 +41,10 @@ function blue(text)
     return "\27[" .. color_keys.blue .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
 end
 
+function magenta(text)
+    return "\27[" .. color_keys.magenta .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
+end
+
 function green(text)
     return "\27[" .. color_keys.green .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
 end
@@ -85,6 +89,8 @@ function inspect(object)
             return "{}"
         end
         return "{ " .. table.concat(items, ", ") .. " }"
+    elseif type(object) == "number" then
+        return magenta(tostring(object))
     elseif type(object) == "string" then
         local escaped = object:gsub('"', '\\"')
         return '"' .. escaped .. '"'
