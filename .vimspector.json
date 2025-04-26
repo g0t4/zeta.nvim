@@ -1,0 +1,32 @@
+// from: https://github.com/puremourning/vimspector/tree/master/support/test/lua/simple
+{
+  "$schema": "https://puremourning.github.io/vimspector/schema/vimspector.schema.json#",
+  "configurations": {
+    "lua": {
+      "adapter": "lua-local",
+      "configuration": {
+        "request": "launch",
+        "type": "lua-local",
+        "cwd": "${workspaceFolder}",
+        "program": {
+          "lua": "lua",
+          "file": "lua/zeta/learn/step-thru-lcs-diff.lua",
+          "stopOnEntry": false
+        }
+      }
+    },
+    "luajit": {
+      "adapter": "lua-local",
+      "configuration": {
+        "request": "launch",
+        "type": "lua-local",
+        "cwd": "${workspaceFolder}",
+        "program": {
+          "lua": "luajit",
+          "file": "lua/zeta/learn/step-thru-lcs-diff.lua",
+          "stopOnEntry": false
+        }
+      }
+    }
+  }
+}
