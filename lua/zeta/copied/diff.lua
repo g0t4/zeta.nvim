@@ -26,9 +26,9 @@ IN             = "in"; OUT = "out"; SAME = "same" -- token statuses
 -- @param t2             the second string.
 -- @return               the least common subsequence as a matrix.
 -----------------------------------------------------------------------------
-local function quick_LCS(t1, t2)
-    local m = #t1
-    local n = #t2
+local function quick_LCS(old_tokens, new_tokens)
+    local num_old_tokens = #old_tokens
+    local num_new_tokens = #new_tokens
 
     -- Build matrix on demand
     local C = {}
@@ -49,11 +49,11 @@ local function quick_LCS(t1, t2)
     }
     setmetatable(C, mt_C)
     local max = math.max
-    for i = 1, m + 1 do
+    for i = 1, num_old_tokens + 1 do
         local ci1 = C[i + 1]
         local ci = C[i]
-        for j = 1, n + 1 do
-            if t1[i - 1] == t2[j - 1] then
+        for j = 1, num_new_tokens + 1 do
+            if old_tokens[i - 1] == new_tokens[j - 1] then
                 ci1[j + 1] = ci[j] + 1
             else
                 ci1[j + 1] = max(ci1[j], ci[j + 1])
