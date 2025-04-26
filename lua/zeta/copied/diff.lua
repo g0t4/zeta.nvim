@@ -142,7 +142,8 @@ end
 -----------------------------------------------------------------------------
 function diff(old, new, separator)
     assert(old); assert(new)
-    new = split(new, separator); old = split(old, separator)
+    new = split(new, separator)
+    old = split(old, separator)
 
     -- * remove common prefix/suffix
     -- First, compare the beginnings and ends of strings to remove the common
