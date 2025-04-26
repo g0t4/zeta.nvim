@@ -17,7 +17,7 @@ SKIP_SEPARATOR = true -- a constant
 IN             = "in"; OUT = "out"; SAME = "same" -- token statuses
 
 -----------------------------------------------------------------------------
--- Derives the longest common subsequence of two strings.  This is a faster
+-- Derives the longest common subsequence of two tokenized strings.  This is a faster
 -- implementation than one provided by stdlib.  Submitted by Hisham Muhammad.
 -- The algorithm was taken from:
 -- http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Longest_common_subsequence
