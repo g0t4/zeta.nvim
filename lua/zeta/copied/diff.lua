@@ -30,8 +30,6 @@ local function quick_LeastCommonSubsequence(old_tokens, new_tokens)
     local num_old_tokens = #old_tokens
     local num_new_tokens = #new_tokens
 
-    local setmetatable = setmetatable
-
     -- mt_tbl is a table that by default sets the value of every key to 0 on first use
     --   table of zeros
     local table_of_zeros = {
