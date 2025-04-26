@@ -99,7 +99,7 @@ function inspect(object)
         return magenta(tostring(object))
     elseif type(object) == "string" then
         local escaped = object:gsub('"', '\\"')
-        return '"' .. escaped .. '"'
+        return green('"' .. escaped .. '"')
     else
         -- PRN udf?
         return tostring(object)
