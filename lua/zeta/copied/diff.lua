@@ -49,12 +49,12 @@ local function quick_LeastCommonSubsequence(old_tokens, new_tokens)
             return tbl
         end
     }
-    local C = {}
-    setmetatable(C, matrix_of_zeros)
+    local matrix = {}
+    setmetatable(matrix, matrix_of_zeros)
 
     for i = 1, num_old_tokens + 1 do
-        local ci1 = C[i + 1]
-        local ci = C[i]
+        local ci1 = matrix[i + 1]
+        local ci = matrix[i]
         for j = 1, num_new_tokens + 1 do
             if old_tokens[i - 1] == new_tokens[j - 1] then
                 ci1[j + 1] = ci[j] + 1
@@ -63,7 +63,7 @@ local function quick_LeastCommonSubsequence(old_tokens, new_tokens)
             end
         end
     end
-    return C
+    return matrix
 end
 
 
