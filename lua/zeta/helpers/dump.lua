@@ -33,6 +33,10 @@ local color_keys = {
     whitebg   = 47
 }
 -- print("\27[31mThis is red text\27[0m")
+function black(text)
+    return "\27[" .. color_keys.black .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
+end
+
 function red(text)
     return "\27[" .. color_keys.red .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
 end
@@ -71,7 +75,9 @@ end
 ---@param object any
 ---@return string description
 function inspect(object)
-    if type(object) == 'table' then
+    if object == nil then
+        return black("nil")
+    elseif type(object) == 'table' then
         -- PRN check if all keys/indicies are integer and consecutive => if so, don't print indicies
         local is_list = tbl_is_list(object)
         local items = {}
