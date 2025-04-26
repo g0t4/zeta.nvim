@@ -26,7 +26,7 @@ IN   = "in"; OUT  = "out"; SAME = "same"  -- token statuses
 -- @param skip_separator [optional] don't include the sepator in the results.     
 -- @return               A list of tokens.
 -----------------------------------------------------------------------------
-function split(text, separator, skip_separator)
+local function split(text, separator, skip_separator)
    separator = separator or "%s+"
    local parts = {}  
    local start = 1
@@ -56,7 +56,7 @@ end
 -- @param t2             the second string.
 -- @return               the least common subsequence as a matrix.
 -----------------------------------------------------------------------------
-function quick_LCS(t1, t2)
+local function quick_LCS(t1, t2)
    local m = #t1
    local n = #t2
 
@@ -101,7 +101,7 @@ end
 -- @param text           The string to be escaped.
 -- @return               Escaped string.
 -----------------------------------------------------------------------------
-function escape_html(text)
+local function escape_html(text)
    text = text:gsub("&", "&amp;"):gsub(">","&gt;"):gsub("<","&lt;")
    text = text:gsub("\"", "&quot;")
    return text
@@ -114,7 +114,7 @@ end
 -- @param tokens         a table of {token, status} pairs.
 -- @return               an HTML string.
 -----------------------------------------------------------------------------
-function format_as_html(tokens)
+local function format_as_html(tokens)
    local diff_buffer = ""
    local token, status
    for i, token_record in ipairs(tokens) do
