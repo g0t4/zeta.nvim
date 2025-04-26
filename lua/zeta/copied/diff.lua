@@ -144,6 +144,7 @@ function diff(old, new, separator)
     assert(old); assert(new)
     new = split(new, separator); old = split(old, separator)
 
+    -- * remove common prefix/suffix
     -- First, compare the beginnings and ends of strings to remove the common
     -- prefix and suffix.  Chances are, there is only a small number of tokens
     -- in the middle that differ, in which case  we can save ourselves a lot
@@ -196,8 +197,10 @@ function diff(old, new, separator)
             end
         end
     end
+
     -- Then call it.
-    get_diff(quick_LCS(old, new), old, new, #old + 1, #new + 1)
+    local lcs_matrix = quick_LCS(old, new)
+    get_diff(lcs_matrix, old, new, #old + 1, #new + 1)
 
     -- Put the prefix in at the end
     rev_diff:same(prefix)
