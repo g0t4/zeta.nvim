@@ -26,7 +26,7 @@ IN             = "in"; OUT = "out"; SAME = "same" -- token statuses
 -- @param t2             the second string.
 -- @return               the least common subsequence as a matrix.
 -----------------------------------------------------------------------------
-local function quick_LCS(old_tokens, new_tokens)
+local function quick_LeastCommonSubsequence(old_tokens, new_tokens)
     local num_old_tokens = #old_tokens
     local num_new_tokens = #new_tokens
 
@@ -206,7 +206,7 @@ function diff(old, new, separator)
     end
 
     -- Then call it.
-    local lcs_matrix = quick_LCS(old, new)
+    local lcs_matrix = quick_LeastCommonSubsequence(old, new)
     get_diff(lcs_matrix, old, new, #old + 1, #new + 1)
 
     -- Put the prefix in at the end
