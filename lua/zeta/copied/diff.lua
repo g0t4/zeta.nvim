@@ -58,7 +58,9 @@ local function quick_LeastCommonSubsequence(old_tokens, new_tokens)
         local ci = matrix[i]
         for j = 1, num_new_tokens + 1 do
             -- for each new token:
-            if old_tokens[i - 1] == new_tokens[j - 1] then
+            local old_token_hrm = old_tokens[i - 1]
+            local new_token_hrm = new_tokens[j - 1]
+            if old_token_hrm == new_token_hrm then
                 ci1[j + 1] = ci[j] + 1
             else
                 ci1[j + 1] = math.max(ci1[j], ci[j + 1])
