@@ -1,7 +1,21 @@
 local luadiff = require("lua.zeta.copied.diff")
 
-print("test")
+local before = [[
+function M.add(a, b)
+    return a + b
+end
+]]
 
-local a = "foo"
+local after = [[
+function M.add(a, b, c)
+    return a + b
+end
+]]
 
-print(a)
+local diff = luadiff.diff(before, after)
+
+local after2 = [[
+function M.add(a, b, c)
+    return a + b + c
+end
+]]
