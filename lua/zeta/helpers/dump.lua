@@ -1,3 +1,50 @@
+--
+-- *** color output
+local color_keys = {
+    -- reset
+    reset     = 0,
+
+    -- misc
+    bright    = 1,
+    dim       = 2,
+    underline = 4,
+    blink     = 5,
+    reverse   = 7,
+    hidden    = 8,
+
+    -- foreground colors
+    black     = 30,
+    red       = 31,
+    green     = 32,
+    yellow    = 33,
+    blue      = 34,
+    magenta   = 35,
+    cyan      = 36,
+    white     = 37,
+
+    -- background colors
+    blackbg   = 40,
+    redbg     = 41,
+    greenbg   = 42,
+    yellowbg  = 43,
+    bluebg    = 44,
+    magentabg = 45,
+    cyanbg    = 46,
+    whitebg   = 47
+}
+-- print("\27[31mThis is red text\27[0m")
+function red(text)
+    return "\27[" .. color_keys.red .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
+end
+
+function blue(text)
+    return "\27[" .. color_keys.blue .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
+end
+
+function green(text)
+    return "\27[" .. color_keys.green .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
+end
+
 function tbl_is_list(tbl)
     if type(tbl) ~= "table" then
         return false
@@ -15,6 +62,8 @@ function tbl_is_list(tbl)
     return true
 end
 
+--%%
+
 ---@param object any
 ---@return string description
 function inspect(object)
@@ -24,10 +73,10 @@ function inspect(object)
         local items = {}
         for key, value in pairs(object) do
             if is_list then
-                table.insert(items, inspect(value))
+                table.insert(items, green(inspect(value)))
             else
                 if type(key) ~= 'number' then key = '"' .. key .. '"' end
-                local item = '[' .. key .. '] = ' .. inspect(value)
+                local item = '[' .. blue(key) .. '] = ' .. green(inspect(value))
                 table.insert(items, item)
             end
         end
@@ -46,14 +95,3 @@ function inspect(object)
 end
 
 --%%
---
--- -- lists:
--- assert(tbl_is_list({ 1, 2, 3 }))
--- assert(tbl_is_list({}))
--- -- not lists:
--- assert(tbl_is_list({ a = 1, b = 2, [3] = 4 }) == false)
---
--- inspect({}) -- "{ }"
--- inspect({ 1, 2, 3 }) --  == "{ 1, 2, 3, }"
--- inspect({ a = 1, b = 2, [3] = 4 })
--- inspect({ a = 'foo" the bar' })
