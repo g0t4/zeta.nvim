@@ -1,4 +1,4 @@
-local luadiff = require("zeta.copied.diff")
+local luadiff = require("lua.zeta.copied.diff")
 
 print("test")
 

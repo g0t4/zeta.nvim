@@ -30,7 +30,7 @@
                 "program": {
                     "lua": "luajit",
                     "file": "lua/zeta/learn/step-thru-lcs-diff.lua",
-                    "stopOnEntry": false
+                    "stopOnEntry": true // TODO set false if you wanna just run and not stop if no breakpoints
                 }
             }
         }
