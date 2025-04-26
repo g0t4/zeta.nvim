@@ -87,7 +87,7 @@ end
 local function format_as_html(tokens)
     local diff_buffer = ""
     local token, status
-    for i, token_record in ipairs(tokens) do
+    for _, token_record in ipairs(tokens) do
         token = escape_html(token_record[1])
         status = token_record[2]
         if status == "in" then
