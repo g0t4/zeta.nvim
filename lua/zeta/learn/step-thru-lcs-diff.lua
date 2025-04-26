@@ -1,4 +1,6 @@
-local luadiff = require("lua.zeta.copied.diff")
+luadiff = require("lua.zeta.copied.diff")
+
+-- FYI! I setup this file to work with iron.nvim too (hence no usage of `local` vars at this top level)
 
 --%%
 
@@ -26,21 +28,21 @@ print(other[3]) -- nil
 
 
 
-local before = [[
+before = [[
 function M.add(a, b)
     return a + b
 end
 ]]
 
-local after = [[
+after = [[
 function M.add(a, b, c)
     return a + b
 end
 ]]
 
-local _diff = luadiff.diff(before, after)
+_diff = luadiff.diff(before, after)
 
-local _after2 = [[
+_after2 = [[
 function M.add(a, b, c)
     return a + b + c
 end

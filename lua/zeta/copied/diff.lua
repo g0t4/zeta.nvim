@@ -9,8 +9,8 @@
 --
 -- License: MIT/X, see http://sputnik.freewisdom.org/en/License
 -----------------------------------------------------------------------------
-
-module(..., package.seeall)
+require("lua.zeta.helpers.dump")
+local M = {}
 
 SKIP_SEPARATOR = true -- a constant
 
@@ -29,6 +29,8 @@ IN             = "in"; OUT = "out"; SAME = "same" -- token statuses
 local function quick_LeastCommonSubsequence(old_tokens, new_tokens)
     local num_old_tokens = #old_tokens
     local num_new_tokens = #new_tokens
+    print("old_tokens: ", inspect(old_tokens))
+    print("new_tokens: ", inspect(new_tokens))
 
     -- mt_tbl is a table that by default sets the value of every key to 0 on first use
     --   table of zeros
@@ -147,7 +149,7 @@ end
 --                       white space).
 -- @return               A list of annotated tokens.
 -----------------------------------------------------------------------------
-function diff(old, new, separator)
+function M.diff(old, new, separator)
     assert(old); assert(new)
     new = split(new, separator)
     old = split(old, separator)
@@ -222,3 +224,5 @@ function diff(old, new, separator)
     diff.to_html = format_as_html
     return diff
 end
+
+return M
