@@ -52,7 +52,6 @@ local function quick_LeastCommonSubsequence(old_tokens, new_tokens)
     local C = {}
     setmetatable(C, matrix_of_zeros)
 
-    local max = math.max
     for i = 1, num_old_tokens + 1 do
         local ci1 = C[i + 1]
         local ci = C[i]
@@ -60,7 +59,7 @@ local function quick_LeastCommonSubsequence(old_tokens, new_tokens)
             if old_tokens[i - 1] == new_tokens[j - 1] then
                 ci1[j + 1] = ci[j] + 1
             else
-                ci1[j + 1] = max(ci1[j], ci[j + 1])
+                ci1[j + 1] = math.max(ci1[j], ci[j + 1])
             end
         end
     end
