@@ -74,7 +74,8 @@ end
 
 ---@param object any
 ---@return string description
-function inspect(object)
+function inspect(object, pretty)
+    pretty = pretty or false
     if object == nil then
         return black("nil")
     elseif type(object) == 'table' then
@@ -94,6 +95,9 @@ function inspect(object)
             -- special case, also don't check this on object itself as it won't work on non-list tables
             return "{}"
         end
+        if pretty then
+            return "{\n" .. table.concat(items, ",\n") .. "\n}"
+        end
         return "{ " .. table.concat(items, ", ") .. " }"
     elseif type(object) == "number" then
         return magenta(tostring(object))
@@ -105,5 +109,3 @@ function inspect(object)
         return tostring(object)
     end
 end
-
---%%
