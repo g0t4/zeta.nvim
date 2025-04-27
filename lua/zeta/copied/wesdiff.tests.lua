@@ -20,7 +20,9 @@ describe("tiny comparison with no leading/trailing comonality", function()
 
     local after_text = [[b, c, d)]]
     it("splits words", function()
-        -- leaving separator as whitespace default AND keeping separator (IOTW no need to pass anything but first arg)
+        -- FYI this is testing the inner details, but I wanna lock those in as the split matters
+        -- leaving separator as whitespace default AND keeping separator
+        -- IOTW no need to pass anything but first arg
         local before_tokens = wesdiff.split(before_text)
         should_be_same({ "b", " ", ")" }, before_tokens)
 
