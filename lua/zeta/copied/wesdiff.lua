@@ -98,14 +98,15 @@ function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
                 --  find a better name than left/up cumulative...
                 --  what does each represent when taking the max
                 --  * something about longest_sequence_so_far_in_[before|after]_tokens
-                --     copying that max since this isn't a match (and therefore cannot increment it!)
+                --     * longest_cum_so_far?
+                --     copying that max (thus far) since this isn't a match (and therefore cannot increment it!)
                 cum_matrix[i][j] = math.max(left_cum, up_cum)
             end
             -- print("  " .. j .. " - " .. cum_matrix[i][j])
         end
     end
+    -- optional:
     cum_matrix[0] = nil -- wipe out first row, it's empty b/c just used to read zeros w/o boundary condition check on i = 1
-    -- would this make more sense: long_cum_matrix
     return cum_matrix
 end
 
