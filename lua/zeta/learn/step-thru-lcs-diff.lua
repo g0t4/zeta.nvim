@@ -41,6 +41,7 @@ end
 ]]
 
 _diff = luadiff.diff(before, after)
+print("diff:", inspect(_diff))
 
 _after2 = [[
 function M.add(a, b, c)
