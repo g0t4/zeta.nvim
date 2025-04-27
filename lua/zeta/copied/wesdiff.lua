@@ -79,9 +79,21 @@ function lazy_zeros_matrix_metatable:new()
 end
 
 function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
-    -- local num_before_tokens = #before_tokens
-    -- local num_after_tokens = #after_tokens
+    local cumulative_matrix = lazy_zeros_matrix_metatable:new()
+    for i, old_token in ipairs(before_tokens) do
+        for j, new_token in ipairs(after_tokens) do
+            if old_token == new_token then
+                -- TODO
+                cumulative_matrix[i][j] = 1
+            else
+                -- TODO
+                cumulative_matrix[i][j] = 2
+            end
+        end
+    end
+end
 
+function M.visualize_longest_common_subsequence_matrix(before_tokens, after_tokens)
     -- FYI test drive "cumulative" as a way to describe the matrix
     --   as more than just a "binary" true/false match matrix (intersection of tokens)
     local cumulative_matrix = lazy_zeros_matrix_metatable:new()
@@ -90,16 +102,15 @@ function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
         for j, new_token in ipairs(after_tokens) do
             cumulative_matrix[i][j] = tostring(old_token) .. " | " .. tostring(new_token)
             if old_token == new_token then
-                -- match_matrix[i][j] = old_token
                 match_matrix[i][j] = old_token
             else
+                -- JUST set a value for inspect purposes only:
                 -- set to space so inspect aligns with "set" tokens... would need length actually of new_token (for col align)
                 local spaces = string.rep(" ", #new_token)
                 match_matrix[i][j] = spaces
             end
         end
     end
-
     print(inspect(cumulative_matrix, true))
     print(inspect(match_matrix, true))
 end
