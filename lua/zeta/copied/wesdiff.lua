@@ -58,6 +58,9 @@ local lazy_zeros_metatable = {
         return 0
     end
 }
+function lazy_zeros_metatable:new()
+    return setmetatable({}, lazy_zeros_metatable)
+end
 
 local lazy_zeros_matrix_metatable = {
     __index = function(table, row_index)
@@ -65,17 +68,20 @@ local lazy_zeros_matrix_metatable = {
         -- __index only called on first use of table[row_index]
         -- or if table[row_index] was set to nil previously
 
-        local new_row = setmetatable({}, lazy_zeros_metatable)
+        local new_row = lazy_zeros_metatable:new()
         table[row_index] = new_row
         return new_row
     end
 }
+function lazy_zeros_matrix_metatable:new()
+    return setmetatable({}, lazy_zeros_matrix_metatable)
+end
 
 function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
     -- local num_before_tokens = #before_tokens
     -- local num_after_tokens = #after_tokens
 
-    local matrix = setmetatable({}, lazy_zeros_matrix_metatable)
+    local matrix = lazy_zeros_matrix_metatable:new()
     for i, old_token in ipairs(before_tokens) do
         for j, new_token in ipairs(after_tokens) do
 
