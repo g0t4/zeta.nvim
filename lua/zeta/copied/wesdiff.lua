@@ -82,10 +82,12 @@ function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
     -- local num_before_tokens = #before_tokens
     -- local num_after_tokens = #after_tokens
 
-    local matrix = lazy_zeros_matrix_metatable:new()
+    -- FYI test drive "cumulative" as a way to describe the matrix
+    --   as more than just a "binary" true/false match matrix (intersection of tokens)
+    local cumulative_matrix = lazy_zeros_matrix_metatable:new()
     for i, old_token in ipairs(before_tokens) do
         for j, new_token in ipairs(after_tokens) do
-            matrix[i][j] = tostring(old_token) .. " " .. tostring(new_token)
+            cumulative_matrix[i][j] = tostring(old_token) .. " " .. tostring(new_token)
         end
     end
 end
