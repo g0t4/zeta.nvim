@@ -54,6 +54,13 @@ local function quick_LongestCommonSubsequence(old_tokens, new_tokens)
     local matrix = {}
     setmetatable(matrix, matrix_of_zeros)
 
+    -- what is super confusing for me is the offsets here...
+    -- they are doing weird shifting of cell values vs original token position...
+    -- it works out the same, assuming same offsets used in get_diff
+    -- but it is really confusing, so just heads up
+    -- one consequence is effectively seeing a non-existant nil token at the start of both old_tokens and new_tokens
+    -- thus the LCS count is overstated (i.e. 3 => 2 max len, 2 => 1 max len, etc)
+    --   b/c the nil at the start of each string is gonna match and count as a match that isn't there!
     for i = 1, num_old_tokens + 1 do
         -- for each old token:
         local current_row = matrix[i]
