@@ -54,20 +54,20 @@ local function quick_LongestCommonSubsequence(old_tokens, new_tokens)
     local matrix = {}
     setmetatable(matrix, matrix_of_zeros)
 
-    for old_pos = 1, num_old_tokens + 1 do
+    for i = 1, num_old_tokens + 1 do
         -- for each old token:
-        local next_row = matrix[old_pos + 1]
-        local current_row = matrix[old_pos]
-        local old_token_hrm = old_tokens[old_pos - 1]
-        print("i = " .. inspect(old_pos) .. " = " .. inspect(old_token_hrm))
-        for new_pos = 1, num_new_tokens + 1 do
+        local next_row = matrix[i + 1]
+        local current_row = matrix[i]
+        local old_token_hrm = old_tokens[i - 1]
+        print("i = " .. inspect(i) .. " = " .. inspect(old_token_hrm))
+        for j = 1, num_new_tokens + 1 do
             -- for each new token:
-            local new_token_hrm = new_tokens[new_pos - 1]
-            print("  j = " .. inspect(new_pos) .. " = " .. inspect(new_token_hrm))
+            local new_token_hrm = new_tokens[j - 1]
+            print("  j = " .. inspect(j) .. " = " .. inspect(new_token_hrm))
             if old_token_hrm == new_token_hrm then
-                next_row[new_pos + 1] = current_row[new_pos] + 1
+                next_row[j + 1] = current_row[j] + 1
             else
-                next_row[new_pos + 1] = math.max(next_row[new_pos], current_row[new_pos + 1])
+                next_row[j + 1] = math.max(next_row[j], current_row[j + 1])
             end
         end
     end
