@@ -40,10 +40,42 @@ function M.split(text, separator, skip_separator)
     return parts
 end
 
+local lazy_zeros_metatable = {
+    __index = function(table, key)
+        -- only called if key/index doesn't already exist
+        --   or was set to nil
+        --
+        --  lazy == defaults to zero on first use
+        --  don't waste time/resources initializing table of zeros
+        --  also useful:
+        --    if don't know table size
+        --      infinite size
+        --    edge cases, when zero is a sufficient/desirable default
+        --      instead of extra boundary checks, in code
+        --      that said, magic is not free... YMMV
+        --      can easily be more confusing, i.e. if you gravitate toward single letter variable names
+        table[key] = 0
+        return 0
+    end
+}
+
+local lazy_zeros_matrix_metatable = {
+    __index = function(table, row_index)
+        -- named with only 2D in mind (row per old_token, col per new_token)
+        -- __index only called on first use of table[row_index]
+        -- or if table[row_index] was set to nil previously
+
+        local new_row = setmetatable({}, lazy_zeros_metatable)
+        table[row_index] = new_row
+        return new_row
+    end
+}
+
 function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
     -- local num_before_tokens = #before_tokens
     -- local num_after_tokens = #after_tokens
 
+    local matrix = setmetatable({}, lazy_zeros_matrix_metatable)
     for i, old_token in ipairs(before_tokens) do
         for j, new_token in ipairs(after_tokens) do
 
