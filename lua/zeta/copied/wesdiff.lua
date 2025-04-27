@@ -40,7 +40,7 @@ function M.split(text, separator, skip_separator)
     return parts
 end
 
-local lazy_zeros_row_metatable = {
+local zeros_until_set_row = {
     __index = function(table, key)
         -- only called if key/index doesn't already exist
         --   or was set to nil
@@ -54,32 +54,36 @@ local lazy_zeros_row_metatable = {
         --      instead of extra boundary checks, in code
         --      that said, magic is not free... YMMV
         --      can easily be more confusing, i.e. if you gravitate toward single letter variable names
-        table[key] = 0
+        --
+        -- umm not reason to set zero actually! just return it until someone else sets it to specific value!
+        --   b/c setting it was fubaring prints too (added new row with sporadic set values ... yuck)
+        -- table[key] = 0
         return 0
     end
 }
-function lazy_zeros_row_metatable:new()
-    return setmetatable({}, lazy_zeros_row_metatable)
+function zeros_until_set_row:new()
+    return setmetatable({}, zeros_until_set_row)
 end
 
-local lazy_zeros_matrix_metatable = {
+local zeros_until_set_matrix = {
     __index = function(table, row_index)
         -- named with only 2D in mind (row per old_token, col per new_token)
         -- __index only called on first use of table[row_index]
         -- or if table[row_index] was set to nil previously
         -- print("new row " .. row_index)
 
-        local new_row = lazy_zeros_row_metatable:new()
+        local new_row = zeros_until_set_row:new()
+        -- auto add the row
         table[row_index] = new_row
         return new_row
     end
 }
-function lazy_zeros_matrix_metatable:new()
-    return setmetatable({}, lazy_zeros_matrix_metatable)
+function zeros_until_set_matrix:new()
+    return setmetatable({}, zeros_until_set_matrix)
 end
 
 function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
-    local cum_matrix = lazy_zeros_matrix_metatable:new()
+    local cum_matrix = zeros_until_set_matrix:new()
     for i, old_token in ipairs(before_tokens) do
         -- print(i .. " " .. old_token)
         for j, new_token in ipairs(after_tokens) do
@@ -100,12 +104,13 @@ function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
             -- print("  " .. j .. " - " .. cum_matrix[i][j])
         end
     end
+    cum_matrix[0] = nil -- wipe out first row, it's empty b/c just used to read zeros w/o boundary condition check on i = 1
     -- would this make more sense: long_cum_matrix
     return cum_matrix
 end
 
 function M.get_match_matrix(before_tokens, after_tokens)
-    local match_matrix = lazy_zeros_matrix_metatable:new() -- just for fun, to illustrate naming differences
+    local match_matrix = zeros_until_set_matrix:new() -- just for fun, to illustrate naming differences
     for i, old_token in ipairs(before_tokens) do
         for j, new_token in ipairs(after_tokens) do
             if old_token == new_token then
