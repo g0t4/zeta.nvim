@@ -68,6 +68,16 @@ describe("my paper example", function()
         should_be_same({ "F", "A", "C",    "F", "H", "G",    "D", "C", "O",    "Z" }, after_tokens)
     end)
 
+    it("gets longest sequence", function()
+        -- FUCK YEAH WORKED THE FIRST TIME MOTHER FUCKER!
+        local longest_sequence = wesdiff.get_longest_sequence(before_tokens, after_tokens)
+        print(inspect(longest_sequence))
+    end)
+
+    it("gets diff", function()
+        -- get_diff(before_text, after_text, separator, keep_separator)
+    end)
+
     it("computes lcs matrix", function()
         local lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
         print("lcs_matrix", inspect(lcs_matrix, true))

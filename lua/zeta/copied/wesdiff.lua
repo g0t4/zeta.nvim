@@ -110,6 +110,57 @@ function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
     return cum_matrix
 end
 
+function M.get_longest_sequence(before_tokens, after_tokens)
+    local lcs_matrix = M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
+
+    function _get_longest(num_before_tokens, num_after_tokens)
+        if num_before_tokens < 1 or num_after_tokens < 1 then
+            -- base case / terminal condition
+            return {}
+        end
+        local longest_length = lcs_matrix[num_before_tokens][num_after_tokens]
+        -- now find a match with that length
+        local old_token = before_tokens[num_before_tokens]
+        local new_token = after_tokens[num_after_tokens]
+        if old_token == new_token then
+            -- this is part of longest sequence (the last token)!
+            -- move to previous token in both old/new sets, hence - 1 on both
+            local rest = _get_longest(num_before_tokens - 1, num_after_tokens - 1)
+            table.insert(rest, old_token)
+            return rest
+        end
+
+        -- btw up/left first doesn't matter
+        -- can lead to different longest sequence selection (when multiple)
+        -- and if you land on a non-matching (tokens) cell with longest_length == longest_above == longest_to_left,
+        --    then you've got at least two longest sequences with a suffix that matches (thus far)
+        -- anyways, so long as you get one longest sequence, it doesn't matter which way you go
+        -- that said, is there any benefit to going up first or left first?
+        --   push more of the sequnce into the start of the before_tokens vs after_tokens?
+        -- probably wise to be deterministic with multiple runs of the same sequences...
+        --   don't flip a coin each time!
+
+        -- look above, if cumulative value is same as longest_length it means there is a token above that is part of a longest length sequence
+        local longest_above = lcs_matrix[num_before_tokens - 1][num_after_tokens]
+        if longest_above == longest_length then
+            -- not on a token so nothing to add to list
+            return _get_longest(num_before_tokens - 1, num_after_tokens)
+        end
+
+        -- otherwise, there's a match token to the left that is part of a longest length sequence
+        -- assertion:
+        local longest_to_left = lcs_matrix[num_before_tokens][num_after_tokens - 1]
+        if longest_to_left ~= longest_length then
+            error("UNEXPECTED... longest_to_left (" .. longest_to_left .. ")"
+                .. " should match logest_length (" .. longest_length .. ")"
+                .. ", when longest_above (" .. longest_above .. ") does not!")
+        end
+        return _get_longest(num_before_tokens, num_after_tokens - 1)
+    end
+
+    return _get_longest(#before_tokens, #after_tokens)
+end
+
 function M.get_match_matrix(before_tokens, after_tokens)
     local match_matrix = zeros_until_set_matrix:new() -- just for fun, to illustrate naming differences
     for i, old_token in ipairs(before_tokens) do
