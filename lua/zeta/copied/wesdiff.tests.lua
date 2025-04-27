@@ -61,7 +61,7 @@ describe("my paper example", function()
     local before_tokens = wesdiff.split(before_text, " ", true)
     local after_tokens = wesdiff.split(after_text, " ", true)
     local longest_seq_if_prefer_match_up = { "C", "F", "D", "O", "Z" }
-    local longest_seq_if_prefer_match_left = { "F", "A", "D", "O", "Z" }
+    local _longest_seq_if_prefer_match_left = { "F", "A", "D", "O", "Z" }
 
     it("splits words w/o separator", function()
         ---@format disable -- disables rest of lines in block
