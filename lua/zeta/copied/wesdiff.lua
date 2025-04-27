@@ -92,6 +92,8 @@ function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
                 -- TODO ok now this feels like the right way to think about the algorithm...
                 --  find a better name than left/up cumulative...
                 --  what does each represent when taking the max
+                --  * something about longest_sequence_so_far_in_[before|after]_tokens
+                --     copying that max since this isn't a match (and therefore cannot increment it!)
                 cum_matrix[i][j] = math.max(left_cum, up_cum)
             end
         end
