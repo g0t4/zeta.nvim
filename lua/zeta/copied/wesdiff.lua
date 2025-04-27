@@ -1,0 +1,6 @@
+-- TODO re-implement algo that I devised on paper.. maybe wait until tomorrow to help ideas solidify
+--
+-- for now I understand how the other one works which is what I initially set out to do
+--   even if I don't like how it works, it works and what it produces is all I care about
+--   but I would like practice with LCS so I would like to revist it
+--     probably will nag at me and make me do it tonight
