@@ -60,6 +60,8 @@ describe("my paper example", function()
     local after_text = "F A C F H G D C O Z"
     local before_tokens = wesdiff.split(before_text, " ", true)
     local after_tokens = wesdiff.split(after_text, " ", true)
+    local longest_seq_if_prefer_match_up = { "C", "F", "D", "O", "Z" }
+    local longest_seq_if_prefer_match_left = { "F", "A", "D", "O", "Z" }
 
     it("splits words w/o separator", function()
         ---@format disable -- disables rest of lines in block
@@ -127,8 +129,6 @@ describe("my paper example", function()
 
         -- longest sequences (just need one of these):
         --   depending on how I recursively reverse scan for longest match, I could get either:
-        local seq_cf5 = { "C", "F", "D", "O", "Z" }
-        local seq_fa5 = { "F", "A", "D", "O", "Z" }
         -- * just like doing a maze in reverse is easy, likewise with finding a longest sequence
         -- sequence comes from token matches only (aka "same" tokens, unchanged)
         --   matches are literally where before and after have the same token
