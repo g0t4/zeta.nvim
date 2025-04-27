@@ -55,7 +55,6 @@ function M.add(a, b, c, d)
 end
 ]]
 end)
-
 describe("my paper example", function()
     local before_text = "C F A D Z O H Z C"
     local after_text = "F A C F H G D C O Z"
@@ -71,6 +70,9 @@ describe("my paper example", function()
 
     it("computes lcs matrix", function()
         local lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
+        print("lcs_matrix", inspect(lcs_matrix, true))
+        local match_matrix = wesdiff.get_match_matrix(before_tokens, after_tokens)
+        print("match_matrix: ", inspect(match_matrix, true))
 
         ---@format disable -- disables rest of lines in block (so I can have 5 per split)
         -- matches:            C                  C
