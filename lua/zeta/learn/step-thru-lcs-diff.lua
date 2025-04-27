@@ -28,19 +28,19 @@ print(other[3]) -- nil
 
 
 
-before = [[
+before_text = [[
 function M.add(a, b )
     return a + b
 end
 ]]
 
-after = [[
+after_text = [[
 function M.add(a, b, c, d)
     return a + b
 end
 ]]
 
-_diff = luadiff.diff(before, after)
+_diff = luadiff.diff(before_text, after_text)
 print("diff:", inspect(_diff, true))
 
 _after2 = [[
