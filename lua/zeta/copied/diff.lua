@@ -227,7 +227,7 @@ function M.diff(old, new, separator)
 
     -- Then call it.
     local lcs_matrix = quick_LongestCommonSubsequence(old, new)
-    print("lcs:", inspect(lcs_matrix))
+    print("lcs:", inspect(lcs_matrix, true))
     get_diff(lcs_matrix, old, new, #old + 1, #new + 1)
 
     -- Put the prefix in at the end
