@@ -4,7 +4,7 @@
 --   even if I don't like how it works, it works and what it produces is all I care about
 --   but I would like practice with LCS so I would like to revist it
 --     probably will nag at me and make me do it tonight
-
+require("lua.zeta.helpers.dump")
 
 
 local M = {}
@@ -85,11 +85,23 @@ function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
     -- FYI test drive "cumulative" as a way to describe the matrix
     --   as more than just a "binary" true/false match matrix (intersection of tokens)
     local cumulative_matrix = lazy_zeros_matrix_metatable:new()
+    local match_matrix = lazy_zeros_matrix_metatable:new() -- just for fun, to illustrate naming differences
     for i, old_token in ipairs(before_tokens) do
         for j, new_token in ipairs(after_tokens) do
-            cumulative_matrix[i][j] = tostring(old_token) .. " " .. tostring(new_token)
+            cumulative_matrix[i][j] = tostring(old_token) .. " | " .. tostring(new_token)
+            if old_token == new_token then
+                -- match_matrix[i][j] = old_token
+                match_matrix[i][j] = old_token
+            else
+                -- set to space so inspect aligns with "set" tokens... would need length actually of new_token (for col align)
+                local spaces = string.rep(" ", #new_token)
+                match_matrix[i][j] = spaces
+            end
         end
     end
+
+    print(inspect(cumulative_matrix, true))
+    print(inspect(match_matrix, true))
 end
 
 return M
