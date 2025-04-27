@@ -56,14 +56,22 @@ local function quick_LongestCommonSubsequence(old_tokens, new_tokens)
 
     for i = 1, num_old_tokens + 1 do
         -- for each old token:
-        local next_row = matrix[i + 1]
         local current_row = matrix[i]
+        local next_row = matrix[i + 1]
         local old_token_hrm = old_tokens[i - 1]
         print("i = " .. inspect(i) .. " = " .. inspect(old_token_hrm))
         for j = 1, num_new_tokens + 1 do
             -- for each new token:
             local new_token_hrm = new_tokens[j - 1]
             print("  j = " .. inspect(j) .. " = " .. inspect(new_token_hrm))
+
+            -- these cells are conditionally accessed
+            -- explicitly access them to ensure they're set to zero
+            -- so inspect sees all rows as lists (no gaps / implicit zeros)
+            current_row[j + 1] = current_row[j + 1]
+            current_row[j] = current_row[j]
+            next_row[j] = next_row[j]
+
             if old_token_hrm == new_token_hrm then
                 next_row[j + 1] = current_row[j] + 1
             else
