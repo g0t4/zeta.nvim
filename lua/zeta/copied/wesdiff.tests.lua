@@ -74,6 +74,7 @@ describe("my paper example", function()
         -- FUCK YEAH WORKED THE FIRST TIME MOTHER FUCKER!
         local longest_sequence = wesdiff.get_longest_sequence(before_tokens, after_tokens)
         print(inspect(longest_sequence))
+        should_be_same(longest_seq_if_prefer_match_up, longest_sequence)
     end)
 
     it("gets diff", function()

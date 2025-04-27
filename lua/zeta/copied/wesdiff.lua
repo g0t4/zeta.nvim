@@ -151,7 +151,7 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         -- assertion:
         local longest_to_left = lcs_matrix[num_before_tokens][num_after_tokens - 1]
         if longest_to_left ~= longest_length then
-            error("UNEXPECTED... longest_to_left (" .. longest_to_left .. ")"
+            error("UNEXPECTED... this suggests a bug in building/traversing LCS matrix... longest_to_left (" .. longest_to_left .. ")"
                 .. " should match logest_length (" .. longest_length .. ")"
                 .. ", when longest_above (" .. longest_above .. ") does not!")
         end
