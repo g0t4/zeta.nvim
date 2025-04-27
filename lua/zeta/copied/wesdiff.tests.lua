@@ -124,13 +124,10 @@ describe("my paper example", function()
         --             { _  _  _    _  _  _    _  _  _    Z }
         --             { _  _  C    _  _  _    _  C  _    _ }
         --
-        --   FYI added _ to see cols/rows, b/c of sparsity
+        --  added _ to see cols/rows, b/c of sparsity
 
-
-        -- longest sequences (just need one of these):
-        --   depending on how I recursively reverse scan for longest match, I could get either:
         -- * just like doing a maze in reverse is easy, likewise with finding a longest sequence
-        -- sequence comes from token matches only (aka "same" tokens, unchanged)
+        -- sequence comes from token matches only (match matrix, aka "same" tokens)
         --   matches are literally where before and after have the same token
         --     and is either the start of a sequence
         --     OR, a continuation of a prior sequence
@@ -145,11 +142,15 @@ describe("my paper example", function()
         --   that's why we scan reverse (lower right to upper left)
         --   on a diagonal-ish pattern
         --   recursive seach where you are always looking for the last token in the longest sequence
-        --     5 first => then 4th token in the matrix w/o the row/col that had 5th match
+        --     5 first => then 4th token in the matrix w/o the row&col that had 5th match
         --     then 3rd token
         --     then 2nd
         --     then 1st
         --  yes there can be multiple matches, for the longest, doesn't matter as long as you find one!
+        --    difference is, when on a non-match cell, do you prefer moving up or left? either work
+        --    move up == prefer to find an LCS closer to start of before_text
+        --    move left = prefer to find an LCS closer to start of after_text
+        --    can flip a coin, non-deterministic
 
     end)
 end)
