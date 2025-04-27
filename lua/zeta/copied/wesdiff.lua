@@ -40,12 +40,12 @@ function M.split(text, separator, skip_separator)
     return parts
 end
 
-function M.get_longest_common_subsequence_matrix(before_tokens, new_tokens)
+function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
     -- local num_before_tokens = #before_tokens
     -- local num_after_tokens = #after_tokens
 
     for i, old_token in ipairs(before_tokens) do
-        for j, new_token in ipairs(new_tokens) do
+        for j, new_token in ipairs(after_tokens) do
 
         end
     end
