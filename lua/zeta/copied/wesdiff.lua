@@ -79,15 +79,20 @@ function lazy_zeros_matrix_metatable:new()
 end
 
 function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
-    local cumulative_matrix = lazy_zeros_matrix_metatable:new()
+    local cum_matrix = lazy_zeros_matrix_metatable:new()
     for i, old_token in ipairs(before_tokens) do
         for j, new_token in ipairs(after_tokens) do
             if old_token == new_token then
-                -- TODO
-                cumulative_matrix[i][j] = 1
+                -- increment sequence length (cumulative value) - up 1 row, left 1 column (NW direction)
+                cum_matrix[i][j] = cum_matrix[i - 1][j - 1] + 1
             else
-                -- TODO
-                cumulative_matrix[i][j] = 2
+                -- max(cell above, cell to left)
+                local left_cum = cum_matrix[i][j - 1]
+                local up_cum = cum_matrix[i - 1][j]
+                -- TODO ok now this feels like the right way to think about the algorithm...
+                --  find a better name than left/up cumulative...
+                --  what does each represent when taking the max
+                cum_matrix[i][j] = math.max(left_cum, up_cum)
             end
         end
     end
