@@ -40,7 +40,7 @@ function M.split(text, separator, skip_separator)
     return parts
 end
 
-local lazy_zeros_table_metatable = {
+local lazy_zeros_row_metatable = {
     __index = function(table, key)
         -- only called if key/index doesn't already exist
         --   or was set to nil
@@ -58,8 +58,8 @@ local lazy_zeros_table_metatable = {
         return 0
     end
 }
-function lazy_zeros_table_metatable:new()
-    return setmetatable({}, lazy_zeros_table_metatable)
+function lazy_zeros_row_metatable:new()
+    return setmetatable({}, lazy_zeros_row_metatable)
 end
 
 local lazy_zeros_matrix_metatable = {
@@ -68,7 +68,7 @@ local lazy_zeros_matrix_metatable = {
         -- __index only called on first use of table[row_index]
         -- or if table[row_index] was set to nil previously
 
-        local new_row = lazy_zeros_table_metatable:new()
+        local new_row = lazy_zeros_row_metatable:new()
         table[row_index] = new_row
         return new_row
     end
