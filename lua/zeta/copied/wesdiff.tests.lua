@@ -35,6 +35,8 @@ describe("tiny comparison with no leading/trailing comonality", function()
     end)
 end)
 
+-- TODO! when done, would it be worth combining sequential tokens that are remove(out)/add(in)/same?
+-- that would really help building extmarks to not have an extmark update per token (word)
 
 describe("simple comparison", function()
     local before_text = [[
