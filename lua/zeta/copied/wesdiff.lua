@@ -67,6 +67,7 @@ local lazy_zeros_matrix_metatable = {
         -- named with only 2D in mind (row per old_token, col per new_token)
         -- __index only called on first use of table[row_index]
         -- or if table[row_index] was set to nil previously
+        -- print("new row " .. row_index)
 
         local new_row = lazy_zeros_row_metatable:new()
         table[row_index] = new_row
@@ -84,7 +85,7 @@ function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
     local matrix = lazy_zeros_matrix_metatable:new()
     for i, old_token in ipairs(before_tokens) do
         for j, new_token in ipairs(after_tokens) do
-
+            matrix[i][j] = tostring(old_token) .. " " .. tostring(new_token)
         end
     end
 end
