@@ -164,8 +164,8 @@ function M.get_longest_sequence(before_tokens, after_tokens)
                 local deleted_token = before_tokens[num_remaining_before_tokens]
                 visitor:on_delete(deleted_token)
 
-                _diff_walker(num_remaining_before_tokens - 1, num_remaining_after_tokens, visitor)
-                return
+                num_remaining_before_tokens = num_remaining_before_tokens - 1
+                goto continue_while
             end
 
             -- * else, move left
