@@ -29,8 +29,8 @@ IN             = "in"; OUT = "out"; SAME = "same" -- token statuses
 local function quick_LongestCommonSubsequence(old_tokens, new_tokens)
     local num_old_tokens = #old_tokens
     local num_new_tokens = #new_tokens
-    print("old_tokens: ", inspect(old_tokens))
-    print("new_tokens: ", inspect(new_tokens))
+    -- print("old_tokens: ", inspect(old_tokens))
+    -- print("new_tokens: ", inspect(new_tokens))
 
     -- mt_tbl is a table that by default sets the value of every key to 0 on first use
     --   table of zeros
@@ -66,11 +66,11 @@ local function quick_LongestCommonSubsequence(old_tokens, new_tokens)
         local current_row = matrix[i]
         local next_row = matrix[i + 1]
         local old_token_hrm = old_tokens[i - 1]
-        print("i = " .. inspect(i) .. " = " .. inspect(old_token_hrm))
+        -- print("i = " .. inspect(i) .. " = " .. inspect(old_token_hrm))
         for j = 1, num_new_tokens + 1 do
             -- for each new token:
             local new_token_hrm = new_tokens[j - 1]
-            print("  j = " .. inspect(j) .. " = " .. inspect(new_token_hrm))
+            -- print("  j = " .. inspect(j) .. " = " .. inspect(new_token_hrm))
 
             -- these cells are conditionally accessed
             -- explicitly access them to ensure they're set to zero
@@ -228,7 +228,7 @@ function M.diff(old, new, separator, skip_separator)
 
     -- Then call it.
     local lcs_matrix = quick_LongestCommonSubsequence(old, new)
-    print("lcs:", inspect(lcs_matrix, true))
+    -- print("lcs:", inspect(lcs_matrix, true))
     get_diff(lcs_matrix, old, new, #old + 1, #new + 1)
 
     -- Put the prefix in at the end
