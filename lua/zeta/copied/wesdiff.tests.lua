@@ -321,6 +321,27 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
     -- TODO test of only shared prefix (don't rely on above test that happens to not have shared prefix/suffix)
     -- TODO test of only shared suffix    "
 
+    describe("no shared suffix nor prefix", function()
+        it("returns correct diff", function()
+            local before_text = "B C B"
+            local after_text = "A C A"
+            local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+
+            local expected_diff = {
+                { "del",  "B" },
+                { "add",  "A" },
+                { "same", "C" },
+                { "del",  "B" },
+                { "add",  "A" },
+            }
+
+            local actual_diff = wesdiff.get_diff(before_tokens, after_tokens)
+
+            should_be_same(expected_diff, actual_diff)
+        end)
+    end)
+
     describe("both sequences match 100%", function()
         it("returns all under same_suffix", function()
             local before_text = "A B C D"
