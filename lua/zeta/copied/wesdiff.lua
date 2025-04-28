@@ -114,11 +114,12 @@ function diff_walker(before_tokens, after_tokens, num_remaining_before_tokens, n
     local lcs_matrix = M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
 
     while num_remaining_before_tokens > 0 or num_remaining_after_tokens > 0 do
-        -- * match?
         local old_token = before_tokens[num_remaining_before_tokens]
         local new_token = after_tokens[num_remaining_after_tokens]
         print("old_token: '" .. tostring(old_token) .. "' - " .. num_remaining_before_tokens)
         print("new_token: '" .. tostring(new_token) .. "' - " .. num_remaining_after_tokens)
+
+        -- * match?
         if old_token == new_token then
             visitor:on_match(old_token)
             -- this is part of longest sequence (the last token)!
