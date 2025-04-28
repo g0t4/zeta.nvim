@@ -139,10 +139,6 @@ describe("my paper example", function()
     it("computes lcs matrix", function()
         local actual_lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
 
-        -- just wanted to see match matrix, don't even need it for testing as I don't use it to produce diff...
-        -- really only dumping it to compare to my manually created versions below
-        -- local _match_matrix = wesdiff.get_match_matrix(before_tokens, after_tokens)
-        -- print("match_matrix: ", inspect(match_matrix, true))
 
         ---@format disable -- disables rest of lines in block (so I can have 5 per split)
         -- columns:      1  2  3    4  5  6    7  8  9   10
@@ -186,6 +182,10 @@ describe("my paper example", function()
         --             { _  _  C    _  _  _    _  C  _    _ }
         --
         --  added _ to see cols/rows, b/c of sparsity
+        --
+        -- only dumping match_matrix to compare to my manually created versions above
+        -- local _match_matrix = wesdiff.get_match_matrix(before_tokens, after_tokens)
+        -- print("match_matrix: ", inspect(match_matrix, true))
 
         -- * just like doing a maze in reverse is easy, likewise with finding a longest sequence
         -- sequence comes from token matches only (match matrix, aka "same" tokens)
