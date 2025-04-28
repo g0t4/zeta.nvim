@@ -132,11 +132,13 @@ function M.get_longest_sequence(before_tokens, after_tokens)
             return
         end
         local current_longest_sequence_position = lcs_matrix[num_before_tokens][num_after_tokens]
+        print("  longest current:", current_longest_sequence_position)
         -- now find a match with that length
         -- * match?
         local old_token = before_tokens[num_before_tokens]
         local new_token = after_tokens[num_after_tokens]
-        print("old_token: '" .. tostring(old_token) .. "', new_token: '" .. tostring(new_token) .. "'")
+        print("old_token: '" .. tostring(old_token) .. "' - " .. num_before_tokens)
+        print("new_token: '" .. tostring(new_token) .. "' - " .. num_after_tokens)
         if old_token == new_token then
             visitor:on_match(old_token)
             -- this is part of longest sequence (the last token)!
@@ -156,8 +158,9 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         -- * move up?
         local longest_sequence_above = lcs_matrix[num_before_tokens - 1][num_after_tokens]
         print("  longest above:", longest_sequence_above)
-        if longest_sequence_above > 0 and longest_sequence_above == current_longest_sequence_position then
+        if num_before_tokens > 0 and longest_sequence_above == current_longest_sequence_position then
             -- this means there's a match token somewhere above that is part of a longest sequence
+            -- num_before_tokens > 0 => only move up if more tokens to move up to (also allow 1=>0 b/c that means we're done with first token)
 
             -- TODO setup tests for these (comment out again and test before/after adding):
             local deleted_token = before_tokens[num_before_tokens]
@@ -169,13 +172,17 @@ function M.get_longest_sequence(before_tokens, after_tokens)
 
         -- * else, move left
         -- this means there's a match token somewhere to the left that is part of a longest sequence
-        -- optional assertion, this is the only remaining possibility
+        -- optional assertions (mirror the check for move up case)
         local longest_sequence_left = lcs_matrix[num_before_tokens][num_after_tokens - 1]
         print("  longest to left:", longest_sequence_left)
         if longest_sequence_left ~= current_longest_sequence_position then
             error("UNEXPECTED... this suggests a bug in building/traversing LCS matrix... longest_to_left (" .. longest_sequence_left .. ")"
                 .. " should match logest_length (" .. current_longest_sequence_position .. ")"
                 .. ", when longest_above (" .. longest_sequence_above .. ") does not!")
+        end
+        if not (num_after_tokens > 0) then
+            -- this is only possible due to a bug, b/c base case happens when both longest_sequence_(above and left) are < 1
+            error("UNEXPECTED... both before and after text appear fully traveresed and yet the boundary condition wasn't hit")
         end
 
         -- TODO setup tests for these (comment out again and test before/after adding):
