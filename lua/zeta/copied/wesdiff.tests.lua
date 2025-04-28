@@ -131,6 +131,21 @@ describe("my paper example", function()
         -- TODO! expected vs actual diff
         --    consolidate consecutive changes that are same type, i.e. two adds between sames... or two deletes between sames
         --      sames are your checkpoint where you stop looking for consecutive changes to coalesce
+        --    also consecutive sames should be combined!
+        --    PRESERVE ORDER within consecutive tokens of a given type
+        local expected_token_diff_reversed = {
+            { "del",  "C" },
+            { "same", "Z" },
+            { "del",  "H" },
+            { "same", "O" },
+            { "del",  "Z" },
+            { "add",  "C" },
+            { "same", "D" },
+            { "del",  "A" },
+            { "add",  "GH" },
+            { "same", "FC" },
+            { "add",  "AF" },
+        }
     end)
 
     -- TODO! add a new test of actual_diff that has common prefix/suffix
