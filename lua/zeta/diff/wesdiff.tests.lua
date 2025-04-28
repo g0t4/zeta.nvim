@@ -112,7 +112,7 @@ describe("my paper example", function()
 
         it("matches luadiff diff too", function()
             local luadiff = require("zeta.diff.luadiff")
-            local other = luadiff.diff(before_text, after_text, SPLIT_ON_WHITESPACE, SKIP_SEPARATOR)
+            local other = luadiff.diff(before_text, after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
             print("other", inspect(other, true))
             -- wow these don't remotely match... later I should double check I didn't modify and break something in the luadiff impl...
             --  that said, the weird nature of that lcs matrix with shifting offsets 2 right and 2 down... I wouldn't be surprised if it introduces issues..
