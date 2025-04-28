@@ -48,12 +48,19 @@ function M.show_diff_extmarks()
             local current_line = accum[#accum]
             local type = chunk[1]
             local text = chunk[2]
+
+            -- same:
             local type_hlgroup = hl_same
             if type == "add" then
-                type_hlgroup = hl_added
+                -- type_hlgroup = hl_added -- mine (above)
+                -- FYI nvim and plugins have a bunch of options already registerd too (color/highlight wise)
+                -- type_hlgroup = "Added" -- light green
+                type_hlgroup = "diffAdded" -- darker green/cyan
             elseif type == "del" then
+                -- type_hlgroup = hl_deleted mine (above)
+                -- type_hlgroup = "Removed" -- very light red (almost brown/gray)
+                type_hlgroup = "diffRemoved" -- dark red
                 -- TODO dont show deleted for now
-                type_hlgroup = hl_deleted
                 -- TODO return  -- for now.. can't just mix add/del and expect good results.. at least have to look at new lines vs not... and how to present the diff (is it all in one line, multiple , one side in one line, other side is multiline?
                 return accum
             end
@@ -84,7 +91,6 @@ function M.show_diff_extmarks()
     end)
 
     BufferDumpAppend("## lines")
-    vim.print(lines)
     for k, v in ipairs(lines) do
         BufferDumpAppend(vim.inspect(v))
     end
