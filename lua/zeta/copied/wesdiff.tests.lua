@@ -83,7 +83,6 @@ describe("my paper example", function()
 
     it("gets longest sequence", function()
         local longest_sequence = wesdiff.get_longest_sequence(before_tokens, after_tokens)
-        print(inspect(longest_sequence))
         should_be_same(longest_seq_if_prefer_match_up, longest_sequence)
     end)
 
