@@ -89,7 +89,7 @@ describe("my paper example", function()
     end)
 
     it("get token diff", function()
-        local token_diff = wesdiff.get_token_diff(before_tokens, after_tokens)
+        -- * notes manually building expected result:
         -- start at lower right, 5 => not a match => move up implies `del C`
         -- now, on match (Z) => `same Z` => move up and left
         -- (4, not a match) => move up implies `del H`
@@ -105,7 +105,6 @@ describe("my paper example", function()
         -- row0/col2 => not a match, can't go up => move left => `add A`
         -- row0/col1 => not a match, can't go up => move left => `add F`
         -- row0/col0 => base case, done!
-
         local expected_token_diff_reversed = {
             { "del",  "C" }, -- move up
             { "same", "Z" }, -- match (move up and left)
@@ -123,7 +122,10 @@ describe("my paper example", function()
             { "add",  "A" }, -- move left
             { "add",  "F" }, -- move left
         }
-        local exepcted_token_diff = vim.iter(expected_token_diff_reversed):rev():totable()
+        local expected_token_diff = vim.iter(expected_token_diff_reversed):rev():totable()
+
+        local actual_token_diff = wesdiff.get_token_diff(before_tokens, after_tokens)
+        should_be_same(expected_token_diff, actual_token_diff)
     end)
 
     it("get consolidated diff", function()
