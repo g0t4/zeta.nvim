@@ -232,12 +232,12 @@ function M.get_token_diff(before_tokens, after_tokens)
 end
 
 function M.get_diff(before_tokens, after_tokens)
-    -- TODO strip out common prefix and suffix token to avoid overhead in LCS?
-    --   measure impact on timing
-    -- DO THIS BEFORE using get_token_diff, assume it doesn't do the stripping, right?
+    -- WIP prefix/suffix strip
+    -- local same_prefix, middle, same_suffix = M.split_common_prefix_and_suffix(before_tokens, after_tokens)
 
     -- * aggregate across token diff
     local token_diff = vim.iter(M.get_token_diff(before_tokens, after_tokens)):rev():totable()
+
     local current_group = {}
     local merged = {}
 

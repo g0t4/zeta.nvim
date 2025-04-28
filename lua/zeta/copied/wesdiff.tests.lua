@@ -128,12 +128,11 @@ describe("my paper example", function()
 
     it("get consolidated diff", function()
         local actual_diff = wesdiff.get_diff(before_tokens, after_tokens)
-        -- TODO! expected vs actual diff
-        --    consolidate consecutive changes that are same type, i.e. two adds between sames... or two deletes between sames
-        --      sames are your checkpoint where you stop looking for consecutive changes to coalesce
-        --    also consecutive sames should be combined!
-        --    PRESERVE ORDER within consecutive tokens of a given type
-        local expected_token_diff_reversed = {
+        -- consolidate consecutive sames
+        -- and consolidate all adds between sames
+        -- and consolidate all dels between sames
+        -- PRESERVE ORDER within consecutive tokens of a given type
+        local expected_token_diff = {
             { "del",  "C" },
             { "same", "Z" },
             { "del",  "H" },
@@ -147,13 +146,7 @@ describe("my paper example", function()
             { "add",  "AF" },
         }
 
-        should_be_same(expected_token_diff_reversed, actual_diff)
-    end)
-
-    it("strips matching prefix and suffix", function()
-        -- TODO! add a new test of actual_diff that has common prefix/suffix
-        -- will have to hook into implementation underneath covers to test this part
-        -- otherwise will not be possible to verify on inputs/outputs alone
+        should_be_same(expected_token_diff, actual_diff)
     end)
 
     it("computes lcs matrix", function()
@@ -280,9 +273,11 @@ end)
 
 describe("diff first checks for common prefix and/or suffix, and strips them before LCS comparison", function()
     describe("both prefix and suffix have overlap, with non-overlapping tokens in middle", function()
+        local before_text = "F A B C D E F G"
+        local after_text = "F A C D E X F G"
+
         it("splits off prefix/suffix from middle", function()
-            local before_text = "F A B C D E F G"
-            local after_text = "F A C D E X F G"
+            -- FYI before_tokens/after_tokens are changed in-place during suffix/prefix extraction... so must setup in each test method separatley
             local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
             local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
 
@@ -297,6 +292,30 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
             should_be_same({ "same", "FA" }, same_prefix)
             should_be_same({ "same", "FG" }, same_suffix)
             should_be_same(expected_middle, middle)
+        end)
+
+
+        it("get_diff uses shared prefix/suffix", function()
+            -- FYI before_tokens/after_tokens are changed in-place during suffix/prefix extraction... so must setup in each test method separatley
+            local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+
+            -- TODO find a sequence that would be diff if not doing shared prefix/suffix checks
+            -- for now just make sure a sequence that has shared prefix and/or suffix is correctly diff'd
+
+            local actual_diff = wesdiff.get_diff(before_tokens, after_tokens)
+            local expected_diff = {
+                -- shared prefix:
+                { "same", "FA" },
+
+                { "del",  "B" },
+                { "same", "CDE" },
+                { "add",  "X" },
+
+                -- shared suffix
+                { "same", "FG" },
+            }
+            should_be_same(expected_diff, actual_diff)
         end)
     end)
 
