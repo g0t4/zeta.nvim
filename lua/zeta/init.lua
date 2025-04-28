@@ -54,6 +54,8 @@ function M.show_diff_extmarks()
             elseif type == "del" then
                 -- TODO dont show deleted for now
                 type_hlgroup = hl_deleted
+                -- TODO return  -- for now.. can't just mix add/del and expect good results.. at least have to look at new lines vs not... and how to present the diff (is it all in one line, multiple , one side in one line, other side is multiline?
+                return accum
             end
             if not text:find("\n") then
                 -- no new lines, so we just tack on to end of current line
@@ -86,8 +88,6 @@ function M.show_diff_extmarks()
     for k, v in ipairs(lines) do
         BufferDumpAppend(vim.inspect(v))
     end
-
-    do return end
 
     if #lines < 1 then
         BufferDumpAppend("no lines")
