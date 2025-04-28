@@ -117,28 +117,28 @@ function M.get_longest_sequence(before_tokens, after_tokens)
 
     -- TODO rename num_before_tokens/num_after_tokens... while correct, it doesn't convey purpose here
     --    rather they specify the current cell (always lower right) being visited
-    function _diff_walker(num_before_tokens, num_after_tokens, visitor)
+    function _diff_walker(num_remaining_before_tokens, num_after_tokens, visitor)
         if iteration_counter > max_iterations then
             error("exceeded max possible iterations: " .. max_iterations)
         end
         iteration_counter = iteration_counter + 1
 
-        if num_before_tokens < 1 and num_after_tokens < 1 then
+        if num_remaining_before_tokens < 1 and num_after_tokens < 1 then
             -- * base case
             return
         end
-        local current_longest_sequence_position = lcs_matrix[num_before_tokens][num_after_tokens]
+        local current_longest_sequence_position = lcs_matrix[num_remaining_before_tokens][num_after_tokens]
         -- now find a match with that length
         -- * match?
-        local old_token = before_tokens[num_before_tokens]
+        local old_token = before_tokens[num_remaining_before_tokens]
         local new_token = after_tokens[num_after_tokens]
-        print("old_token: '" .. tostring(old_token) .. "' - " .. num_before_tokens)
+        print("old_token: '" .. tostring(old_token) .. "' - " .. num_remaining_before_tokens)
         print("new_token: '" .. tostring(new_token) .. "' - " .. num_after_tokens)
         if old_token == new_token then
             visitor:on_match(old_token)
             -- this is part of longest sequence (the last token)!
             -- move to previous token in both old/new sets, hence - 1 on both
-            _diff_walker(num_before_tokens - 1, num_after_tokens - 1, visitor)
+            _diff_walker(num_remaining_before_tokens - 1, num_after_tokens - 1, visitor)
             return
         end
 
@@ -149,8 +149,8 @@ function M.get_longest_sequence(before_tokens, after_tokens)
 
         --  just assume the max of the two is == longest_length
 
-        local longest_sequence_above = lcs_matrix[num_before_tokens - 1][num_after_tokens]
-        local longest_sequence_left = lcs_matrix[num_before_tokens][num_after_tokens - 1]
+        local longest_sequence_above = lcs_matrix[num_remaining_before_tokens - 1][num_after_tokens]
+        local longest_sequence_left = lcs_matrix[num_remaining_before_tokens][num_after_tokens - 1]
         -- new layout:
         -- longest:   A
         --          L<C
@@ -164,15 +164,15 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         -- - and if they match, then pick up
 
         -- * move up?
-        local any_before_tokens_remain = num_before_tokens > 0
+        local any_before_tokens_remain = num_remaining_before_tokens > 0
         if any_before_tokens_remain and longest_sequence_above == current_longest_sequence_position then
             -- this means there's a match token somewhere above that is part of a longest sequence
 
             -- TODO setup tests for these (comment out again and test before/after adding):
-            local deleted_token = before_tokens[num_before_tokens]
+            local deleted_token = before_tokens[num_remaining_before_tokens]
             visitor:on_delete(deleted_token)
 
-            _diff_walker(num_before_tokens - 1, num_after_tokens, visitor)
+            _diff_walker(num_remaining_before_tokens - 1, num_after_tokens, visitor)
             return
         end
 
@@ -194,7 +194,7 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         local added_token = after_tokens[num_after_tokens]
         visitor:on_add(added_token)
 
-        _diff_walker(num_before_tokens, num_after_tokens - 1, visitor)
+        _diff_walker(num_remaining_before_tokens, num_after_tokens - 1, visitor)
     end
 
     local lcs_builder = {
