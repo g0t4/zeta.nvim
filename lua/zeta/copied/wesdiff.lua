@@ -185,25 +185,25 @@ function diff_walker(before_tokens, after_tokens, num_remaining_before_tokens, n
 end
 
 function M.get_longest_sequence(before_tokens, after_tokens)
-    local lcs_builder = {
-        longest_sequence = {},
+    local builder = {
+        longest_common_subsequence = {},
     }
-    function lcs_builder:on_match(token)
+    function builder:on_match(token)
         -- traverses in reverse, so insert token at start of list to ensure we get left to right sequence
-        table.insert(self.longest_sequence, 1, token)
+        table.insert(self.longest_common_subsequence, 1, token)
         print("  same", token) -- PRN could be helpful to move this into a base builder class and include a toggle on/off
     end
 
-    function lcs_builder:on_add(token)
+    function builder:on_add(token)
         print("  move left / add", token)
     end
 
-    function lcs_builder:on_delete(token)
+    function builder:on_delete(token)
         print("  move up / del", token)
     end
 
-    diff_walker(before_tokens, after_tokens, #before_tokens, #after_tokens, lcs_builder)
-    return lcs_builder.longest_sequence
+    diff_walker(before_tokens, after_tokens, #before_tokens, #after_tokens, builder)
+    return builder.longest_common_subsequence
 end
 
 function M.get_token_diff(before_tokens, after_tokens)
