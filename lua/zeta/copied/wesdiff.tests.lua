@@ -148,7 +148,11 @@ describe("my paper example", function()
         }
     end)
 
-    -- TODO! add a new test of actual_diff that has common prefix/suffix
+    it("strips matching prefix and suffix", function()
+        -- TODO! add a new test of actual_diff that has common prefix/suffix
+        -- will have to hook into implementation underneath covers to test this part
+        -- otherwise will not be possible to verify on inputs/outputs alone
+    end)
 
     it("computes lcs matrix", function()
         local actual_lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
