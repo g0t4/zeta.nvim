@@ -95,7 +95,35 @@ describe("my paper example", function()
         -- (4, not a match) => move up implies `del H`
         -- match(O) => `same O` => move up and left
         -- row5_Z/col8 => (3, not match) => prefer move up => implies `delZ`
-        -- row4_D/col8 => (3, not match) => move left => implies `add
+        -- row4_D/col8 => (3, not match) => move left => implies `add C`
+        -- row4_D/col7 => match(D) => `same D` => move up and left
+        -- row3_A/col6 => (2, not match) => move up => implies `del A`
+        -- row2_F/col6 => (2, not match) => move left => implies `add G`
+        -- row2_F/col5 => (2, not match) => move left => implies `add H`
+        -- row2_F/col4 => match(F) => `same F` => move up and left
+        -- row1_C/col3 => match(C) => `same C` => move up and left
+        -- row0/col2 => not a match, can't go up => move left => `add A`
+        -- row0/col1 => not a match, can't go up => move left => `add F`
+        -- row0/col0 => base case, done!
+
+        local expected_token_diff_reversed = {
+            { "del",  "C" }, -- move up
+            { "same", "Z" }, -- match (move up and left)
+            { "del",  "H" }, -- move up
+            { "same", "O" }, -- match (move up and left)
+            { "del",  "Z" }, -- move up
+            { "add",  "C" }, -- move left
+            { "same", "D" }, -- match (move up and left)
+            { "del",  "A" }, -- move up
+            { "add",  "G" }, -- move left
+            { "add",  "H" }, -- move left
+            { "same", "F" }, -- match (move up and left)
+            { "same", "C" }, -- last match (move up and left)
+            -- these are left moves (adds) after last match (row == 0, column > 0)
+            { "add",  "A" }, -- move left
+            { "add",  "F" }, -- move left
+        }
+        local exepcted_token_diff = vim.iter(expected_token_diff_reversed):rev():totable()
     end)
 
     it("get consolidated diff", function()
@@ -109,6 +137,7 @@ describe("my paper example", function()
         print("match_matrix: ", inspect(match_matrix, true))
 
         ---@format disable -- disables rest of lines in block (so I can have 5 per split)
+        -- columns:      1  2  3    4  5  6    7  8  9   10
         -- matches:            C                  C
         local row1_C = { 0, 0, 1,   1, 1, 1,   1, 1, 1,   1 }
         --               F          F

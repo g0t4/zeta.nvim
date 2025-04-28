@@ -116,6 +116,10 @@ function M.get_longest_sequence(before_tokens, after_tokens)
     function _get_longest(num_before_tokens, num_after_tokens)
         if num_before_tokens < 1 or num_after_tokens < 1 then
             -- base case / terminal condition
+            -- TODO need to keep recursing until both before/after are < 1 (for getting diff)
+            --   IOTW there are still moves (add/del), but no matches (same)
+            -- TODO test case of move left past last match (already covered in `my paper example`)
+            -- TODO test case of move up past last match
             return {}
         end
         local longest_length = lcs_matrix[num_before_tokens][num_after_tokens]
