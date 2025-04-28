@@ -314,8 +314,7 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
                 -- shared suffix
                 { "same", "FG" },
             }
-            -- TODO!
-            -- should_be_same(expected_diff, actual_diff)
+            should_be_same(expected_diff, actual_diff)
         end)
     end)
 
