@@ -1,6 +1,11 @@
 local assert = require("luassert")
 local wesdiff = require("lua.zeta.copied.wesdiff")
 
+-- -- FYI if I wanted to use vim.iter w/o plenary test runner...
+-- -- it has no dependencies, so I can import it by path with loadfile
+-- local iter = vim.iter or (loadfile("/opt/homebrew/Cellar/neovim/0.11.0/share/nvim/runtime/lua/vim/iter.lua")())
+-- print(inspect(iter({ "foo", "bar", "bam" }):map(function(i) return i:reverse() end):totable()))
+
 local SPLIT_ON_WHITESPACE = "%s+"
 local STRIP_WHITESPACE = true
 
