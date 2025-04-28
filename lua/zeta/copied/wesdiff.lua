@@ -113,25 +113,28 @@ end
 function M.get_longest_sequence(before_tokens, after_tokens)
     local lcs_matrix = M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
 
-    function _diff_walker(num_before_tokens, num_after_tokens)
+    -- TODO rename num_before_tokens/num_after_tokens... while correct, it doesn't convey purpose here
+    --    rather they specify the current cell (always lower right) being visited
+    function _diff_walker(num_before_tokens, num_after_tokens, visitor)
         if num_before_tokens < 1 or num_after_tokens < 1 then
-            -- base case / terminal condition
+            -- * base case / terminal condition
             -- TODO need to keep recursing until both before/after are < 1 (for getting diff)
             --   IOTW there are still moves (add/del), but no matches (same)
             -- TODO test case of move left past last match (already covered in `my paper example`)
             -- TODO test case of move up past last match
-            return {}
+            return
         end
         local longest_length = lcs_matrix[num_before_tokens][num_after_tokens]
         -- now find a match with that length
+        -- * match?
         local old_token = before_tokens[num_before_tokens]
         local new_token = after_tokens[num_after_tokens]
         if old_token == new_token then
+            visitor:on_match(old_token)
             -- this is part of longest sequence (the last token)!
             -- move to previous token in both old/new sets, hence - 1 on both
-            local rest = _diff_walker(num_before_tokens - 1, num_after_tokens - 1)
-            table.insert(rest, old_token)
-            return rest
+            _diff_walker(num_before_tokens - 1, num_after_tokens - 1, visitor)
+            return
         end
 
         -- btw up/left first doesn't matter
@@ -144,13 +147,20 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         -- probably wise to be deterministic with multiple runs of the same sequences...
         --   don't flip a coin each time!
 
-        -- look above, if cumulative value is same as longest_length it means there is a token above that is part of a longest length sequence
+        -- * move up?
+        --   if cumulative value is same as longest_length
+        --   which means there is a token above that is part of a longest length sequence
         local longest_above = lcs_matrix[num_before_tokens - 1][num_after_tokens]
         if longest_above == longest_length then
-            -- not on a token so nothing to add to list
-            return _diff_walker(num_before_tokens - 1, num_after_tokens)
+            -- -- TODO setup tests for and then uncomment to test:
+            -- local deleted_token = before_tokens[num_before_tokens]
+            -- visitor:on_delete(deleted_token)
+
+            _diff_walker(num_before_tokens - 1, num_after_tokens, visitor)
+            return
         end
 
+        -- * move left
         -- otherwise, there's a match token to the left that is part of a longest length sequence
         -- assertion:
         local longest_to_left = lcs_matrix[num_before_tokens][num_after_tokens - 1]
@@ -159,10 +169,32 @@ function M.get_longest_sequence(before_tokens, after_tokens)
                 .. " should match logest_length (" .. longest_length .. ")"
                 .. ", when longest_above (" .. longest_above .. ") does not!")
         end
-        return _diff_walker(num_before_tokens, num_after_tokens - 1)
+
+        -- -- TODO setup tests for and then uncomment to test:
+        -- local added_token = after_tokens[num_after_tokens]
+        -- visitor:on_add(added_token)
+
+        _diff_walker(num_before_tokens, num_after_tokens - 1, visitor)
     end
 
-    return _diff_walker(#before_tokens, #after_tokens)
+    local lcs_builder = {
+        longest_sequence = {},
+    }
+    function lcs_builder:on_match(token)
+        -- traverses in reverse, so insert token at start of list to ensure we get left to right sequence
+        table.insert(self.longest_sequence, 1, token)
+    end
+
+    function lcs_builder:on_add(token)
+        print("add", token)
+    end
+
+    function lcs_builder:on_delete(token)
+        print("del", token)
+    end
+
+    _diff_walker(#before_tokens, #after_tokens, lcs_builder)
+    return lcs_builder.longest_sequence
 end
 
 function M.get_token_diff(before_tokens, after_tokens)
