@@ -239,7 +239,7 @@ function M.get_diff(before_tokens, after_tokens)
     local token_diff = M.get_token_diff(before_tokens, after_tokens)
 
     local current_group = {}
-    local merged = {}
+    local merged = { same_prefix }
 
     function merge_current_group()
         local function merge(type)
@@ -271,6 +271,9 @@ function M.get_diff(before_tokens, after_tokens)
         --   { sames={"cow" " " "cobweb"} }, -- sames only (not combined w/ adds/dels)
     end
     merge_current_group()
+
+    table.insert(merged, same_suffix)
+
     return merged
 end
 

@@ -318,8 +318,8 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
         end)
     end)
 
-    -- TODO test of only shared prefix
-    -- TODO test of only shared suffix
+    -- TODO test of only shared prefix (don't rely on above test that happens to not have shared prefix/suffix)
+    -- TODO test of only shared suffix    "
 
     describe("both sequences match 100%", function()
         it("returns all under same_suffix", function()
