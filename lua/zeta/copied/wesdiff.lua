@@ -132,8 +132,11 @@ function M.get_longest_sequence(before_tokens, after_tokens)
                 visitor:on_match(old_token)
                 -- this is part of longest sequence (the last token)!
                 -- move to previous token in both old/new sets, hence - 1 on both
-                _diff_walker(num_remaining_before_tokens - 1, num_remaining_after_tokens - 1, visitor)
-                return
+                num_remaining_before_tokens = num_remaining_before_tokens - 1
+                num_remaining_after_tokens = num_remaining_after_tokens - 1
+                -- FYI lua has no continue, so short of nesting an else block, I am using goto to simulate continue
+                --   chill it... continue is implicitly a goto anyways
+                goto continue_while
             end
 
             -- btw up/left first doesn't matter, best to be deterministic
@@ -184,6 +187,8 @@ function M.get_longest_sequence(before_tokens, after_tokens)
             visitor:on_add(added_token)
 
             _diff_walker(num_remaining_before_tokens, num_remaining_after_tokens - 1, visitor)
+
+            ::continue_while::
         end
     end
 
