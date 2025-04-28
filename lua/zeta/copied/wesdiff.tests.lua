@@ -47,9 +47,6 @@ describe("tiny comparison with no leading/trailing comonality", function()
     end)
 end)
 
--- TODO! when done, would it be worth combining sequential tokens that are remove(out)/add(in)/same?
--- that would really help building extmarks to not have an extmark update per token (word)
-
 describe("simple comparison", function()
     local before_text = [[
 function M.add(a, b )
@@ -63,6 +60,8 @@ function M.add(a, b, c, d)
 end
 ]]
 end)
+
+-- FYI! REMEMBER REASON TO DO this was to understand how to use the token level diff for this zeta test plugin... diff was not an end in itself!
 
 describe("my paper example", function()
     ---@format disablenext
