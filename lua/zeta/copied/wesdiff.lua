@@ -256,10 +256,10 @@ function M.get_diff(before_tokens, after_tokens)
     end
 
     for _, current in pairs(token_diff) do
-        print("current", inspect(current))
-        -- edge triggered on change to/from same
+        -- print("current", inspect(current))
         local current_type = current[1] .. "s"
         local current_token = current[2]
+        -- edge triggered on change to/from same
         if (last_group.sames and current_type ~= "sames")
             or ((not last_group.sames) and current_type == "sames") then
             do_merge()
@@ -267,17 +267,11 @@ function M.get_diff(before_tokens, after_tokens)
 
         last_group[current_type] = last_group[current_type] or {}
         table.insert(last_group[current_type], current_token)
-        -- sequence of alternating:
-        --  can start w/ sames or adds/dels (usually latter unless not stripping common prefix/suffix)
-        -- {
-        --   { adds={"foo", "bar"}, dels={"doo"} },
-        --   { sames={"cow" " " "cobweb"} },
-        --   { adds={"food"}, }
-        --   ...
-        -- }
+        -- last_group looks one of:
+        --   { adds={"foo", "bar"}, dels={"doo"} }, -- adds and/or dels
+        --   { sames={"cow" " " "cobweb"} }, -- sames only (not combined w/ adds/dels)
     end
     do_merge()
-    print("merged", inspect(merged, true))
     return merged
 end
 
