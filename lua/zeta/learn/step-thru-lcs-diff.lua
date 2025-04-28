@@ -1,6 +1,9 @@
 luadiff = require("zeta.copied.diff")
 
 -- FYI! I setup this file to work with iron.nvim too (hence no usage of `local` vars at this top level)
+-- TODO! switch to plenary/nvim tests for anything nvim related.. too much of a mess to maintain
+--   separate runtime paths... for using this as a standalone script vs plugin in nvim...
+--   and standalone script doesn't have access nvim apis so unless its unrelated to nvim then chances are you won't be able to test very much
 
 --%%
 
