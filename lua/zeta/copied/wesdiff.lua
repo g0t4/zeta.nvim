@@ -239,25 +239,36 @@ function M.get_diff(before_tokens, after_tokens)
     -- * aggregate across token diff
     local token_diff = M.get_token_diff(before_tokens, after_tokens)
     local init = {
-        -- last_group = {},
-        -- merged = {}
-        {}
+        last_group = {},
+        merged = {}
     }
-    local groups = vim.iter(token_diff)
+    local accum = vim.iter(token_diff)
         :rev()
         :fold(init, function(accum, current)
             -- edge triggered on change to/from same
-            local last_group = accum[#accum]
             local current_type = current[1] .. "s"
             local current_token = current[2]
-            if last_group.sames and current_type ~= "sames" then
-                accum[#accum + 1] = {}
-            elseif (not last_group.sames) and current_type == "sames" then
-                accum[#accum + 1] = {}
+            if (accum.last_group.sames and current_type ~= "sames")
+                or ((not accum.last_group.sames) and current_type == "sames") then
+                function do_merge(last_group)
+                    if last_group.sames then
+                        table.insert(accum.merged, { "same", vim.iter(last_group.sames):join("") })
+                    end
+                    if last_group.dels then
+                        table.insert(accum.merged, { "del", vim.iter(last_group.dels):join("") })
+                    end
+                    if last_group.adds then
+                        table.insert(accum.merged, { "add", vim.iter(last_group.adds):join("") })
+                    end
+                end
+
+                do_merge(accum.last_group)
+
+                accum.last_group = {}
             end
-            local use_group = accum[#accum]
-            use_group[current_type] = use_group[current_type] or {}
-            table.insert(use_group[current_type], current_token)
+
+            accum.last_group[current_type] = accum.last_group[current_type] or {}
+            table.insert(accum.last_group[current_type], current_token)
             -- sequence of alternating:
             --  can start w/ sames or adds/dels (usually latter unless not stripping common prefix/suffix)
             -- {
@@ -268,23 +279,8 @@ function M.get_diff(before_tokens, after_tokens)
             -- }
             return accum
         end)
-    print("groups", inspect(groups, true))
-    local merged = vim.iter(groups)
-        :fold({}, function(accum, group)
-            -- print("group", inspect(group, true))
-            if group.sames then
-                table.insert(accum, { "same", vim.iter(group.sames):join("") })
-            end
-            if group.dels then
-                table.insert(accum, { "del", vim.iter(group.dels):join("") })
-            end
-            if group.adds then
-                table.insert(accum, { "add", vim.iter(group.adds):join("") })
-            end
-            return accum
-        end)
-    -- print("merged", inspect(merged, true))
-    return merged
+    print("accum.merged", inspect(accum.merged, true))
+    return accum.merged
 end
 
 function M.get_match_matrix(before_tokens, after_tokens)
