@@ -236,12 +236,53 @@ function M.get_diff(before_tokens, after_tokens)
     --   measure impact on timing
     -- DO THIS BEFORE using get_token_diff, assume it doesn't do the stripping, right?
 
-    -- aggregate across token diff
+    -- * aggregate across token diff
     local token_diff = M.get_token_diff(before_tokens, after_tokens)
-    vim.iter(token_diff):fold({{}}, function(accum, current)
-        -- split on sames
-    end)
-    -- TODO (combine consecutive tokens with same diff type (same/del/add)
+    local init = {}
+    local groups = vim.iter(token_diff)
+        :rev()
+        :fold(init, function(accum, current)
+            -- edge triggered on change to/from same
+            local last_group = accum[#accum] or {} -- add first group with `or {}`
+            local current_type = current[1] .. "s"
+            local current_token = current[2]
+            if last_group.sames and current_type ~= "sames" then
+                accum[#accum + 1] = {}
+            elseif (not last_group.sames) and current_type == "sames" then
+                accum[#accum + 1] = {}
+            else
+                accum[#accum] = last_group -- for edge case of first group
+            end
+            local use_group = accum[#accum]
+            use_group[current_type] = use_group[current_type] or {}
+            table.insert(use_group[current_type], current_token)
+            -- sequence of alternating:
+            --  can start w/ sames or adds/dels (usually latter unless not stripping common prefix/suffix)
+            -- {
+            --   { adds={"foo", "bar"}, dels={"doo"} },
+            --   { sames={"cow" " " "cobweb"} },
+            --   { adds={"food"}, }
+            --   ...
+            -- }
+            return accum
+        end)
+    -- print("groups", inspect(groups, true))
+    local merged = vim.iter(groups)
+        :fold({}, function(accum, _key, group)
+            -- print("group", inspect(group, true))
+            if group.sames then
+                table.insert(accum, { "same", vim.iter(group.sames):join("") })
+            end
+            if group.dels then
+                table.insert(accum, { "del", vim.iter(group.dels):join("") })
+            end
+            if group.adds then
+                table.insert(accum, { "add", vim.iter(group.adds):join("") })
+            end
+            return accum
+        end)
+    -- print("merged", inspect(merged, true))
+    return merged
 end
 
 function M.get_match_matrix(before_tokens, after_tokens)

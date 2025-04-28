@@ -146,6 +146,8 @@ describe("my paper example", function()
             { "same", "FC" },
             { "add",  "AF" },
         }
+
+        should_be_same(expected_token_diff_reversed, actual_diff)
     end)
 
     it("strips matching prefix and suffix", function()
