@@ -1,5 +1,15 @@
 -- PRN! port to use plenary test:
+local should = require("zeta.helpers.should")
+-- describe("foo scenario", function()
+--  it("should do bar", function()
 --
+--  end)
+-- end)
+--
+-- <leader>u triggers plenary tests in current file, great workflow (runs tests with nvim runtime and APIs accessible)
+-- STOP using iron.nvim when testing nvim related config/code
+--   only use iron.nvim if you're working on generic lua libraries or otherwise
+
 require("zeta.helpers.dump")
 t = { x = 1 }
 setmetatable(t, {
@@ -80,4 +90,3 @@ test_matrix[3][1] = "bar" -- setting
 print(test_matrix[3][1]) -- no print
 print(test_matrix[3][2]) -- setting key 2 to zero (b/c this is a getter)
 print(test_matrix[3][2]) -- no print
-
