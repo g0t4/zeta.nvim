@@ -186,7 +186,7 @@ function M.get_longest_sequence(before_tokens, after_tokens)
             local added_token = after_tokens[num_remaining_after_tokens]
             visitor:on_add(added_token)
 
-            _diff_walker(num_remaining_before_tokens, num_remaining_after_tokens - 1, visitor)
+            num_remaining_after_tokens = num_remaining_after_tokens - 1
 
             ::continue_while::
         end
