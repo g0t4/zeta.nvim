@@ -168,9 +168,9 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         -- - and if they match, then pick up
 
         -- * move up?
-        if num_before_tokens > 0 and longest_sequence_above == current_longest_sequence_position then
+        local any_before_tokens_remain = num_before_tokens > 0
+        if any_before_tokens_remain and longest_sequence_above == current_longest_sequence_position then
             -- this means there's a match token somewhere above that is part of a longest sequence
-            -- num_before_tokens > 0 => only move up if tokens remain in before_tokens
 
             -- TODO setup tests for these (comment out again and test before/after adding):
             local deleted_token = before_tokens[num_before_tokens]
@@ -188,10 +188,10 @@ function M.get_longest_sequence(before_tokens, after_tokens)
                 .. " should match logest_length (" .. current_longest_sequence_position .. ")"
                 .. ", when longest_above (" .. longest_sequence_above .. ") does not!")
         end
-        if not (num_after_tokens > 0) then
-            -- cannot move left if no tokens remain in after_tokens
+        local any_after_tokens_remain = num_after_tokens > 0
+        if not any_after_tokens_remain then
             -- this is only possible due to a bug, b/c base case happens when both longest_sequence_(above and left) are < 1
-            error("UNEXPECTED... both before and after text appear fully traveresed and yet the boundary condition wasn't hit")
+            error("UNEXPECTED... both before and after tokens appear fully traveresed and yet the base condition wasn't hit")
         end
 
         -- TODO setup tests for these (comment out again and test before/after adding):
