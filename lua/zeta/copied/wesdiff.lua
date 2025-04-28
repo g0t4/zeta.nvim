@@ -214,7 +214,7 @@ function M.get_token_diff(before_tokens, after_tokens)
         local what = { change, token }
         -- traverses in reverse, so insert token at start of list to ensure we get left to right sequence
         table.insert(self.token_diff, 1, what)
-        print("  ", inspect(what))
+        -- print("  ", inspect(what)) -- toggle to enable "tracing"?
     end
 
     function builder:on_match(token)
