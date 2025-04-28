@@ -1,4 +1,4 @@
-local luadiff = require("zeta.diff.luadiff")
+local wesdiff = require("zeta.diff.wesdiff")
 local parser = require("zeta.helpers.response-parser")
 local M = {}
 
@@ -22,15 +22,10 @@ function M.show_diff_extmarks()
 
     input_editable = input_editable:gsub(parser.tag_cursor_here, "")
 
-    local ldiff = luadiff.diff(input_editable, output_editable)
-    BufferDumpAppend(ldiff)
-    -- "same", "out", "in"
-    -- ** SUPER USEFUL vim.iter
-    -- BufferDumpArray(vim.iter(ldiff):take(10))
-    BufferDumpAppend(ldiff:to_html())
-    -- vim.iter(ldiff):each(function(k, chunk)
-    --     BufferDumpAppend(chunk)
-    -- end)
+    local diff = wesdiff.diff(input_editable, output_editable)
+    BufferDumpAppend(diff)
+    -- luadiff: "same", "out",  "in"
+    -- wesdiff: "same", "del", "add"
 
     -- * highlight groups
     local hl_same = "zeta-same"
@@ -41,7 +36,7 @@ function M.show_diff_extmarks()
     vim.api.nvim_set_hl(0, hl_inserted, { fg = "#00ff00", }) -- ctermfg = "green"
     vim.api.nvim_set_hl(0, hl_deleted, { fg = "#ff0000", }) -- ctermfg = "red"
 
-    local lines = vim.iter(ldiff):fold({ {} }, function(accum, key, value)
+    local lines = vim.iter(diff):fold({ {} }, function(accum, key, value)
         local chunk = value
         if chunk == nil then
             BufferDumpAppend("nil chunk: " .. tostring(key))
