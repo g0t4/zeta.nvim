@@ -210,30 +210,30 @@ function M.get_token_diff(before_tokens, after_tokens)
     -- TODO strip out common prefix and suffix token to avoid overhead in LCS?
     --   measure impact on timing
 
-    local token_diff_builder = {
+    local builder = {
         token_diff = {},
     }
-    function token_diff_builder:push(change, token)
+    function builder:push(change, token)
         local what = { change, token }
         -- traverses in reverse, so insert token at start of list to ensure we get left to right sequence
         table.insert(self.token_diff, 1, what)
         print("  ", what)
     end
 
-    function token_diff_builder:on_match(token)
+    function builder:on_match(token)
         self:push("same", token)
     end
 
-    function token_diff_builder:on_add(token)
+    function builder:on_add(token)
         self:push("add", token)
     end
 
-    function token_diff_builder:on_delete(token)
+    function builder:on_delete(token)
         self:push("del", token)
     end
 
-    diff_walker(before_tokens, after_tokens, #before_tokens, #after_tokens, token_diff_builder)
-    return token_diff_builder.token_diff
+    diff_walker(before_tokens, after_tokens, #before_tokens, #after_tokens, builder)
+    return builder.token_diff
 
     -- FYI this is gonna be done using a visitor for getting LCS? Or just inline it?
     --  basically you visit each token as you build the LCS (matches and non-matches)
