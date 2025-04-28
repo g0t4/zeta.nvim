@@ -1,4 +1,4 @@
-local luadiff = require("zeta.copied.diff")
+local luadiff = require("zeta.diff.luadiff")
 local parser = require("zeta.helpers.response-parser")
 local M = {}
 

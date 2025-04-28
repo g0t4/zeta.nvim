@@ -1,5 +1,5 @@
 local should = require("zeta.helpers.should")
-local wesdiff = require("zeta.copied.wesdiff")
+local wesdiff = require("zeta.diff.wesdiff")
 
 -- -- FYI if I wanted to use vim.iter w/o plenary test runner...
 -- -- it has no dependencies, so I can import it by path with loadfile
@@ -111,7 +111,7 @@ describe("my paper example", function()
         should.be_same(expected_token_diff, actual_token_diff)
 
         it("matches luadiff diff too", function()
-            local luadiff = require("lua.zeta.copied.diff")
+            local luadiff = require("zeta.diff.luadiff")
             local other = luadiff.diff(before_text, after_text, SPLIT_ON_WHITESPACE, SKIP_SEPARATOR)
             print("other", inspect(other))
         end)
