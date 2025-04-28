@@ -132,13 +132,13 @@ function M.get_longest_sequence(before_tokens, after_tokens)
             return
         end
         local current_longest_sequence_position = lcs_matrix[num_before_tokens][num_after_tokens]
-        print("  longest current:", current_longest_sequence_position)
         -- now find a match with that length
         -- * match?
         local old_token = before_tokens[num_before_tokens]
         local new_token = after_tokens[num_after_tokens]
         print("old_token: '" .. tostring(old_token) .. "' - " .. num_before_tokens)
         print("new_token: '" .. tostring(new_token) .. "' - " .. num_after_tokens)
+        print("  longest current:", current_longest_sequence_position)
         if old_token == new_token then
             visitor:on_match(old_token)
             -- this is part of longest sequence (the last token)!
