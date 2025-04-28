@@ -191,7 +191,7 @@ function M.get_longest_sequence(before_tokens, after_tokens)
     function lcs_builder:on_match(token)
         -- traverses in reverse, so insert token at start of list to ensure we get left to right sequence
         table.insert(self.longest_sequence, 1, token)
-        print("  same", token)
+        print("  same", token) -- PRN could be helpful to move this into a base builder class and include a toggle on/off
     end
 
     function lcs_builder:on_add(token)
@@ -210,25 +210,25 @@ function M.get_token_diff(before_tokens, after_tokens)
     -- TODO strip out common prefix and suffix token to avoid overhead in LCS?
     --   measure impact on timing
 
-    local lcs_builder = {
+    local token_diff_builder = {
         longest_sequence = {},
     }
-    function lcs_builder:on_match(token)
+    function token_diff_builder:on_match(token)
         -- traverses in reverse, so insert token at start of list to ensure we get left to right sequence
         table.insert(self.longest_sequence, 1, token)
         print("  same", token)
     end
 
-    function lcs_builder:on_add(token)
+    function token_diff_builder:on_add(token)
         print("  move left / add", token)
     end
 
-    function lcs_builder:on_delete(token)
+    function token_diff_builder:on_delete(token)
         print("  move up / del", token)
     end
 
-    diff_walker(before_tokens, after_tokens, #before_tokens, #after_tokens, lcs_builder)
-    return lcs_builder.longest_sequence
+    diff_walker(before_tokens, after_tokens, #before_tokens, #after_tokens, token_diff_builder)
+    return token_diff_builder.longest_sequence
 
     -- FYI this is gonna be done using a visitor for getting LCS? Or just inline it?
     --  basically you visit each token as you build the LCS (matches and non-matches)
