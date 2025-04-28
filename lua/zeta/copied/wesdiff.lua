@@ -213,18 +213,20 @@ function M.get_token_diff(before_tokens, after_tokens)
     local token_diff_builder = {
         longest_sequence = {},
     }
-    function token_diff_builder:on_match(token)
+    function token_diff_builder:push(change, token)
+        local what = { change, token }
         -- traverses in reverse, so insert token at start of list to ensure we get left to right sequence
-        table.insert(self.longest_sequence, 1, token)
-        print("  same", token)
+        table.insert(self.longest_sequence, 1, what)
+        print("  ", what)
+    end
+
+    function token_diff_builder:on_match(token)
     end
 
     function token_diff_builder:on_add(token)
-        print("  move left / add", token)
     end
 
     function token_diff_builder:on_delete(token)
-        print("  move up / del", token)
     end
 
     diff_walker(before_tokens, after_tokens, #before_tokens, #after_tokens, token_diff_builder)
