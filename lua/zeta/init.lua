@@ -57,7 +57,9 @@ function M.show_diff_extmarks()
             local type = chunk[1]
             local text = chunk[2]
 
-            -- same:
+
+            -- TODO something feels off with new lines... am I splitting extra lines when I shouldn't be somewhere in this loop
+            --   TODO also review how I split out prefix/suffix and what not... and just in genereal how I process chunks, would any of that cause inadvertent \n or literal adding a new buffer line in a funky way?
             local type_hlgroup = hl_same
             if type == "add" then
                 -- type_hlgroup = hl_added -- mine (above)
@@ -68,8 +70,8 @@ function M.show_diff_extmarks()
                 -- type_hlgroup = hl_deleted mine (above)
                 -- type_hlgroup = "Removed" -- very light red (almost brown/gray)
                 type_hlgroup = "diffRemoved" -- dark red
-                -- TODO find changed examples (removed and added between sames)
-                return accum -- actually, based on how I aggregate between sames... there should only be one delete and one add between any two sames... so, I could just show both and it would appaer like remove / add (probably often lines removed then lines added, my diff processor puts the delete first which makes sense for that to be on top)
+                return accum
+                -- actually, based on how I aggregate between sames... there should only be one delete and one add between any two sames... so, I could just show both and it would appaer like remove / add (probably often lines removed then lines added, my diff processor puts the delete first which makes sense for that to be on top)
             end
             if not text:find("\n") then
                 -- no new lines, so we just tack on to end of current line
@@ -78,6 +80,7 @@ function M.show_diff_extmarks()
                     table.insert(current_line, { text, type_hlgroup })
                 end
             else
+                -- TODO i.e. when I split on new line... how do I treat the first and last segments? are they added as full lines or? (out of time today)
                 local splits = vim.split(text, "\n")
                 for _, piece in ipairs(splits) do
                     -- FYI often v will be empty (i.e. a series of newlines)... do not exclude these empty lines!
