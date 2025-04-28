@@ -137,21 +137,16 @@ function M.get_longest_sequence(before_tokens, after_tokens)
             return
         end
 
-        -- btw up/left first doesn't matter
-        -- can lead to different longest sequence selection (when multiple)
-        -- and if you land on a non-matching (tokens) cell with longest_length == longest_above == longest_to_left,
-        --    then you've got at least two longest sequences with a suffix that matches (thus far)
-        -- anyways, so long as you get one longest sequence, it doesn't matter which way you go
-        -- that said, is there any benefit to going up first or left first?
-        --   push more of the sequnce into the start of the before_tokens vs after_tokens?
-        -- probably wise to be deterministic with multiple runs of the same sequences...
-        --   don't flip a coin each time!
+        -- btw up/left first doesn't matter, best to be deterministic
+        -- if you land on a non-matching (token) cell with longest_length == longest_above == longest_to_left,
+        --    then you've got at least two longest sequences with a shared suffix
+        --    pick either is fine, unless you have additional constraints beyond longest
 
         -- * move up?
-        --   if cumulative value is same as longest_length
-        --   which means there is a token above that is part of a longest length sequence
         local longest_above = lcs_matrix[num_before_tokens - 1][num_after_tokens]
         if longest_above == longest_length then
+            -- this means there's a match token above that is part of a longest sequence
+
             -- -- TODO setup tests for and then uncomment to test:
             -- local deleted_token = before_tokens[num_before_tokens]
             -- visitor:on_delete(deleted_token)
@@ -160,9 +155,9 @@ function M.get_longest_sequence(before_tokens, after_tokens)
             return
         end
 
-        -- * move left
-        -- otherwise, there's a match token to the left that is part of a longest length sequence
-        -- assertion:
+        -- * else, move left
+        -- this means there's a match token to the left that is part of a longest sequence
+        -- optional assertion, this is the only remaining possibility
         local longest_to_left = lcs_matrix[num_before_tokens][num_after_tokens - 1]
         if longest_to_left ~= longest_length then
             error("UNEXPECTED... this suggests a bug in building/traversing LCS matrix... longest_to_left (" .. longest_to_left .. ")"
