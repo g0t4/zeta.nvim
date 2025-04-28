@@ -29,11 +29,11 @@ function M.show_diff_extmarks()
 
     -- * highlight groups
     local hl_same = "zeta-same"
-    local hl_inserted = "zeta-inserted"
+    local hl_added = "zeta-added"
     local hl_deleted = "zeta-deleted"
     -- 0 == global namespace (otherwise have to activate them if not global ns on hlgroup)
     vim.api.nvim_set_hl(0, hl_same, {}) -- for now just keep it as is
-    vim.api.nvim_set_hl(0, hl_inserted, { fg = "#00ff00", }) -- ctermfg = "green"
+    vim.api.nvim_set_hl(0, hl_added, { fg = "#00ff00", }) -- ctermfg = "green"
     vim.api.nvim_set_hl(0, hl_deleted, { fg = "#ff0000", }) -- ctermfg = "red"
 
     local lines = vim.iter(diff):fold({ {} }, function(accum, key, value)
@@ -46,18 +46,17 @@ function M.show_diff_extmarks()
         else
             BufferDumpAppend("chunk", chunk)
             -- each chunk has has two strings: { "text\nfoo\nbar", "type" }
-            --   type == "same", "in", "out"
+            --   type == "same", "add", "del"
             -- text must be split on new line into an array
             --  when \n is encountered, start a new line in the accum
             local current_line = accum[#accum]
             local text = chunk[1]
             local type = chunk[2]
             local type_hlgroup = hl_same
-            -- TODO confirm in/out/same?
-            if type == "in" then
-                type_hlgroup = hl_inserted
-            elseif type == "out" then
-                -- TODO .. if there is an out, is it followed by the corresponding in? that replaced it?
+            if type == "add" then
+                type_hlgroup = hl_added
+            elseif type == "del" then
+                -- TODO dont show deleted for now
                 type_hlgroup = hl_deleted
             end
             if not text:find("\n") then
@@ -115,7 +114,7 @@ function M.show_diff_extmarks()
         hl_mode = "combine",
         virt_text = first_line,
         virt_lines = lines, -- rest after first
-        -- virt_text = { { "twat waffl3", hl_inserted } }, -- line of extmark
+        -- virt_text = { { "twat waffl3", hl_added } }, -- line of extmark
         -- virt_lines = virt_lines, -- lines below
         virt_text_pos = "overlay", -- "overlay", "eol", "inline"
     })
