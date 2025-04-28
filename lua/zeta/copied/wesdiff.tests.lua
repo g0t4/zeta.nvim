@@ -249,5 +249,9 @@ describe("diff with AA in before text, and only one A in after text", function()
 
         local expected_lcs_matrix = { row1_D, row2_F, row3_A, row4_A, row5_H }
         should_be_same(expected_lcs_matrix, actual_lcs_matrix)
+
+        -- * also check LCS
+        local actual = wesdiff.get_longest_sequence(before_tokens, after_tokens)
+        should_be_same({ "F", "A", "H" }, actual)
     end)
 end)
