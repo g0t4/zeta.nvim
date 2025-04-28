@@ -238,20 +238,22 @@ function M.get_diff(before_tokens, after_tokens)
 
     -- * aggregate across token diff
     local token_diff = M.get_token_diff(before_tokens, after_tokens)
-    local init = {}
+    local init = {
+        -- last_group = {},
+        -- merged = {}
+        {}
+    }
     local groups = vim.iter(token_diff)
         :rev()
         :fold(init, function(accum, current)
             -- edge triggered on change to/from same
-            local last_group = accum[#accum] or {} -- add first group with `or {}`
+            local last_group = accum[#accum]
             local current_type = current[1] .. "s"
             local current_token = current[2]
             if last_group.sames and current_type ~= "sames" then
                 accum[#accum + 1] = {}
             elseif (not last_group.sames) and current_type == "sames" then
                 accum[#accum + 1] = {}
-            else
-                accum[#accum] = last_group -- for edge case of first group
             end
             local use_group = accum[#accum]
             use_group[current_type] = use_group[current_type] or {}
@@ -266,9 +268,9 @@ function M.get_diff(before_tokens, after_tokens)
             -- }
             return accum
         end)
-    -- print("groups", inspect(groups, true))
+    print("groups", inspect(groups, true))
     local merged = vim.iter(groups)
-        :fold({}, function(accum, _key, group)
+        :fold({}, function(accum, group)
             -- print("group", inspect(group, true))
             if group.sames then
                 table.insert(accum, { "same", vim.iter(group.sames):join("") })
