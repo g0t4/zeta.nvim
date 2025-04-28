@@ -238,6 +238,9 @@ function M.get_diff(before_tokens, after_tokens)
 
     -- aggregate across token diff
     local token_diff = M.get_token_diff(before_tokens, after_tokens)
+    vim.iter(token_diff):fold({{}}, function(accum, current)
+        -- split on sames
+    end)
     -- TODO (combine consecutive tokens with same diff type (same/del/add)
 end
 
