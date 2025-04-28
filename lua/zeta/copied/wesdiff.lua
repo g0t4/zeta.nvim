@@ -191,15 +191,15 @@ function M.get_longest_sequence(before_tokens, after_tokens)
     function builder:on_match(token)
         -- traverses in reverse, so insert token at start of list to ensure we get left to right sequence
         table.insert(self.longest_common_subsequence, 1, token)
-        print("  same", token) -- PRN could be helpful to move this into a base builder class and include a toggle on/off
+        -- print("  same", token) -- PRN could be helpful to move this into a base builder class and include a toggle on/off
     end
 
-    function builder:on_add(token)
-        print("  move left / add", token)
+    function builder:on_add(_token)
+        -- print("  move left / add", _token)
     end
 
-    function builder:on_delete(token)
-        print("  move up / del", token)
+    function builder:on_delete(_token)
+        -- print("  move up / del", _token)
     end
 
     walk_the_diff(before_tokens, after_tokens, builder)
