@@ -1,6 +1,9 @@
 local assert = require("luassert")
 local wesdiff = require("lua.zeta.copied.wesdiff")
 
+local SPLIT_ON_WHITESPACE = "%s+"
+local STRIP_WHITESPACE = true
+
 local function should_be_equal(expected, actual)
     assert.are.equal(expected, actual)
 end
@@ -55,11 +58,14 @@ function M.add(a, b, c, d)
 end
 ]]
 end)
+
 describe("my paper example", function()
-    local before_text = "C F A D Z O H Z C"
-    local after_text = "F A C F H G D C O Z"
-    local before_tokens = wesdiff.split(before_text, " ", true)
-    local after_tokens = wesdiff.split(after_text, " ", true)
+    ---@format disablenext
+    -- FYI whitespace is stripped out, so its only here to make this easier to read the before/after text
+    local before_text = "C F A    D Z O    H Z C"
+    local after_text = "F A C    F H G    D C O    Z"
+    local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+    local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
     local longest_seq_if_prefer_match_up = { "C", "F", "D", "O", "Z" }
     local _longest_seq_if_prefer_match_left = { "F", "A", "D", "O", "Z" }
 
@@ -170,8 +176,8 @@ end)
 describe("diff with AA in before text, and only one A in after text", function()
     local before_text = "D F A A H"
     local after_text = "F A R F H"
-    local before_tokens = wesdiff.split(before_text, " ", true)
-    local after_tokens = wesdiff.split(after_text, " ", true)
+    local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+    local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
     -- FTR, do not need to test split again
 
     it("should have LCS FAH, and not FAAH", function()
