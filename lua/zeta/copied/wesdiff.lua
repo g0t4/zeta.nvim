@@ -210,6 +210,26 @@ function M.get_token_diff(before_tokens, after_tokens)
     -- TODO strip out common prefix and suffix token to avoid overhead in LCS?
     --   measure impact on timing
 
+    local lcs_builder = {
+        longest_sequence = {},
+    }
+    function lcs_builder:on_match(token)
+        -- traverses in reverse, so insert token at start of list to ensure we get left to right sequence
+        table.insert(self.longest_sequence, 1, token)
+        print("  same", token)
+    end
+
+    function lcs_builder:on_add(token)
+        print("  move left / add", token)
+    end
+
+    function lcs_builder:on_delete(token)
+        print("  move up / del", token)
+    end
+
+    diff_walker(before_tokens, after_tokens, #before_tokens, #after_tokens, lcs_builder)
+    return lcs_builder.longest_sequence
+
     -- FYI this is gonna be done using a visitor for getting LCS? Or just inline it?
     --  basically you visit each token as you build the LCS (matches and non-matches)
     --  I don't really need to get just the LCS but I like having it alone (esp for tesing)...
