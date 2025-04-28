@@ -174,7 +174,6 @@ function walk_the_diff(before_tokens, after_tokens, visitor)
             error("UNEXPECTED... both before and after tokens appear fully traveresed and yet the base condition wasn't hit")
         end
 
-        -- TODO setup tests for these (comment out again and test before/after adding):
         local added_token = after_tokens[num_remaining_after_tokens]
         visitor:on_add(added_token)
 
