@@ -164,12 +164,13 @@ end
 -- @param new             The "new" text string
 -- @param separator      [optional] the separator pattern (defaults ot any
 --                       white space).
+-- @param skip_separator  Remove separator, don't include it in diff'd tokens
 -- @return               A list of annotated tokens.
 -----------------------------------------------------------------------------
-function M.diff(old, new, separator)
+function M.diff(old, new, separator, skip_separator)
     assert(old); assert(new)
-    new = split(new, separator)
-    old = split(old, separator)
+    new = split(new, separator, skip_separator)
+    old = split(old, separator, skip_separator)
 
     -- * remove common prefix/suffix
     -- First, compare the beginnings and ends of strings to remove the common

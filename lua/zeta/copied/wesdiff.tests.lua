@@ -109,6 +109,12 @@ describe("my paper example", function()
         local actual_token_diff = wesdiff.get_token_diff(before_tokens, after_tokens)
 
         should.be_same(expected_token_diff, actual_token_diff)
+
+        it("matches luadiff diff too", function()
+            local luadiff = require("lua.zeta.copied.diff")
+            local other = luadiff.diff(before_text, after_text, SPLIT_ON_WHITESPACE, SKIP_SEPARATOR)
+            print("other", inspect(other))
+        end)
     end)
 
     it("get consolidated diff", function()
