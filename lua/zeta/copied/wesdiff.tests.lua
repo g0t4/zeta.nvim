@@ -1,4 +1,4 @@
-local should = require("zeta.helpers.testing")
+local should = require("zeta.helpers.should")
 local wesdiff = require("zeta.copied.wesdiff")
 
 -- -- FYI if I wanted to use vim.iter w/o plenary test runner...
