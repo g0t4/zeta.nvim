@@ -1,5 +1,5 @@
 local assert = require("luassert")
-local wesdiff = require("lua.zeta.copied.wesdiff")
+local wesdiff = require("zeta.copied.wesdiff")
 
 -- -- FYI if I wanted to use vim.iter w/o plenary test runner...
 -- -- it has no dependencies, so I can import it by path with loadfile

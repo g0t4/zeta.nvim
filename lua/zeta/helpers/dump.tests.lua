@@ -1,4 +1,4 @@
-require("lua.zeta.helpers.dump")
+require("zeta.helpers.dump")
 
 -- lists:
 assert(tbl_is_list({ 1, 2, 3 }))

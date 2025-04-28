@@ -4,7 +4,7 @@
 --   even if I don't like how it works, it works and what it produces is all I care about
 --   but I would like practice with LCS so I would like to revist it
 --     probably will nag at me and make me do it tonight
-require("lua.zeta.helpers.dump")
+require("zeta.helpers.dump")
 
 
 local M = {}

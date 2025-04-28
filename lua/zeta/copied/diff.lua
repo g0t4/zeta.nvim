@@ -9,7 +9,7 @@
 --
 -- License: MIT/X, see http://sputnik.freewisdom.org/en/License
 -----------------------------------------------------------------------------
-require("lua.zeta.helpers.dump")
+require("zeta.helpers.dump")
 local M        = {}
 
 SKIP_SEPARATOR = true -- a constant

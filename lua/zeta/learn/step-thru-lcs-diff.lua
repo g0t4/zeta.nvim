@@ -1,4 +1,4 @@
-luadiff = require("lua.zeta.copied.diff")
+luadiff = require("zeta.copied.diff")
 
 -- FYI! I setup this file to work with iron.nvim too (hence no usage of `local` vars at this top level)
 

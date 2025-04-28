@@ -1,4 +1,4 @@
-require("lua.zeta.helpers.dump")
+require("zeta.helpers.dump")
 t = { x = 1 }
 setmetatable(t, {
     __newindex = function(table, key, value)
