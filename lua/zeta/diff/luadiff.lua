@@ -171,6 +171,8 @@ function M.diff(old, new, separator, skip_separator)
     assert(old); assert(new)
     new = split(new, separator, skip_separator)
     old = split(old, separator, skip_separator)
+    -- print("new", inspect(new, true))
+    -- print("old", inspect(old, true))
 
     -- * remove common prefix/suffix
     -- First, compare the beginnings and ends of strings to remove the common
