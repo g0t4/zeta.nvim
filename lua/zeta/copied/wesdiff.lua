@@ -242,16 +242,15 @@ function M.get_diff(before_tokens, after_tokens)
     local merged = {}
 
     function merge_current_group()
-        if current_group.sames then
-            table.insert(merged, { "same", vim.iter(current_group.sames):join("") })
+        local function merge(type)
+            if current_group[type .. "s"] then
+                table.insert(merged, { type, vim.iter(current_group[type .. "s"]):join("") })
+            end
         end
-        if current_group.dels then
-            table.insert(merged, { "del", vim.iter(current_group.dels):join("") })
-        end
-        if current_group.adds then
-            table.insert(merged, { "add", vim.iter(current_group.adds):join("") })
-        end
-        -- clear group now that its merged
+        merge("same")
+        merge("del")
+        merge("add")
+
         current_group = {}
     end
 
