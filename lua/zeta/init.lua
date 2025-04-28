@@ -36,13 +36,9 @@ function M.show_diff_extmarks()
     vim.api.nvim_set_hl(0, hl_added, { fg = "#00ff00", }) -- ctermfg = "green"
     vim.api.nvim_set_hl(0, hl_deleted, { fg = "#ff0000", }) -- ctermfg = "red"
 
-    local lines = vim.iter(diff):fold({ {} }, function(accum, key, value)
-        local chunk = value
+    local lines = vim.iter(diff):fold({ {} }, function(accum, chunk)
         if chunk == nil then
-            BufferDumpAppend("nil chunk: " .. tostring(key))
-        elseif type(chunk) == "function" then
-            -- TODO can I delete the to_html... or how can I avoid iterating it too?
-            BufferDumpAppend("func chunk: " .. tostring(key))
+            BufferDumpAppend("nil chunk: " .. tostring(chunk))
         else
             BufferDumpAppend("chunk", chunk)
             -- each chunk has has two strings: { "text\nfoo\nbar", "type" }
