@@ -225,7 +225,7 @@ describe("diff with AA in before text, and only one A in after text", function()
     -- FTR, do not need to test split again
 
     it("should have LCS FAH, and not FAAH", function()
-        local lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
+        local actual_lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
 
         ---@format disable -- disables rest of lines in block (so I can have 5 per split)
         -- matches:
@@ -247,5 +247,7 @@ describe("diff with AA in before text, and only one A in after text", function()
         --     otherwise you'd get FAAH
         --       and that's not in the after_text!
 
+        local expected_lcs_matrix = { row1_D, row2_F, row3_A, row4_A, row5_H }
+        should_be_same(expected_lcs_matrix, actual_lcs_matrix)
     end)
 end)
