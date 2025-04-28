@@ -46,8 +46,8 @@ function M.show_diff_extmarks()
             -- text must be split on new line into an array
             --  when \n is encountered, start a new line in the accum
             local current_line = accum[#accum]
-            local text = chunk[1]
-            local type = chunk[2]
+            local type = chunk[1]
+            local text = chunk[2]
             local type_hlgroup = hl_same
             if type == "add" then
                 type_hlgroup = hl_added
