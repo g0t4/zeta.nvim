@@ -318,6 +318,9 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
         end)
     end)
 
+    -- TODO test of only shared prefix
+    -- TODO test of only shared suffix
+
     describe("both sequences match 100%", function()
         it("returns all under same_suffix", function()
             local before_text = "A B C D"
