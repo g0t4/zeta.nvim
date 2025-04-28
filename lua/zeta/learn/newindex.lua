@@ -9,6 +9,7 @@ local should = require("zeta.helpers.should")
 -- <leader>u triggers plenary tests in current file, great workflow (runs tests with nvim runtime and APIs accessible)
 -- STOP using iron.nvim when testing nvim related config/code
 --   only use iron.nvim if you're working on generic lua libraries or otherwise
+--   paths will be an issue for all requires (can fix by modifying RTP but lets just use plenary for consistency and it works fine)
 
 require("zeta.helpers.dump")
 t = { x = 1 }
