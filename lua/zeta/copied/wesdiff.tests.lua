@@ -275,3 +275,49 @@ describe("diff with AA in before text, and only one A in after text", function()
         should_be_same({ "F", "A", "H" }, actual)
     end)
 end)
+
+
+
+describe("diff first checks for common prefix and/or suffix, and strips them before LCS comparison", function()
+    describe("both prefix and suffix have overlap, with non-overlapping tokens in middle", function()
+        it("splits off prefix/suffix from middle", function()
+            local before_text = "F A B C D E F G"
+            local after_text = "F A C D E X F G"
+            local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+
+            -- FTR, do not need to test split again
+            local expected_middle = {
+                before_tokens = { "B", "C", "D", "E" },
+                after_tokens = { "C", "D", "E", "X" },
+            }
+
+            local same_prefix, middle, same_suffix = wesdiff.split_common_prefix_and_suffix(before_tokens, after_tokens)
+
+            should_be_same({ "same", "FA" }, same_prefix)
+            should_be_same({ "same", "FG" }, same_suffix)
+            should_be_same(expected_middle, middle)
+        end)
+    end)
+
+    describe("both sequences match 100%", function()
+        it("returns all under same_suffix", function()
+            local before_text = "A B C D"
+            local after_text = "A B C D"
+            local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+
+            local expected_middle = {
+                before_tokens = {},
+                after_tokens = {},
+            }
+
+            local same_prefix, middle, same_suffix = wesdiff.split_common_prefix_and_suffix(before_tokens, after_tokens)
+
+            -- FYI doesn't matter if I expect them to be in prefix or suffix, just need to validate I do one of the two
+            should_be_same({ "same", "" }, same_prefix) -- TODO what do I want here? nil? "" (emtpy)? {} empty table?
+            should_be_same({ "same", "ABCD" }, same_suffix)
+            should_be_same(expected_middle, middle)
+        end)
+    end)
+end)

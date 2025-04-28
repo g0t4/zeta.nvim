@@ -274,6 +274,34 @@ function M.get_diff(before_tokens, after_tokens)
     return merged
 end
 
+---@return table same_prefix, table middle, table same_suffix
+function M.split_common_prefix_and_suffix(before_tokens, after_tokens)
+    -- * shared suffix first, just removing from end of table
+    local same_suffix = {}
+    while #before_tokens > 0 and #after_tokens > 0
+        and before_tokens[#before_tokens] == after_tokens[#after_tokens] do
+        table.remove(after_tokens)
+        table.insert(same_suffix, 1, table.remove(before_tokens))
+    end
+
+    local same_prefix = {}
+    while #before_tokens > 0 and #after_tokens > 0
+        and before_tokens[1] == after_tokens[1] do
+        -- TODO is remove at start expensive b/c it has to renumber entire list every time? is this inevitable and is it inconsequential vs LCS diffing the shared prefix? (FYI could trim only shared suffix if need be)
+        table.remove(after_tokens, 1)
+        table.insert(same_prefix, table.remove(before_tokens, 1))
+    end
+
+    local middle = { before_tokens = before_tokens, after_tokens = after_tokens }
+
+    -- TODO revisit what shape I want for output
+    --  TODO what if no shared prefix/suffix... do I want { "same", "" } or nil?
+    return
+        { "same", vim.iter(same_prefix):join("") },
+        middle,
+        { "same", vim.iter(same_suffix):join("") }
+end
+
 function M.get_match_matrix(before_tokens, after_tokens)
     local match_matrix = zeros_until_set_matrix:new() -- just for fun, to illustrate naming differences
     for i, old_token in ipairs(before_tokens) do
