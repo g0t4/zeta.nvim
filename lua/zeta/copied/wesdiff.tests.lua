@@ -134,11 +134,11 @@ describe("my paper example", function()
         local expected_token_diff = {
             { "add",  "FA" },
             { "same", "CF" },
-            { "add",  "HG" },
             { "del",  "A" },
+            { "add",  "HG" },
             { "same", "D" },
-            { "add",  "C" },
             { "del",  "Z" },
+            { "add",  "C" },
             { "same", "O" },
             { "del",  "H" },
             { "same", "Z" },
