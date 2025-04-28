@@ -1,5 +1,5 @@
-local assert = require("luassert")
 local wesdiff = require("zeta.copied.wesdiff")
+local should = require("zeta.helpers.testing")
 
 -- -- FYI if I wanted to use vim.iter w/o plenary test runner...
 -- -- it has no dependencies, so I can import it by path with loadfile
@@ -8,20 +8,6 @@ local wesdiff = require("zeta.copied.wesdiff")
 
 local SPLIT_ON_WHITESPACE = "%s+"
 local STRIP_WHITESPACE = true
-
-local function should_be_equal(expected, actual)
-    assert.are.equal(expected, actual)
-end
-
-local function should_be_same(expected, actual)
-    assert.are.same(expected, actual)
-end
-
-local function should_be_nil(actual)
-    -- FYI you can join with _ instead of dot (.)
-    --   must use this for keywords like nil, function, etc
-    assert.is_nil(actual)
-end
 
 describe("tiny comparison with no leading/trailing comonality", function()
     local before_text = [[b )]]
@@ -33,10 +19,10 @@ describe("tiny comparison with no leading/trailing comonality", function()
         -- leaving separator as whitespace default AND keeping separator
         -- IOTW no need to pass anything but first arg
         local before_tokens = wesdiff.split(before_text)
-        should_be_same({ "b", " ", ")" }, before_tokens)
+        should.be_same({ "b", " ", ")" }, before_tokens)
 
         local after_tokens = wesdiff.split(after_text)
-        should_be_same({ "b,", " ", "c,", " ", "d)" }, after_tokens)
+        should.be_same({ "b,", " ", "c,", " ", "d)" }, after_tokens)
     end)
 
     it("computes lcs_matrix", function()
@@ -76,13 +62,13 @@ describe("my paper example", function()
     it("splits words w/o separator", function()
         ---@format disable -- disables rest of lines in block
         -- true as last arg says to discard separator (I didn't do my paper example with space separators)
-        should_be_same({ "C", "F", "A",    "D", "Z", "O",    "H", "Z", "C" }, before_tokens)
-        should_be_same({ "F", "A", "C",    "F", "H", "G",    "D", "C", "O",    "Z" }, after_tokens)
+        should.be_same({ "C", "F", "A",    "D", "Z", "O",    "H", "Z", "C" }, before_tokens)
+        should.be_same({ "F", "A", "C",    "F", "H", "G",    "D", "C", "O",    "Z" }, after_tokens)
     end)
 
     it("gets longest sequence", function()
         local longest_sequence = wesdiff.get_longest_sequence(before_tokens, after_tokens)
-        should_be_same(longest_seq_if_prefer_match_up, longest_sequence)
+        should.be_same(longest_seq_if_prefer_match_up, longest_sequence)
     end)
 
     it("get token diff", function()
@@ -122,7 +108,7 @@ describe("my paper example", function()
 
         local actual_token_diff = wesdiff.get_token_diff(before_tokens, after_tokens)
 
-        should_be_same(expected_token_diff, actual_token_diff)
+        should.be_same(expected_token_diff, actual_token_diff)
     end)
 
     it("get consolidated diff", function()
@@ -145,7 +131,7 @@ describe("my paper example", function()
             { "del",  "C" },
         }
 
-        should_be_same(expected_token_diff, actual_diff)
+        should.be_same(expected_token_diff, actual_diff)
     end)
 
     it("computes lcs matrix", function()
@@ -177,7 +163,7 @@ describe("my paper example", function()
         local row9_C = { 1, 2, 3,   3, 3, 3,   3, 4, 4,   5 }
 
         local expected_lcs_matrix = { row1_C, row2_F, row3_A, row4_D, row5_Z, row6_O, row7_H, row8_Z, row9_C }
-        should_be_same(expected_lcs_matrix, actual_lcs_matrix)
+        should.be_same(expected_lcs_matrix, actual_lcs_matrix)
 
         -- matches matrix:
         --   before[i] == after[j]
@@ -260,11 +246,11 @@ describe("diff with AA in before text, and only one A in after text", function()
         --       and that's not in the after_text!
 
         local expected_lcs_matrix = { row1_D, row2_F, row3_A, row4_A, row5_H }
-        should_be_same(expected_lcs_matrix, actual_lcs_matrix)
+        should.be_same(expected_lcs_matrix, actual_lcs_matrix)
 
         -- * also check LCS
         local actual = wesdiff.get_longest_sequence(before_tokens, after_tokens)
-        should_be_same({ "F", "A", "H" }, actual)
+        should.be_same({ "F", "A", "H" }, actual)
     end)
 end)
 
@@ -288,9 +274,9 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
 
             local same_prefix, middle, same_suffix = wesdiff.split_common_prefix_and_suffix(before_tokens, after_tokens)
 
-            should_be_same({ "same", "FA" }, same_prefix)
-            should_be_same({ "same", "FG" }, same_suffix)
-            should_be_same(expected_middle, middle)
+            should.be_same({ "same", "FA" }, same_prefix)
+            should.be_same({ "same", "FG" }, same_suffix)
+            should.be_same(expected_middle, middle)
         end)
 
 
@@ -314,7 +300,7 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
                 -- shared suffix
                 { "same", "FG" },
             }
-            should_be_same(expected_diff, actual_diff)
+            should.be_same(expected_diff, actual_diff)
         end)
     end)
 
@@ -338,7 +324,7 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
 
             local actual_diff = wesdiff.get_diff(before_tokens, after_tokens)
 
-            should_be_same(expected_diff, actual_diff)
+            should.be_same(expected_diff, actual_diff)
         end)
     end)
 
@@ -357,9 +343,9 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
             local same_prefix, middle, same_suffix = wesdiff.split_common_prefix_and_suffix(before_tokens, after_tokens)
 
             -- FYI doesn't matter if I expect them to be in prefix or suffix, just need to validate I do one of the two
-            should_be_same({ "same", "" }, same_prefix) -- TODO what do I want here? nil? "" (emtpy)? {} empty table?
-            should_be_same({ "same", "ABCD" }, same_suffix)
-            should_be_same(expected_middle, middle)
+            should.be_same({ "same", "" }, same_prefix) -- TODO what do I want here? nil? "" (emtpy)? {} empty table?
+            should.be_same({ "same", "ABCD" }, same_suffix)
+            should.be_same(expected_middle, middle)
         end)
     end)
 end)
