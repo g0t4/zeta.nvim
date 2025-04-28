@@ -110,8 +110,11 @@ function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
     return cum_matrix
 end
 
-function walk_the_diff(before_tokens, after_tokens, num_remaining_before_tokens, num_remaining_after_tokens, visitor)
+function walk_the_diff(before_tokens, after_tokens, visitor)
     local lcs_matrix = M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
+
+    local num_remaining_before_tokens = #before_tokens
+    local num_remaining_after_tokens = #after_tokens
 
     while num_remaining_before_tokens > 0 or num_remaining_after_tokens > 0 do
         local old_token = before_tokens[num_remaining_before_tokens]
@@ -202,7 +205,7 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         print("  move up / del", token)
     end
 
-    walk_the_diff(before_tokens, after_tokens, #before_tokens, #after_tokens, builder)
+    walk_the_diff(before_tokens, after_tokens, builder)
     return builder.longest_common_subsequence
 end
 
@@ -232,7 +235,7 @@ function M.get_token_diff(before_tokens, after_tokens)
         self:push("del", token)
     end
 
-    walk_the_diff(before_tokens, after_tokens, #before_tokens, #after_tokens, builder)
+    walk_the_diff(before_tokens, after_tokens, builder)
     return builder.token_diff
 
     -- FYI this is gonna be done using a visitor for getting LCS? Or just inline it?
