@@ -113,7 +113,7 @@ end
 function M.get_longest_sequence(before_tokens, after_tokens)
     local lcs_matrix = M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
 
-    function _get_longest(num_before_tokens, num_after_tokens)
+    function _diff_walker(num_before_tokens, num_after_tokens)
         if num_before_tokens < 1 or num_after_tokens < 1 then
             -- base case / terminal condition
             -- TODO need to keep recursing until both before/after are < 1 (for getting diff)
@@ -129,7 +129,7 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         if old_token == new_token then
             -- this is part of longest sequence (the last token)!
             -- move to previous token in both old/new sets, hence - 1 on both
-            local rest = _get_longest(num_before_tokens - 1, num_after_tokens - 1)
+            local rest = _diff_walker(num_before_tokens - 1, num_after_tokens - 1)
             table.insert(rest, old_token)
             return rest
         end
@@ -148,7 +148,7 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         local longest_above = lcs_matrix[num_before_tokens - 1][num_after_tokens]
         if longest_above == longest_length then
             -- not on a token so nothing to add to list
-            return _get_longest(num_before_tokens - 1, num_after_tokens)
+            return _diff_walker(num_before_tokens - 1, num_after_tokens)
         end
 
         -- otherwise, there's a match token to the left that is part of a longest length sequence
@@ -159,10 +159,10 @@ function M.get_longest_sequence(before_tokens, after_tokens)
                 .. " should match logest_length (" .. longest_length .. ")"
                 .. ", when longest_above (" .. longest_above .. ") does not!")
         end
-        return _get_longest(num_before_tokens, num_after_tokens - 1)
+        return _diff_walker(num_before_tokens, num_after_tokens - 1)
     end
 
-    return _get_longest(#before_tokens, #after_tokens)
+    return _diff_walker(#before_tokens, #after_tokens)
 end
 
 function M.get_token_diff(before_tokens, after_tokens)
