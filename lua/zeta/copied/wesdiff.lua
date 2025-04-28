@@ -138,7 +138,6 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         local new_token = after_tokens[num_after_tokens]
         print("old_token: '" .. tostring(old_token) .. "' - " .. num_before_tokens)
         print("new_token: '" .. tostring(new_token) .. "' - " .. num_after_tokens)
-        print("  longest current:", current_longest_sequence_position)
         if old_token == new_token then
             visitor:on_match(old_token)
             -- this is part of longest sequence (the last token)!
@@ -152,15 +151,26 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         --    then you've got at least two longest sequences with a shared suffix
         --    pick either is fine, unless you have additional constraints beyond longest
 
-        -- TODO drop comparison to longest_length and just pick up/left based on max first, then default up if same?)
         --  just assume the max of the two is == longest_length
 
-        -- * move up?
         local longest_sequence_above = lcs_matrix[num_before_tokens - 1][num_after_tokens]
-        print("  longest above:", longest_sequence_above)
+        local longest_sequence_left = lcs_matrix[num_before_tokens][num_after_tokens - 1]
+        -- new layout:
+        -- longest:   A
+        --          L<C
+        --  FYI not perfect output (i.e. padding) and only meant to use briefly here in testing / finishing impl
+        print("  longests:  " .. longest_sequence_above)
+        print("           " .. longest_sequence_left .. "<" .. current_longest_sequence_position)
+
+        -- TODO drop comparing current_longest_sequence_position to longest_above/below:
+        -- - pick whichever is bigger (assuming it matches current/outstanding sequence length)
+        -- - AND that has tokens left for that direction (i.e. toward upper left you can run into 0 for above/below and current when just have all adds or deletes remaining at start of sequence
+        -- - and if they match, then pick up
+
+        -- * move up?
         if num_before_tokens > 0 and longest_sequence_above == current_longest_sequence_position then
             -- this means there's a match token somewhere above that is part of a longest sequence
-            -- num_before_tokens > 0 => only move up if tokens remain to "del" (row1 is last row that can move up to consume)
+            -- num_before_tokens > 0 => only move up if tokens remain in before_tokens
 
             -- TODO setup tests for these (comment out again and test before/after adding):
             local deleted_token = before_tokens[num_before_tokens]
@@ -173,14 +183,13 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         -- * else, move left
         -- this means there's a match token somewhere to the left that is part of a longest sequence
         -- optional assertions (mirror the check for move up case)
-        local longest_sequence_left = lcs_matrix[num_before_tokens][num_after_tokens - 1]
-        print("  longest to left:", longest_sequence_left)
         if longest_sequence_left ~= current_longest_sequence_position then
             error("UNEXPECTED... this suggests a bug in building/traversing LCS matrix... longest_to_left (" .. longest_sequence_left .. ")"
                 .. " should match logest_length (" .. current_longest_sequence_position .. ")"
                 .. ", when longest_above (" .. longest_sequence_above .. ") does not!")
         end
         if not (num_after_tokens > 0) then
+            -- cannot move left if no tokens remain in after_tokens
             -- this is only possible due to a bug, b/c base case happens when both longest_sequence_(above and left) are < 1
             error("UNEXPECTED... both before and after text appear fully traveresed and yet the boundary condition wasn't hit")
         end
