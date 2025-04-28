@@ -119,8 +119,8 @@ function walk_the_diff(before_tokens, after_tokens, visitor)
     while num_remaining_before_tokens > 0 or num_remaining_after_tokens > 0 do
         local old_token = before_tokens[num_remaining_before_tokens]
         local new_token = after_tokens[num_remaining_after_tokens]
-        print("old_token: '" .. tostring(old_token) .. "' - " .. num_remaining_before_tokens)
-        print("new_token: '" .. tostring(new_token) .. "' - " .. num_remaining_after_tokens)
+        -- print("old_token: '" .. tostring(old_token) .. "' - " .. num_remaining_before_tokens)
+        -- print("new_token: '" .. tostring(new_token) .. "' - " .. num_remaining_after_tokens)
 
         -- * match?
         if old_token == new_token then
@@ -139,8 +139,8 @@ function walk_the_diff(before_tokens, after_tokens, visitor)
         local current_longest_sequence_position = lcs_matrix[num_remaining_before_tokens][num_remaining_after_tokens]
         local longest_sequence_above = lcs_matrix[num_remaining_before_tokens - 1][num_remaining_after_tokens]
         local longest_sequence_left = lcs_matrix[num_remaining_before_tokens][num_remaining_after_tokens - 1]
-        print("  longests:  " .. longest_sequence_above)
-        print("           " .. longest_sequence_left .. "<" .. current_longest_sequence_position)
+        -- print("  longests:  " .. longest_sequence_above)
+        -- print("           " .. longest_sequence_left .. "<" .. current_longest_sequence_position)
 
         -- ?? drop comparing current_longest_sequence_position to longest_above/below?? or not?
         -- - pick whichever is bigger (assuming it matches current/outstanding sequence length)
@@ -217,7 +217,7 @@ function M.get_token_diff(before_tokens, after_tokens)
         local what = { change, token }
         -- traverses in reverse, so insert token at start of list to ensure we get left to right sequence
         table.insert(self.token_diff, 1, what)
-        print("  ", what)
+        print("  ", inspect(what))
     end
 
     function builder:on_match(token)
