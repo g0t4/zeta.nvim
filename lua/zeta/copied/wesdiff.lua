@@ -117,7 +117,7 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         local max_iterations = #before_tokens + #after_tokens
         local iteration_counter = 0
 
-        while num_remaining_after_tokens > 0 or num_remaining_before_tokens > 0 do
+        while num_remaining_before_tokens > 0 or num_remaining_after_tokens > 0 do
             if iteration_counter > max_iterations then
                 error("exceeded max possible iterations: " .. max_iterations)
             end
