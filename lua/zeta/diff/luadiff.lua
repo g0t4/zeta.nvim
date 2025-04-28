@@ -141,6 +141,8 @@ end
 function diff(old, new, separator, skip_separator)
    assert(old); assert(new)
    new = split(new, separator, skip_separator); old = split(old, separator, skip_separator)
+   print("old", inspect(old, true))
+   print("new", inspect(new, true))
 
    -- First, compare the beginnings and ends of strings to remove the common
    -- prefix and suffix.  Chances are, there is only a small number of tokens
