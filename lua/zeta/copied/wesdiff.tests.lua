@@ -123,21 +123,26 @@ describe("my paper example", function()
         local expected_token_diff = vim.iter(expected_token_diff_reversed):rev():totable()
 
         local actual_token_diff = wesdiff.get_token_diff(before_tokens, after_tokens)
+
         should_be_same(expected_token_diff, actual_token_diff)
     end)
 
     it("get consolidated diff", function()
         local actual_diff = wesdiff.get_diff(before_tokens, after_tokens)
-        -- TODO expected vs actual diff
+        -- TODO! expected vs actual diff
         --    consolidate consecutive changes that are same type, i.e. two adds between sames... or two deletes between sames
         --      sames are your checkpoint where you stop looking for consecutive changes to coalesce
     end)
 
+    -- TODO! add a new test of actual_diff that has common prefix/suffix
+
     it("computes lcs matrix", function()
-        local lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
-        print("lcs_matrix", inspect(lcs_matrix, true))
-        local match_matrix = wesdiff.get_match_matrix(before_tokens, after_tokens)
-        print("match_matrix: ", inspect(match_matrix, true))
+        local actual_lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
+
+        -- just wanted to see match matrix, don't even need it for testing as I don't use it to produce diff...
+        -- really only dumping it to compare to my manually created versions below
+        -- local _match_matrix = wesdiff.get_match_matrix(before_tokens, after_tokens)
+        -- print("match_matrix: ", inspect(match_matrix, true))
 
         ---@format disable -- disables rest of lines in block (so I can have 5 per split)
         -- columns:      1  2  3    4  5  6    7  8  9   10
@@ -164,6 +169,8 @@ describe("my paper example", function()
         --                     C                  C
         local row9_C = { 1, 2, 3,   3, 3, 3,   3, 4, 4,   5 }
 
+        local expected_lcs_matrix = { row1_C, row2_F, row3_A, row4_D, row5_Z, row6_O, row7_H, row8_Z, row9_C }
+        should_be_same(expected_lcs_matrix, actual_lcs_matrix)
 
         -- matches matrix:
         --   before[i] == after[j]
