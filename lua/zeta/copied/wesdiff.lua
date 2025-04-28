@@ -207,9 +207,6 @@ function M.get_longest_sequence(before_tokens, after_tokens)
 end
 
 function M.get_token_diff(before_tokens, after_tokens)
-    -- TODO strip out common prefix and suffix token to avoid overhead in LCS?
-    --   measure impact on timing
-
     local builder = {
         token_diff = {},
     }
@@ -234,14 +231,13 @@ function M.get_token_diff(before_tokens, after_tokens)
 
     walk_the_diff(before_tokens, after_tokens, builder)
     return builder.token_diff
-
-    -- FYI this is gonna be done using a visitor for getting LCS? Or just inline it?
-    --  basically you visit each token as you build the LCS (matches and non-matches)
-    --  I don't really need to get just the LCS but I like having it alone (esp for tesing)...
-    --  so I could reimpl it with a cell visitor (func) arg
 end
 
 function M.get_diff(before_tokens, after_tokens)
+    -- TODO strip out common prefix and suffix token to avoid overhead in LCS?
+    --   measure impact on timing
+    -- DO THIS BEFORE using get_token_diff, assume it doesn't do the stripping, right?
+
     -- aggregate across token diff
     local token_diff = M.get_token_diff(before_tokens, after_tokens)
     -- TODO (combine consecutive tokens with same diff type (same/del/add)
