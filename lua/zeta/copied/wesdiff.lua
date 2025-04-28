@@ -259,7 +259,7 @@ function M.get_diff(before_tokens, after_tokens)
         -- print("current", inspect(current))
         local current_type = current[1] .. "s"
         local current_token = current[2]
-        -- edge triggered on change to/from same
+        -- edge triggered on change to/from "same"
         if (current_group.sames and current_type ~= "sames")
             or ((not current_group.sames) and current_type == "sames") then
             merge_current_group()
