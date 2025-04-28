@@ -233,7 +233,7 @@ end
 
 function M.get_diff(before_tokens, after_tokens)
     -- WIP prefix/suffix strip
-    -- local same_prefix, middle, same_suffix = M.split_common_prefix_and_suffix(before_tokens, after_tokens)
+    local same_prefix, middle, same_suffix = M.split_common_prefix_and_suffix(before_tokens, after_tokens)
 
     -- * aggregate across token diff
     local token_diff = M.get_token_diff(before_tokens, after_tokens)
