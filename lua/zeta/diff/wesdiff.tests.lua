@@ -110,13 +110,47 @@ describe("my paper example", function()
 
         should.be_same(expected_token_diff, actual_token_diff)
 
-        it("matches luadiff diff too", function()
+        it("matches luadiff diff too - luadiff is broken", function()
             local luadiff = require("zeta.diff.luadiff")
             local other = luadiff.diff(before_text, after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
             print("luadiff result", inspect(other, true))
             -- wow these don't remotely match... later I should double check I didn't modify and break something in the luadiff impl...
             --  that said, the weird nature of that lcs matrix with shifting offsets 2 right and 2 down... I wouldn't be surprised if it introduces issues..
             --  i.e. the luadiff match shows space for leading and trailing characters even though I said not to include separators (though I did add the pass throught to split for that)
+            --
+            --
+            -- ok yeah there appears to be a bug in lua diff... for example, there is NO "" in old/new! and yet the output shows it... as same!
+            --    and, LCS match is not even the same
+            --    something is horribly off
+            --    this must be why I struggled to get the diff of my code to look correct (slightly off all the time!)
+            --    I am glad I reimplemented it and can use my copy
+            --    this is what happens when you use single letter abbreviations for entire algorithms!
+            --
+            -- * output running this test (old/new are the tokens that were fed in (after skip separator, which you can see worked perfect):
+            -- luadiff - old   { "C", "F", "A", "D", "Z", "O", "H", "Z", "C" }
+            -- luadiff - new   { "F", "A", "C", "F", "H", "G", "D", "C", "O", "Z" }
+            --
+            -- * but then the diff result has tokens not in the inputs (old/new)!
+            -- luadiff result  {
+            -- [1] = { "", "same" },
+            -- [2] = { "C", "out" },
+            -- [3] = { "F", "same" },
+            -- [4] = { "A", "same" },
+            -- [5] = { "D", "out" },
+            -- [6] = { "C", "in" },
+            -- [7] = { "Z", "out" },
+            -- [8] = { "F", "in" },
+            -- [9] = { "O", "out" },
+            -- [10] = { "H", "out" },
+            -- [11] = { "Z", "out" },
+            -- [12] = { "H", "in" },
+            -- [13] = { "G", "in" },
+            -- [14] = { "D", "in" },
+            -- [15] = { "C", "same" },
+            -- [16] = { "O", "in" },
+            -- [17] = { "Z", "in" },
+            -- [18] = { "", "same" },           --
+            --
         end)
     end)
 
