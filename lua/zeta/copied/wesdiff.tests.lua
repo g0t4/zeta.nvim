@@ -128,7 +128,10 @@ describe("my paper example", function()
     end)
 
     it("get consolidated diff", function()
-        local diff = wesdiff.get_diff(before_tokens, after_tokens)
+        local actual_diff = wesdiff.get_diff(before_tokens, after_tokens)
+        -- TODO expected vs actual diff
+        --    consolidate consecutive changes that are same type, i.e. two adds between sames... or two deletes between sames
+        --      sames are your checkpoint where you stop looking for consecutive changes to coalesce
     end)
 
     it("computes lcs matrix", function()
