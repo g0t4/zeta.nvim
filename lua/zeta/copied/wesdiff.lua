@@ -221,12 +221,15 @@ function M.get_token_diff(before_tokens, after_tokens)
     end
 
     function token_diff_builder:on_match(token)
+        self:push("same", token)
     end
 
     function token_diff_builder:on_add(token)
+        self:push("add", token)
     end
 
     function token_diff_builder:on_delete(token)
+        self:push("del", token)
     end
 
     diff_walker(before_tokens, after_tokens, #before_tokens, #after_tokens, token_diff_builder)
