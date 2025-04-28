@@ -123,11 +123,6 @@ function M.get_longest_sequence(before_tokens, after_tokens)
             end
             iteration_counter = iteration_counter + 1
 
-            if num_remaining_before_tokens < 1 and num_remaining_after_tokens < 1 then
-                -- * base case
-                return
-            end
-
             -- * match?
             local old_token = before_tokens[num_remaining_before_tokens]
             local new_token = after_tokens[num_remaining_after_tokens]
