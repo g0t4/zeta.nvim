@@ -160,7 +160,7 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         print("  longest above:", longest_sequence_above)
         if num_before_tokens > 0 and longest_sequence_above == current_longest_sequence_position then
             -- this means there's a match token somewhere above that is part of a longest sequence
-            -- num_before_tokens > 0 => only move up if more tokens to move up to (also allow 1=>0 b/c that means we're done with first token)
+            -- num_before_tokens > 0 => only move up if tokens remain to "del" (row1 is last row that can move up to consume)
 
             -- TODO setup tests for these (comment out again and test before/after adding):
             local deleted_token = before_tokens[num_before_tokens]
