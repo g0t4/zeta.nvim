@@ -112,16 +112,8 @@ end
 
 function diff_walker(before_tokens, after_tokens, num_remaining_before_tokens, num_remaining_after_tokens, visitor)
     local lcs_matrix = M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
-    -- TODO remove when done refactoring.. can also look into expand plenary's test output runner max lines so its not truncated in a SOF (then this isn't needed)
-    local max_iterations = #before_tokens + #after_tokens
-    local iteration_counter = 0
 
     while num_remaining_before_tokens > 0 or num_remaining_after_tokens > 0 do
-        if iteration_counter > max_iterations then
-            error("exceeded max possible iterations: " .. max_iterations)
-        end
-        iteration_counter = iteration_counter + 1
-
         -- * match?
         local old_token = before_tokens[num_remaining_before_tokens]
         local new_token = after_tokens[num_remaining_after_tokens]
