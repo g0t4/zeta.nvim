@@ -275,7 +275,9 @@ function M.get_diff(before_tokens, after_tokens)
     end
     merge_current_group()
 
-    table.insert(merged, same_suffix)
+    if same_suffix[2] ~= "" then
+        table.insert(merged, same_suffix)
+    end
 
     return merged
 end
