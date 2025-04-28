@@ -125,8 +125,7 @@ function M.get_longest_sequence(before_tokens, after_tokens)
             -- * base case
             return
         end
-        local current_longest_sequence_position = lcs_matrix[num_remaining_before_tokens][num_remaining_after_tokens]
-        -- now find a match with that length
+
         -- * match?
         local old_token = before_tokens[num_remaining_before_tokens]
         local new_token = after_tokens[num_remaining_after_tokens]
@@ -145,18 +144,13 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         --    then you've got at least two longest sequences with a shared suffix
         --    pick either is fine, unless you have additional constraints beyond longest
 
-        --  just assume the max of the two is == longest_length
-
+        local current_longest_sequence_position = lcs_matrix[num_remaining_before_tokens][num_remaining_after_tokens]
         local longest_sequence_above = lcs_matrix[num_remaining_before_tokens - 1][num_remaining_after_tokens]
         local longest_sequence_left = lcs_matrix[num_remaining_before_tokens][num_remaining_after_tokens - 1]
-        -- new layout:
-        -- longest:   A
-        --          L<C
-        --  FYI not perfect output (i.e. padding) and only meant to use briefly here in testing / finishing impl
         print("  longests:  " .. longest_sequence_above)
         print("           " .. longest_sequence_left .. "<" .. current_longest_sequence_position)
 
-        -- TODO drop comparing current_longest_sequence_position to longest_above/below:
+        -- TODO drop comparing current_longest_sequence_position to longest_above/below?? or not?
         -- - pick whichever is bigger (assuming it matches current/outstanding sequence length)
         -- - AND that has tokens left for that direction (i.e. toward upper left you can run into 0 for above/below and current when just have all adds or deletes remaining at start of sequence
         -- - and if they match, then pick up
