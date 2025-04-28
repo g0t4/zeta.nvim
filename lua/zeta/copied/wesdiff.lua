@@ -237,48 +237,48 @@ function M.get_diff(before_tokens, after_tokens)
     -- DO THIS BEFORE using get_token_diff, assume it doesn't do the stripping, right?
 
     -- * aggregate across token diff
-    local token_diff = M.get_token_diff(before_tokens, after_tokens)
-    local init = {
+    local token_diff = vim.iter(M.get_token_diff(before_tokens, after_tokens)):rev():totable()
+    local accum = {
         last_group = {},
         merged = {}
     }
-    local accum = vim.iter(token_diff)
-        :rev()
-        :fold(init, function(accum, current)
-            -- edge triggered on change to/from same
-            local current_type = current[1] .. "s"
-            local current_token = current[2]
-            if (accum.last_group.sames and current_type ~= "sames")
-                or ((not accum.last_group.sames) and current_type == "sames") then
-                function do_merge(last_group)
-                    if last_group.sames then
-                        table.insert(accum.merged, { "same", vim.iter(last_group.sames):join("") })
-                    end
-                    if last_group.dels then
-                        table.insert(accum.merged, { "del", vim.iter(last_group.dels):join("") })
-                    end
-                    if last_group.adds then
-                        table.insert(accum.merged, { "add", vim.iter(last_group.adds):join("") })
-                    end
-                end
 
-                do_merge(accum.last_group)
+    function do_merge(last_group)
+        if last_group.sames then
+            table.insert(accum.merged, { "same", vim.iter(last_group.sames):join("") })
+        end
+        if last_group.dels then
+            table.insert(accum.merged, { "del", vim.iter(last_group.dels):join("") })
+        end
+        if last_group.adds then
+            table.insert(accum.merged, { "add", vim.iter(last_group.adds):join("") })
+        end
+    end
 
-                accum.last_group = {}
-            end
+    for _, current in pairs(token_diff) do
+        print("current", inspect(current))
+        -- edge triggered on change to/from same
+        local current_type = current[1] .. "s"
+        local current_token = current[2]
+        if (accum.last_group.sames and current_type ~= "sames")
+            or ((not accum.last_group.sames) and current_type == "sames") then
+            do_merge(accum.last_group)
 
-            accum.last_group[current_type] = accum.last_group[current_type] or {}
-            table.insert(accum.last_group[current_type], current_token)
-            -- sequence of alternating:
-            --  can start w/ sames or adds/dels (usually latter unless not stripping common prefix/suffix)
-            -- {
-            --   { adds={"foo", "bar"}, dels={"doo"} },
-            --   { sames={"cow" " " "cobweb"} },
-            --   { adds={"food"}, }
-            --   ...
-            -- }
-            return accum
-        end)
+            accum.last_group = {}
+        end
+
+        accum.last_group[current_type] = accum.last_group[current_type] or {}
+        table.insert(accum.last_group[current_type], current_token)
+        -- sequence of alternating:
+        --  can start w/ sames or adds/dels (usually latter unless not stripping common prefix/suffix)
+        -- {
+        --   { adds={"foo", "bar"}, dels={"doo"} },
+        --   { sames={"cow" " " "cobweb"} },
+        --   { adds={"food"}, }
+        --   ...
+        -- }
+    end
+    do_merge(accum.last_group)
     print("accum.merged", inspect(accum.merged, true))
     return accum.merged
 end
