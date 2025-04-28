@@ -139,7 +139,6 @@ describe("my paper example", function()
     it("computes lcs matrix", function()
         local actual_lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
 
-
         ---@format disable -- disables rest of lines in block (so I can have 5 per split)
         -- columns:      1  2  3    4  5  6    7  8  9   10
         -- matches:            C                  C
