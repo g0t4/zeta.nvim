@@ -138,9 +138,9 @@ end
 --                       white space).
 -- @return               A list of annotated tokens.
 -----------------------------------------------------------------------------
-function diff(old, new, separator)
+function diff(old, new, separator, skip_separator)
    assert(old); assert(new)
-   new = split(new, separator); old = split(old, separator)
+   new = split(new, separator, skip_separator); old = split(old, separator, skip_separator)
 
    -- First, compare the beginnings and ends of strings to remove the common
    -- prefix and suffix.  Chances are, there is only a small number of tokens
