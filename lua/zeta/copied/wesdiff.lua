@@ -125,12 +125,9 @@ function walk_the_diff(before_tokens, after_tokens, visitor)
         -- * match?
         if old_token == new_token then
             visitor:on_match(old_token)
-            -- this is part of longest sequence (the last token)!
-            -- move to previous token in both old/new sets, hence - 1 on both
-            num_remaining_before_tokens = num_remaining_before_tokens - 1
-            num_remaining_after_tokens = num_remaining_after_tokens - 1
-            -- FYI lua has no continue, so short of nesting an else block, I am using goto to simulate continue
-            --   chill it... continue is implicitly a goto anyways
+            -- move up and left, to previous token in both before/after token arrays
+            num_remaining_before_tokens = num_remaining_before_tokens - 1 -- move up
+            num_remaining_after_tokens = num_remaining_after_tokens - 1 -- move left
             goto continue_while
         end
 
@@ -145,7 +142,7 @@ function walk_the_diff(before_tokens, after_tokens, visitor)
         print("  longests:  " .. longest_sequence_above)
         print("           " .. longest_sequence_left .. "<" .. current_longest_sequence_position)
 
-        -- TODO drop comparing current_longest_sequence_position to longest_above/below?? or not?
+        -- ?? drop comparing current_longest_sequence_position to longest_above/below?? or not?
         -- - pick whichever is bigger (assuming it matches current/outstanding sequence length)
         -- - AND that has tokens left for that direction (i.e. toward upper left you can run into 0 for above/below and current when just have all adds or deletes remaining at start of sequence
         -- - and if they match, then pick up
