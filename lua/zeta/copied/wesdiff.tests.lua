@@ -102,24 +102,23 @@ describe("my paper example", function()
         -- row0/col2 => not a match, can't go up => move left => `add A`
         -- row0/col1 => not a match, can't go up => move left => `add F`
         -- row0/col0 => base case, done!
-        local expected_token_diff_reversed = {
-            { "del",  "C" }, -- move up
-            { "same", "Z" }, -- match (move up and left)
-            { "del",  "H" }, -- move up
-            { "same", "O" }, -- match (move up and left)
-            { "del",  "Z" }, -- move up
-            { "add",  "C" }, -- move left
-            { "same", "D" }, -- match (move up and left)
-            { "del",  "A" }, -- move up
-            { "add",  "G" }, -- move left
-            { "add",  "H" }, -- move left
-            { "same", "F" }, -- match (move up and left)
-            { "same", "C" }, -- last match (move up and left)
-            -- these are left moves (adds) after last match (row == 0, column > 0)
-            { "add",  "A" }, -- move left
+        local expected_token_diff = {
             { "add",  "F" }, -- move left
+            { "add",  "A" }, -- move left
+            -- these are left moves (adds) after last match (row == 0, column > 0)
+            { "same", "C" }, -- last match (move up and left)
+            { "same", "F" }, -- match (move up and left)
+            { "add",  "H" }, -- move left
+            { "add",  "G" }, -- move left
+            { "del",  "A" }, -- move up
+            { "same", "D" }, -- match (move up and left)
+            { "add",  "C" }, -- move left
+            { "del",  "Z" }, -- move up
+            { "same", "O" }, -- match (move up and left)
+            { "del",  "H" }, -- move up
+            { "same", "Z" }, -- match (move up and left)
+            { "del",  "C" }, -- move up
         }
-        local expected_token_diff = vim.iter(expected_token_diff_reversed):rev():totable()
 
         local actual_token_diff = wesdiff.get_token_diff(before_tokens, after_tokens)
 
