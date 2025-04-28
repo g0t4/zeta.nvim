@@ -152,7 +152,6 @@ function walk_the_diff(before_tokens, after_tokens, visitor)
         if any_before_tokens_remain and longest_sequence_above == current_longest_sequence_position then
             -- this means there's a match token somewhere above that is part of a longest sequence
 
-            -- TODO setup tests for these (comment out again and test before/after adding):
             local deleted_token = before_tokens[num_remaining_before_tokens]
             visitor:on_delete(deleted_token)
 
