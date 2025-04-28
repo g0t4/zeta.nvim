@@ -113,7 +113,7 @@ describe("my paper example", function()
         it("matches luadiff diff too", function()
             local luadiff = require("zeta.diff.luadiff")
             local other = luadiff.diff(before_text, after_text, SPLIT_ON_WHITESPACE, SKIP_SEPARATOR)
-            print("other", inspect(other))
+            print("other", inspect(other, true))
         end)
     end)
 
