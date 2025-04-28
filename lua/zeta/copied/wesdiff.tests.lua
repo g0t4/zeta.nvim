@@ -77,8 +77,18 @@ describe("my paper example", function()
         should_be_same(longest_seq_if_prefer_match_up, longest_sequence)
     end)
 
-    it("gets diff", function()
-        -- get_diff(before_text, after_text, separator, keep_separator)
+    it("get token diff", function()
+        local token_diff = wesdiff.get_token_diff(before_tokens, after_tokens)
+        -- start at lower right, 5 => not a match => move up implies `del C`
+        -- now, on match (Z) => `same Z` => move up and left
+        -- (4, not a match) => move up implies `del H`
+        -- match(O) => `same O` => move up and left
+        -- row5_Z/col8 => (3, not match) => prefer move up => implies `delZ`
+        -- row4_D/col8 => (3, not match) => move left => implies `add
+    end)
+
+    it("get consolidated diff", function()
+        local diff = wesdiff.get_diff(before_tokens, after_tokens)
     end)
 
     it("computes lcs matrix", function()
