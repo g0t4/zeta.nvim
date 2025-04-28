@@ -238,21 +238,21 @@ function M.get_diff(before_tokens, after_tokens)
 
     -- * aggregate across token diff
     local token_diff = vim.iter(M.get_token_diff(before_tokens, after_tokens)):rev():totable()
-    local last_group = {}
+    local current_group = {}
     local merged = {}
 
-    function do_merge()
-        if last_group.sames then
-            table.insert(merged, { "same", vim.iter(last_group.sames):join("") })
+    function merge_current_group()
+        if current_group.sames then
+            table.insert(merged, { "same", vim.iter(current_group.sames):join("") })
         end
-        if last_group.dels then
-            table.insert(merged, { "del", vim.iter(last_group.dels):join("") })
+        if current_group.dels then
+            table.insert(merged, { "del", vim.iter(current_group.dels):join("") })
         end
-        if last_group.adds then
-            table.insert(merged, { "add", vim.iter(last_group.adds):join("") })
+        if current_group.adds then
+            table.insert(merged, { "add", vim.iter(current_group.adds):join("") })
         end
         -- clear group now that its merged
-        last_group = {}
+        current_group = {}
     end
 
     for _, current in pairs(token_diff) do
@@ -260,18 +260,18 @@ function M.get_diff(before_tokens, after_tokens)
         local current_type = current[1] .. "s"
         local current_token = current[2]
         -- edge triggered on change to/from same
-        if (last_group.sames and current_type ~= "sames")
-            or ((not last_group.sames) and current_type == "sames") then
-            do_merge()
+        if (current_group.sames and current_type ~= "sames")
+            or ((not current_group.sames) and current_type == "sames") then
+            merge_current_group()
         end
 
-        last_group[current_type] = last_group[current_type] or {}
-        table.insert(last_group[current_type], current_token)
+        current_group[current_type] = current_group[current_type] or {}
+        table.insert(current_group[current_type], current_token)
         -- last_group looks one of:
         --   { adds={"foo", "bar"}, dels={"doo"} }, -- adds and/or dels
         --   { sames={"cow" " " "cobweb"} }, -- sames only (not combined w/ adds/dels)
     end
-    do_merge()
+    merge_current_group()
     return merged
 end
 
