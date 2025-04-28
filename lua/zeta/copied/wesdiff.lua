@@ -211,12 +211,12 @@ function M.get_token_diff(before_tokens, after_tokens)
     --   measure impact on timing
 
     local token_diff_builder = {
-        longest_sequence = {},
+        token_diff = {},
     }
     function token_diff_builder:push(change, token)
         local what = { change, token }
         -- traverses in reverse, so insert token at start of list to ensure we get left to right sequence
-        table.insert(self.longest_sequence, 1, what)
+        table.insert(self.token_diff, 1, what)
         print("  ", what)
     end
 
@@ -233,7 +233,7 @@ function M.get_token_diff(before_tokens, after_tokens)
     end
 
     diff_walker(before_tokens, after_tokens, #before_tokens, #after_tokens, token_diff_builder)
-    return token_diff_builder.longest_sequence
+    return token_diff_builder.token_diff
 
     -- FYI this is gonna be done using a visitor for getting LCS? Or just inline it?
     --  basically you visit each token as you build the LCS (matches and non-matches)
