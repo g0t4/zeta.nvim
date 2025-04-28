@@ -111,82 +111,84 @@ function M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
 end
 
 function M.get_longest_sequence(before_tokens, after_tokens)
-    local lcs_matrix = M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
-    local max_iterations = #before_tokens + #after_tokens
-    local iteration_counter = 0
+    function diff_walker(num_remaining_before_tokens, num_remaining_after_tokens, visitor)
+        local lcs_matrix = M.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
+        local max_iterations = #before_tokens + #after_tokens
+        local iteration_counter = 0
 
-    function _diff_walker(num_remaining_before_tokens, num_remaining_after_tokens, visitor)
-        if iteration_counter > max_iterations then
-            error("exceeded max possible iterations: " .. max_iterations)
-        end
-        iteration_counter = iteration_counter + 1
+        while num_remaining_after_tokens > 0 or num_remaining_before_tokens > 0 do
+            if iteration_counter > max_iterations then
+                error("exceeded max possible iterations: " .. max_iterations)
+            end
+            iteration_counter = iteration_counter + 1
 
-        if num_remaining_before_tokens < 1 and num_remaining_after_tokens < 1 then
-            -- * base case
-            return
-        end
+            if num_remaining_before_tokens < 1 and num_remaining_after_tokens < 1 then
+                -- * base case
+                return
+            end
 
-        -- * match?
-        local old_token = before_tokens[num_remaining_before_tokens]
-        local new_token = after_tokens[num_remaining_after_tokens]
-        print("old_token: '" .. tostring(old_token) .. "' - " .. num_remaining_before_tokens)
-        print("new_token: '" .. tostring(new_token) .. "' - " .. num_remaining_after_tokens)
-        if old_token == new_token then
-            visitor:on_match(old_token)
-            -- this is part of longest sequence (the last token)!
-            -- move to previous token in both old/new sets, hence - 1 on both
-            _diff_walker(num_remaining_before_tokens - 1, num_remaining_after_tokens - 1, visitor)
-            return
-        end
+            -- * match?
+            local old_token = before_tokens[num_remaining_before_tokens]
+            local new_token = after_tokens[num_remaining_after_tokens]
+            print("old_token: '" .. tostring(old_token) .. "' - " .. num_remaining_before_tokens)
+            print("new_token: '" .. tostring(new_token) .. "' - " .. num_remaining_after_tokens)
+            if old_token == new_token then
+                visitor:on_match(old_token)
+                -- this is part of longest sequence (the last token)!
+                -- move to previous token in both old/new sets, hence - 1 on both
+                _diff_walker(num_remaining_before_tokens - 1, num_remaining_after_tokens - 1, visitor)
+                return
+            end
 
-        -- btw up/left first doesn't matter, best to be deterministic
-        -- if you land on a non-matching (token) cell with longest_length == longest_above == longest_to_left,
-        --    then you've got at least two longest sequences with a shared suffix
-        --    pick either is fine, unless you have additional constraints beyond longest
+            -- btw up/left first doesn't matter, best to be deterministic
+            -- if you land on a non-matching (token) cell with longest_length == longest_above == longest_to_left,
+            --    then you've got at least two longest sequences with a shared suffix
+            --    pick either is fine, unless you have additional constraints beyond longest
 
-        local current_longest_sequence_position = lcs_matrix[num_remaining_before_tokens][num_remaining_after_tokens]
-        local longest_sequence_above = lcs_matrix[num_remaining_before_tokens - 1][num_remaining_after_tokens]
-        local longest_sequence_left = lcs_matrix[num_remaining_before_tokens][num_remaining_after_tokens - 1]
-        print("  longests:  " .. longest_sequence_above)
-        print("           " .. longest_sequence_left .. "<" .. current_longest_sequence_position)
+            local current_longest_sequence_position = lcs_matrix[num_remaining_before_tokens][num_remaining_after_tokens]
+            local longest_sequence_above = lcs_matrix[num_remaining_before_tokens - 1][num_remaining_after_tokens]
+            local longest_sequence_left = lcs_matrix[num_remaining_before_tokens][num_remaining_after_tokens - 1]
+            print("  longests:  " .. longest_sequence_above)
+            print("           " .. longest_sequence_left .. "<" .. current_longest_sequence_position)
 
-        -- TODO drop comparing current_longest_sequence_position to longest_above/below?? or not?
-        -- - pick whichever is bigger (assuming it matches current/outstanding sequence length)
-        -- - AND that has tokens left for that direction (i.e. toward upper left you can run into 0 for above/below and current when just have all adds or deletes remaining at start of sequence
-        -- - and if they match, then pick up
+            -- TODO drop comparing current_longest_sequence_position to longest_above/below?? or not?
+            -- - pick whichever is bigger (assuming it matches current/outstanding sequence length)
+            -- - AND that has tokens left for that direction (i.e. toward upper left you can run into 0 for above/below and current when just have all adds or deletes remaining at start of sequence
+            -- - and if they match, then pick up
 
-        -- * move up?
-        local any_before_tokens_remain = num_remaining_before_tokens > 0
-        if any_before_tokens_remain and longest_sequence_above == current_longest_sequence_position then
-            -- this means there's a match token somewhere above that is part of a longest sequence
+            -- * move up?
+            local any_before_tokens_remain = num_remaining_before_tokens > 0
+            if any_before_tokens_remain and longest_sequence_above == current_longest_sequence_position then
+                -- this means there's a match token somewhere above that is part of a longest sequence
+
+                -- TODO setup tests for these (comment out again and test before/after adding):
+                local deleted_token = before_tokens[num_remaining_before_tokens]
+                visitor:on_delete(deleted_token)
+
+                _diff_walker(num_remaining_before_tokens - 1, num_remaining_after_tokens, visitor)
+                return
+            end
+
+            -- * else, move left
+            -- this means there's a match token somewhere to the left that is part of a longest sequence
+            -- optional assertions (mirror the check for move up case)
+            if longest_sequence_left ~= current_longest_sequence_position then
+                error("UNEXPECTED... this suggests a bug in building/traversing LCS matrix... longest_to_left (" .. longest_sequence_left .. ")"
+                    .. " should match logest_length (" .. current_longest_sequence_position .. ")"
+                    .. ", when longest_above (" .. longest_sequence_above .. ") does not!")
+            end
+            local any_after_tokens_remain = num_remaining_after_tokens > 0
+            if not any_after_tokens_remain then
+                -- this is only possible due to a bug, b/c base case happens when both longest_sequence_(above and left) are < 1
+                error("UNEXPECTED... both before and after tokens appear fully traveresed and yet the base condition wasn't hit")
+            end
 
             -- TODO setup tests for these (comment out again and test before/after adding):
-            local deleted_token = before_tokens[num_remaining_before_tokens]
-            visitor:on_delete(deleted_token)
+            local added_token = after_tokens[num_remaining_after_tokens]
+            visitor:on_add(added_token)
 
-            _diff_walker(num_remaining_before_tokens - 1, num_remaining_after_tokens, visitor)
-            return
+            _diff_walker(num_remaining_before_tokens, num_remaining_after_tokens - 1, visitor)
         end
-
-        -- * else, move left
-        -- this means there's a match token somewhere to the left that is part of a longest sequence
-        -- optional assertions (mirror the check for move up case)
-        if longest_sequence_left ~= current_longest_sequence_position then
-            error("UNEXPECTED... this suggests a bug in building/traversing LCS matrix... longest_to_left (" .. longest_sequence_left .. ")"
-                .. " should match logest_length (" .. current_longest_sequence_position .. ")"
-                .. ", when longest_above (" .. longest_sequence_above .. ") does not!")
-        end
-        local any_after_tokens_remain = num_remaining_after_tokens > 0
-        if not any_after_tokens_remain then
-            -- this is only possible due to a bug, b/c base case happens when both longest_sequence_(above and left) are < 1
-            error("UNEXPECTED... both before and after tokens appear fully traveresed and yet the base condition wasn't hit")
-        end
-
-        -- TODO setup tests for these (comment out again and test before/after adding):
-        local added_token = after_tokens[num_remaining_after_tokens]
-        visitor:on_add(added_token)
-
-        _diff_walker(num_remaining_before_tokens, num_remaining_after_tokens - 1, visitor)
     end
 
     local lcs_builder = {
@@ -206,7 +208,7 @@ function M.get_longest_sequence(before_tokens, after_tokens)
         print("  move up / del", token)
     end
 
-    _diff_walker(#before_tokens, #after_tokens, lcs_builder)
+    diff_walker(#before_tokens, #after_tokens, lcs_builder)
     return lcs_builder.longest_sequence
 end
 
