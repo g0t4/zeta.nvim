@@ -22,7 +22,7 @@ function M.show_diff_extmarks()
 
     input_editable = input_editable:gsub(parser.tag_cursor_here, "")
 
-    local diff = wesdiff.diff(input_editable, output_editable)
+    local diff = wesdiff.get_diff_from_text(input_editable, output_editable)
     BufferDumpAppend(diff)
     -- luadiff: "same", "out",  "in"
     -- wesdiff: "same", "del", "add"

@@ -231,6 +231,14 @@ function M.get_token_diff(before_tokens, after_tokens)
     return builder.token_diff
 end
 
+function M.get_diff_from_text(before_text, after_text)
+    local before_tokens = M.split(before_text)
+    local after_tokens  = M.split(after_text)
+
+    local diff          = M.get_diff(before_tokens, after_tokens)
+    return diff
+end
+
 function M.get_diff(before_tokens, after_tokens)
     -- WIP prefix/suffix strip
     local same_prefix, middle, same_suffix = M.split_common_prefix_and_suffix(before_tokens, after_tokens)
