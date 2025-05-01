@@ -39,7 +39,7 @@ function M.show_diff_extmarks()
     vim.api.nvim_set_hl(0, hl_added, { fg = "#00ff00", }) -- ctermfg = "green"
     vim.api.nvim_set_hl(0, hl_deleted, { fg = "#ff0000", }) -- ctermfg = "red"
 
-    local lines = vim.iter(diff):fold({ {} }, function(accum, chunk)
+    local extmark_lines = vim.iter(diff):fold({ {} }, function(accum, chunk)
         if chunk == nil then
             BufferDumpAppend("nil chunk: " .. tostring(chunk))
         else
@@ -96,18 +96,14 @@ function M.show_diff_extmarks()
     end)
 
     BufferDumpAppend("## lines")
-    for k, v in ipairs(lines) do
+    for k, v in ipairs(extmark_lines) do
         BufferDumpAppend(vim.inspect(v))
     end
 
-    if #lines < 1 then
+    if #extmark_lines < 1 then
         BufferDumpAppend("no lines")
         return
     end
-
-    -- FYI this removes first line from lines
-    local first_line = table.remove(lines, 1)
-    -- thus lines == rest of lines
 
     -- * extmark
     local ns_id = vim.api.nvim_create_namespace('zeta_diff')
@@ -117,15 +113,15 @@ function M.show_diff_extmarks()
     local ext_mark_row_0based = to_row_1based - 1
     local _mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, ext_mark_row_0based, 0, {
         hl_mode = "combine",
-        virt_text = first_line,
-        virt_lines = lines, -- rest after first
+        virt_text = { { "" } }, -- add blank line
+        virt_lines = extmark_lines, -- rest after first
         -- virt_text = { { "twat waffl3", hl_added } }, -- line of extmark
         -- virt_lines = virt_lines, -- lines below
         virt_text_pos = "overlay", -- "overlay", "eol", "inline"
     })
 
     -- * scroll down enough to see extmarks that are past the last line of the buffer (so, moving cursor won't work to see them)
-    window.set_topline(num_lines + #lines + 1)
+    window.set_topline(num_lines + #extmark_lines)
 end
 
 function M.setup()
