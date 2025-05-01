@@ -74,7 +74,13 @@ end
 
 ---@param object any
 ---@return string description
-function inspect(object, pretty)
+function inspect(object, pretty, current_depth)
+    local max_depth = 5
+    current_depth = current_depth or 0
+    if current_depth > max_depth then
+        print("pretty_print: max depth reached")
+        return "..."
+    end
     pretty = pretty or false
     if object == nil then
         return black("nil")
@@ -84,10 +90,10 @@ function inspect(object, pretty)
         local items = {}
         for key, value in pairs(object) do
             if is_list then
-                table.insert(items, green(inspect(value)))
+                table.insert(items, green(inspect(value, pretty, current_depth + 1)))
             else
                 if type(key) ~= 'number' then key = '"' .. key .. '"' end
-                local item = '[' .. blue(key) .. '] = ' .. green(inspect(value))
+                local item = '[' .. blue(key) .. '] = ' .. green(inspect(value, pretty, current_depth + 1))
                 table.insert(items, item)
             end
         end
