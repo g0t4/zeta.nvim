@@ -1,5 +1,7 @@
 local should = require("zeta.helpers.should")
 
+local M = {}
+
 local function build_histogram(seq)
     local hist = {}
     for _, token in ipairs(seq) do
@@ -23,7 +25,7 @@ local function find_rarest_common_token(a, hist_a, hist_b)
     return rare_token
 end
 
-local function histogram_diff(a, b, diffs)
+function M.diff(a, b, diffs)
     diffs = diffs or {}
 
     -- nothing to compare on at least one side
@@ -66,15 +68,15 @@ local function histogram_diff(a, b, diffs)
     end
 
     -- recursively diff before and after
-    histogram_diff({ unpack(a, 1, index_first_match_a - 1) }, { unpack(b, 1, index_first_match_b - 1) }, diffs)
+    M.diff({ unpack(a, 1, index_first_match_a - 1) }, { unpack(b, 1, index_first_match_b - 1) }, diffs)
     table.insert(diffs, { " ", rarest_token })
-    histogram_diff({ unpack(a, index_first_match_a + 1) }, { unpack(b, index_first_match_b + 1) }, diffs)
+    M.diff({ unpack(a, index_first_match_a + 1) }, { unpack(b, index_first_match_b + 1) }, diffs)
     -- TODO recursive is likely a problem here
 
     return diffs
 end
 
-describe("test using histogram_diff", function()
+describe("test using histogram diff", function()
     it("with lines", function()
         local A = {
             "foo",
@@ -96,7 +98,7 @@ describe("test using histogram_diff", function()
             { " ", "the cow" },
             { " ", "baz" },
         }
-        local diff = histogram_diff(A, B)
+        local diff = M.diff(A, B)
         for _, line in ipairs(diff) do
             print(line[1] .. " " .. line[2])
         end
@@ -104,3 +106,5 @@ describe("test using histogram_diff", function()
         should.be_same(expected, diff)
     end)
 end)
+
+return M
