@@ -229,17 +229,19 @@ return N
             -- flatten across groups
             -- combine consecutive "="/"same" into single record
             {
-                { "=",    "local M = {}\nfunction M.add(a, " },
-                { "del",  "b" },
-                { "add",  "b, c," },
-                { "same", " " },
-                { "del",  ")" },
-                { "add",  "d)" },
-                { "same", "\n    return a + b\nend\nreturn " },
-                { "del",  "M\n" },
-                { "add",  "N\n\n" },
+                { "=", "local M = {}\nfunction M.add(a, " },
+                { "-", "b" },
+                { "+", "b, c," },
+                { "=", " " },
+                { "-", ")" },
+                { "+", "d)" },
+                { "=", "\n    return a + b\nend\nreturn " },
+                { "-", "M\n" },
+                { "+", "N\n\n" },
             },
         }
+
+        should.be_same(expected_groups, step3)
     end)
 end)
 
