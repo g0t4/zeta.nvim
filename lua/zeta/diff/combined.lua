@@ -79,8 +79,9 @@ function step2_lcs_diffs(histogram_line_diff)
 
         -- edge triggered on change to/from "=" (histogram's equiv of LCS's "same")
         -- edge triggered on change to/from ANCHOR lines
-        if (current_group["="] and line_type ~= "=")
-            or ((not current_group["="]) and line_type == "=") then
+        local change_to_anchor = current_group["="] and line_type ~= "="
+        local change_from_anchor = (not current_group["="]) and line_type == "="
+        if change_to_anchor or change_from_anchor then
             process_group()
         end
 
