@@ -235,9 +235,8 @@ end
 function M.get_diff_from_text(before_text, after_text)
     local before_tokens = M.split(before_text)
     local after_tokens  = M.split(after_text)
-    -- TODO add a trace mechanism to capture key steps and dump it later!
-    trace.raw("before_tokens", inspect(before_tokens, false))
-    trace.raw("pafter_tokens", inspect(after_tokens, false))
+    -- trace.raw("before_tokens", inspect(before_tokens, false))
+    -- trace.raw("pafter_tokens", inspect(after_tokens, false))
 
     local diff = M.get_diff(before_tokens, after_tokens)
     return diff

@@ -102,10 +102,10 @@ end
 function step3_final_aggregate_and_standardize(groups)
     local final_diff = {}
     for _, group in ipairs(groups) do
-        print("group", inspect(group))
+        -- print("group", inspect(group))
         for _, text in ipairs(group) do
             -- FYI also flattening the groups (SelectMany)
-            print("  text", inspect(text))
+            -- print("  text", inspect(text))
             -- add any missing implicit newlines
             if text[1] == "=" then
                 text[2] = text[2] .. "\n"
@@ -186,7 +186,7 @@ return N
     it("follows histogram with a 2nd pass, word-level LCS", function()
         local histogram_line_diff = histogram.split_then_diff_lines(before_text, after_text)
         local diffs = step2_lcs_diffs(histogram_line_diff)
-        trace.flush()
+        -- trace.flush()
 
 
         -- pretty_print(diffs)
