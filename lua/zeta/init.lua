@@ -65,7 +65,7 @@ function M.show_diff_extmarks()
                 -- type_hlgroup = hl_deleted mine (above)
                 -- type_hlgroup = "Removed" -- very light red (almost brown/gray)
                 type_hlgroup = "diffRemoved" -- dark red
-                return accum
+                -- return accum
                 -- actually, based on how I aggregate between sames... there should only be one delete and one add between any two sames... so, I could just show both and it would appaer like remove / add (probably often lines removed then lines added, my diff processor puts the delete first which makes sense for that to be on top)
             end
             if not text:find("\n") then
