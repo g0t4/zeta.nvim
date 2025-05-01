@@ -140,9 +140,8 @@ function combined_diff(old_text, new_text)
     local histogram_line_diff = histogram.split_then_diff_lines(old_text, new_text)
     -- TODO test this combined_diff end to end too
     local with_lsc = step2_lcs_diffs(histogram_line_diff)
-    -- local lsc_aggregated = step3_aggregate_lscs(with_lsc)
-    -- local merged = step4_merge_lsc_and_histogram_sames(lsc_aggregated)
-    return histogram_line_diff
+    local lsc_aggregated = step3_final_aggregate_and_standardize(with_lsc)
+    return lsc_aggregated
 end
 
 describe("simple comparison", function()
