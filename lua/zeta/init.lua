@@ -126,9 +126,6 @@ function M.setup()
     vim.keymap.set("n", "<leader>z", function()
         M.show_diff_extmarks()
     end, {})
-    vim.keymap.set("n", "<leader>zl", function()
-        require("zeta.learn.find-diff-tool").test_zeta()
-    end, {})
 end
 
 return M
