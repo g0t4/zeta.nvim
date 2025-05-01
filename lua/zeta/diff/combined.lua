@@ -158,7 +158,9 @@ return N
 
             -- STEP1/2 Histogram Anchors
             -- FYI implicit new lines
-            { { "=", "local M = {}" } }, -- implicit \n
+            {
+                { "=", "local M = {}" }
+            }, -- implicit \n
 
             -- STEP2 LCS input:
             -- FYI implicit new lines:
@@ -179,8 +181,10 @@ return N
 
             -- STEP1/2 Histogram Anchors
             -- FYI implicit new lines
-            { { "=", "    return a + b" }, -- implicit \n
-                { "=", "end" }, }, -- implicit \n
+            {
+                { "=", "    return a + b" }, -- implicit \n
+                { "=", "end" },
+            }, -- implicit \n
 
             -- STEP2 LCS input:
             -- FYI implicit new lines:
@@ -190,9 +194,11 @@ return N
             --
             -- STEP2 LCS output:
             -- FYI explicit new lines
-            { { "same", "return " },
+            {
+                { "same", "return " },
                 { "del",  "M\n" },
-                { "add",  "N\n" }, },
+                { "add",  "N\n" },
+            },
         }
 
         should.be_same(expected_groups, diffs)
