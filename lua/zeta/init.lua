@@ -52,9 +52,6 @@ function M.show_diff_extmarks()
             local type = chunk[1]
             local text = chunk[2]
 
-
-            -- TODO something feels off with new lines... am I splitting extra lines when I shouldn't be somewhere in this loop
-            --   TODO also review how I split out prefix/suffix and what not... and just in genereal how I process chunks, would any of that cause inadvertent \n or literal adding a new buffer line in a funky way?
             local type_hlgroup = hl_same
             if type == "add" then
                 -- type_hlgroup = hl_added -- mine (above)
@@ -75,7 +72,6 @@ function M.show_diff_extmarks()
                     table.insert(current_line, { text, type_hlgroup })
                 end
             else
-                -- TODO i.e. when I split on new line... how do I treat the first and last segments? are they added as full lines or? (out of time today)
                 local splits = vim.split(text, "\n")
                 for i, piece in ipairs(splits) do
                     -- FYI often v will be empty (i.e. a series of newlines)... do not exclude these empty lines!
