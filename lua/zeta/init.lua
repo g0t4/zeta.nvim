@@ -1,6 +1,8 @@
 local wesdiff = require("zeta.diff.wesdiff")
 local parser = require("zeta.helpers.response-parser")
 local files = require("zeta.helpers.files")
+local window = require("zeta.helpers.vimz.windows")
+
 local M = {}
 
 function M.show_diff_extmarks()
@@ -123,9 +125,7 @@ function M.show_diff_extmarks()
     })
 
     -- * scroll down enough to see extmarks that are past the last line of the buffer (so, moving cursor won't work to see them)
-    local view = vim.fn.winsaveview()
-    view.topline = view.topline + #lines + 1
-    vim.fn.winrestview(view)
+    window.set_topline(num_lines + #lines + 1)
 end
 
 function M.setup()
