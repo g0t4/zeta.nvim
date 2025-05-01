@@ -1,0 +1,4 @@
+{
+  "output_excerpt": "<|editable_region_start|>\nlocal M = {}\n\nfunction M.adder(a, b, c)\n    return a + b + c\nend\n\nfunction M.subtract(a, b)\n    return a - b\nend\n\nfunction M.multiply(a, b)\n    return a * b\nend\n\nfunction M.divide(a, b)\n    if b == 0 then\n        error(\"Division by zero\")\n    end\n    return a / b\nend\n\n\n\nreturn M\n\n<|editable_region_end|>\n```\n",
+  "request_id": "8319778f2ac147f7b1fbe1b0d5424132"
+}
