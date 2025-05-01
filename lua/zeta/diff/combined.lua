@@ -136,9 +136,9 @@ end
 
 function M.combined_diff(old_text, new_text)
     local histogram_line_diff = histogram.split_then_diff_lines(old_text, new_text)
-    -- TODO test this combined_diff end to end too
-    local with_lsc = step2_lcs_diffs(histogram_line_diff)
-    local lsc_aggregated = step3_final_aggregate_and_standardize(with_lsc)
-    return lsc_aggregated
+    local groups = M.step2_lcs_diffs(histogram_line_diff)
+    local final_diff = M.step3_final_aggregate_and_standardize(groups)
+    return final_diff
 end
+
 return M

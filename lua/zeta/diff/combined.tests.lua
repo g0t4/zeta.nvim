@@ -106,10 +106,7 @@ return N
 
 
     it("step 3 is a final aggregate (across '='/'same') and standardize to '+/-/=' for final results", function()
-        local histogram_line_diff = histogram.split_then_diff_lines(before_text, after_text)
-        local step2 = combined.step2_lcs_diffs(histogram_line_diff)
-        local step3 = combined.step3_final_aggregate_and_standardize(step2)
-        -- TODO! wire in combined.combined_diff
+        local combined_diff = combined.combined_diff(before_text, after_text)
 
 
         -- Notes:
@@ -133,7 +130,7 @@ return N
             { "+", "N\n\n" },
         }
 
-        should.be_same(expected_groups, step3)
+        should.be_same(expected_groups, combined_diff)
     end)
 end)
 

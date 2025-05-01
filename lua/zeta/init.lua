@@ -1,4 +1,5 @@
 local weslcs = require("zeta.diff.weslcs")
+local combined = require("zeta.diff.combined")
 local parser = require("zeta.helpers.response-parser")
 local files = require("zeta.helpers.files")
 local window = require("zeta.helpers.vimz.windows")
@@ -10,6 +11,8 @@ local M = {}
 function M.show_diff_extmarks()
     BufferDumpClear()
 
+
+    -- * get editable regions to diff
     local zed_request, _ = files.read_example("01_request.json")
     -- local zed_response, _ = files.read_example("01_response.json")
     local zed_response, _ = files.read_example("02_response.json")
@@ -27,10 +30,11 @@ function M.show_diff_extmarks()
 
     input_editable = input_editable:gsub(parser.tag_cursor_here, "")
 
-    local diff = weslcs.get_diff_from_text(input_editable, output_editable)
+    local diff     = combined.combined_diff(input_editable, output_editable)
+    -- local diff = weslcs.get_diff_from_text(input_editable, output_editable)
     BufferDumpAppend(diff)
-    -- luadiff: "same", "out",  "in"
-    -- weslcs: "same", "del", "add"
+    -- weslcs:   "same", "del", "add"
+    -- combined: "=",    "-",   "+"
 
     -- * highlight groups
     local hl_same = "zeta-same"
@@ -55,12 +59,12 @@ function M.show_diff_extmarks()
             local text = chunk[2]
 
             local type_hlgroup = hl_same
-            if type == "add" then
+            if type == "+" then
                 -- type_hlgroup = hl_added -- mine (above)
                 -- FYI nvim and plugins have a bunch of options already registerd too (color/highlight wise)
                 -- type_hlgroup = "Added" -- light green
                 type_hlgroup = "diffAdded" -- darker green/cyan
-            elseif type == "del" then
+            elseif type == "-" then
                 -- type_hlgroup = hl_deleted mine (above)
                 -- type_hlgroup = "Removed" -- very light red (almost brown/gray)
                 type_hlgroup = "diffRemoved" -- dark red
