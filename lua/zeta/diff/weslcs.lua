@@ -5,6 +5,7 @@
 --   but I would like practice with LCS so I would like to revist it
 --     probably will nag at me and make me do it tonight
 require("zeta.helpers.dump")
+local trace = require("zeta.diff.trace")
 
 
 local M = {}
@@ -235,10 +236,10 @@ function M.get_diff_from_text(before_text, after_text)
     local before_tokens = M.split(before_text)
     local after_tokens  = M.split(after_text)
     -- TODO add a trace mechanism to capture key steps and dump it later!
-    -- trace("before_tokens", inspect(before_tokens, false))
-    -- trace("after_tokens", inspect(after_tokens, false))
+    trace.raw("before_tokens", inspect(before_tokens, false))
+    trace.raw("pafter_tokens", inspect(after_tokens, false))
 
-    local diff          = M.get_diff(before_tokens, after_tokens)
+    local diff = M.get_diff(before_tokens, after_tokens)
     return diff
 end
 

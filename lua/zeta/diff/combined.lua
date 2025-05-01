@@ -2,6 +2,7 @@ local histogram = require("zeta.diff.histogram")
 local weslcs = require("zeta.diff.weslcs")
 local should = require("zeta.helpers.should")
 local files = require("zeta.helpers.files")
+local trace = require("zeta.diff.trace")
 require("zeta.helpers.dump")
 
 
@@ -147,6 +148,8 @@ return N
     it("follows histogram with a 2nd pass, word-level LCS", function()
         local histogram_line_diff = histogram.split_then_diff_lines(before_text, after_text)
         local diffs = step2_lcs_diffs(histogram_line_diff)
+        trace.flush()
+
 
         -- pretty_print(diffs)
 
