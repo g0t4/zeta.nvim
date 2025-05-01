@@ -2,6 +2,7 @@ local histogram = require("zeta.diff.histogram")
 local weslcs = require("zeta.diff.weslcs")
 local should = require("zeta.helpers.should")
 local files = require("zeta.helpers.files")
+require("zeta.helpers.dump")
 
 function combined_diff(old, new)
 end
@@ -18,7 +19,9 @@ function M.add(a, b, c, d)
 end]]
     it("validate histogram alone", function()
         local diffs = histogram.split_then_diff_lines(before_text, after_text)
-        -- vim.print(diffs)
+
+        print(inspect(diffs, true))
+
         local expected = {
             { "-", "function M.add(a, b )" },
             { "+", "function M.add(a, b, c, d)" },

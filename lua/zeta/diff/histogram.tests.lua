@@ -1,5 +1,6 @@
 local should = require("zeta.helpers.should")
 local histogram = require("zeta.diff.histogram")
+require("zeta.helpers.dump")
 
 describe("test using histogram diff", function()
     it("with lines", function()
@@ -24,9 +25,8 @@ describe("test using histogram diff", function()
             { " ", "baz" },
         }
         local diff = histogram.diff(A, B)
-        for _, line in ipairs(diff) do
-            print(line[1] .. " " .. line[2])
-        end
+
+        print(inspect(diff, true))
 
         should.be_same(expected, diff)
     end)
