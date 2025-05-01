@@ -196,8 +196,9 @@ return N
             -- FYI explicit new lines
             {
                 { "same", "return " },
+                -- ok btw... my separator is ' '
                 { "del",  "M\n" },
-                { "add",  "N\n" },
+                { "add",  "N\n\n" },
             },
         }
 
