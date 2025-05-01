@@ -98,8 +98,42 @@ function step2_lcs_diffs(histogram_line_diff)
     return groups
 end
 
+---@return { { string, string } } diff_texts
 function step3_final_aggregate_and_standardize(groups)
+    local final_diff = {}
+    for _, group in ipairs(groups) do
+        print("group", inspect(group))
+        for _, text in ipairs(group) do
+            -- FYI also flattening the groups (SelectMany)
+            print("  text", inspect(text))
+            -- add any missing implicit newlines
+            if text[1] == "=" then
+                text[2] = text[2] .. "\n"
+                -- FYI could leave checks for =/+/- but I already mapped those in step 2 to include explicit newlines
+            end
 
+            -- * insert -/+ verbatim (they're already consolidated too)
+            if text[1] == "add" or text[1] == "+" then
+                table.insert(final_diff, { "+", text[2] })
+                goto continue
+            elseif text[1] == "del" or text[1] == "-" then
+                table.insert(final_diff, { "-", text[2] })
+                goto continue
+            end
+
+            -- * aggregate same/= across groups/items
+            local last_text = final_diff[#final_diff]
+            if last_text ~= nil and last_text[1] == "=" then
+                -- append to preceding same text
+                last_text[2] = last_text[2] .. text[2]
+            else
+                -- insert as a new same text
+                table.insert(final_diff, { "=", text[2] })
+            end
+            ::continue::
+        end
+    end
+    return final_diff
 end
 
 function combined_diff(old_text, new_text)
