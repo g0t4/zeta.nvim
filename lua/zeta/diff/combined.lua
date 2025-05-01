@@ -98,6 +98,10 @@ function step2_lcs_diffs(histogram_line_diff)
     return groups
 end
 
+function step3_final_aggregate_and_standardize(groups)
+
+end
+
 function combined_diff(old_text, new_text)
     local histogram_line_diff = histogram.split_then_diff_lines(old_text, new_text)
     -- TODO test this combined_diff end to end too
@@ -206,6 +210,45 @@ return N
         }
 
         should.be_same(expected_groups, diffs)
+    end)
+
+
+    it("step 3 is a final aggregate (across '='/'same') and standardize to '+/-/=' for final results", function()
+        local histogram_line_diff = histogram.split_then_diff_lines(before_text, after_text)
+        local step2 = step2_lcs_diffs(histogram_line_diff)
+        local step3 = step3_final_aggregate_and_standardize(step2)
+
+
+        -- Notes:
+        -- - I wanted 2+ alternating groups of same vs del/add LCS lines
+        -- - part of the reason I kept =/+/- is so I can track the implicit vs explicit new lines
+        -- - don't forget for LCS, whitesapce is treated as a word too!
+        local expected_groups = {
+
+            -- STEP1/2 Histogram Anchors
+            -- FYI made remaining "=" newlines explicit
+            -- flatten across groups
+            -- combine consecutive "="/"same" into single record
+            {
+                { "=",    "local M = {}\n" },
+
+                { "same", "function M.add(a, " },
+                { "del",  "b" },
+                { "add",  "b, c," },
+                { "same", " " },
+                { "del",  ")" },
+                { "add",  "d)" },
+                { "same", "\n" },
+
+                { "=",    "    return a + b\n" },
+                { "=",    "end\n" },
+
+                { "same", "return " },
+                -- ok btw... my separator is ' '
+                { "del",  "M\n" },
+                { "add",  "N\n\n" },
+            },
+        }
     end)
 end)
 
