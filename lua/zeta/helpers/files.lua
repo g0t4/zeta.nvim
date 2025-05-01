@@ -58,4 +58,23 @@ function M.read_lines(path)
     return lines
 end
 
+function M.read_example_json_excerpt(relative_path)
+    local repo_path = get_path_relative_to_examples_dir(relative_path)
+    local content, err = M.read_file(repo_path)
+    if not content then
+        error("Cannot read file: " .. repo_path .. ", error: " .. err)
+    end
+
+    -- btw the md excerpt files are mostly intended for me to use with diff tools...
+    --  consider json files as definitive source of truth
+    local body = vim.json.decode(content)
+    if body.input_excerpt then
+        return body.input_excerpt
+    elseif body.output_excerpt then
+        return body.output_excerpt
+    end
+
+    error("i don't know how to parse this file: " .. repo_path)
+end
+
 return M
