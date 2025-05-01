@@ -203,7 +203,6 @@ return N
             -- FYI explicit new lines
             {
                 { "same", "return " },
-                -- ok btw... my separator is ' '
                 { "del",  "M\n" },
                 { "add",  "N\n\n" },
             },
@@ -230,21 +229,13 @@ return N
             -- flatten across groups
             -- combine consecutive "="/"same" into single record
             {
-                { "=",    "local M = {}\n" },
-
-                { "same", "function M.add(a, " },
+                { "=",    "local M = {}\nfunction M.add(a, " },
                 { "del",  "b" },
                 { "add",  "b, c," },
                 { "same", " " },
                 { "del",  ")" },
                 { "add",  "d)" },
-                { "same", "\n" },
-
-                { "=",    "    return a + b\n" },
-                { "=",    "end\n" },
-
-                { "same", "return " },
-                -- ok btw... my separator is ' '
+                { "same", "\n    return a + b\nend\nreturn " },
                 { "del",  "M\n" },
                 { "add",  "N\n\n" },
             },
