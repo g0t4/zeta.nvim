@@ -2,6 +2,8 @@ local weslcs = require("zeta.diff.weslcs")
 local parser = require("zeta.helpers.response-parser")
 local files = require("zeta.helpers.files")
 local window = require("zeta.helpers.vimz.windows")
+local gather = require("zeta.gather")
+
 
 local M = {}
 
@@ -125,6 +127,9 @@ end
 function M.setup()
     vim.keymap.set("n", "<leader>z", function()
         M.show_diff_extmarks()
+    end, {})
+    vim.keymap.set("n", "<leader>zg", function()
+        gather.learn_treesitter_node_APIs()
     end, {})
 end
 

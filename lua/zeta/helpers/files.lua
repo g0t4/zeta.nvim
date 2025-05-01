@@ -1,3 +1,5 @@
+local parser = require("zeta.helpers.response-parser")
+
 local M = {}
 
 --- Returns the absolute path of a file relative to the examples directory.
@@ -74,7 +76,17 @@ function M.read_example_json_excerpt(relative_path)
         return body.output_excerpt
     end
 
-    error("i don't know how to parse this file: " .. repo_path)
+    error("file is missing both input_excerpt and output_excerpt: " .. relative_path)
+end
+
+--- extract just the content inside of <|editable_region_start|> tags
+function M.read_example_editable_only(relative_path)
+    local json_excerpt = M.read_example_json_excerpt(relative_path)
+    local editable = parser.get_editable(json_excerpt)
+    if not editable then
+        error("couldn't find editable in excerpt: " .. relative_path)
+    end
+    return editable
 end
 
 return M

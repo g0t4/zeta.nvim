@@ -26,7 +26,7 @@ describe("test using histogram diff", function()
         }
         local diff = histogram.diff(A, B)
 
-        print(inspect(diff, true))
+        pretty_print(diff)
 
         should.be_same(expected, diff)
     end)

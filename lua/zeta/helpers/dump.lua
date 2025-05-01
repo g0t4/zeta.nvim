@@ -115,3 +115,11 @@ function inspect(object, pretty, current_depth)
         return tostring(object)
     end
 end
+
+function print_inspect(object, pretty)
+    print(inspect(object, pretty))
+end
+
+function pretty_print(object)
+    print_inspect(object, true)
+end
