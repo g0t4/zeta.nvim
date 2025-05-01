@@ -112,8 +112,6 @@ function M.show_diff_extmarks()
     local bufnr, window_id = GetBufferDumpNumbers()
     local num_lines = vim.api.nvim_buf_line_count(bufnr)
     local to_row_1based = num_lines
-    local to_col_0based = 0
-    vim.api.nvim_win_set_cursor(window_id, { to_row_1based, to_col_0based })
     local ext_mark_row_0based = to_row_1based - 1
     local mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, ext_mark_row_0based, 0, {
         hl_mode = "combine",
