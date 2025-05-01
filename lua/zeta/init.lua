@@ -77,18 +77,20 @@ function M.show_diff_extmarks()
             else
                 -- TODO i.e. when I split on new line... how do I treat the first and last segments? are they added as full lines or? (out of time today)
                 local splits = vim.split(text, "\n")
-                for _, piece in ipairs(splits) do
+                for i, piece in ipairs(splits) do
                     -- FYI often v will be empty (i.e. a series of newlines)... do not exclude these empty lines!
-                    BufferDumpAppend("  " .. piece)
+                    BufferDumpAppend("  piece: " .. piece)
                     local len_text = #piece
                     if len_text > 0 then
                         -- don't add empty pieces, just make sure we add the lines (even if empty)
                         table.insert(current_line, { piece, type_hlgroup })
                     end
-                    -- start a new, empty line (even if last piece was empty)
-                    current_line = {}
-                    accum[#accum + 1] = current_line
-                    -- next piece will be first, which could be next in splits OR a subsequent chunk
+                    if i < #splits then
+                        -- start a new, empty line (even if last piece was empty)
+                        current_line = {}
+                        accum[#accum + 1] = current_line
+                        -- next piece will be first, which could be next in splits OR a subsequent chunk
+                    end
                 end
             end
         end
