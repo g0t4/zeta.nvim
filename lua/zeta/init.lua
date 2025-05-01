@@ -109,11 +109,11 @@ function M.show_diff_extmarks()
 
     -- * extmark
     local ns_id = vim.api.nvim_create_namespace('zeta_diff')
-    local bufnr, window_id = GetBufferDumpNumbers()
+    local bufnr, _window_id = GetBufferDumpNumbers()
     local num_lines = vim.api.nvim_buf_line_count(bufnr)
     local to_row_1based = num_lines
     local ext_mark_row_0based = to_row_1based - 1
-    local mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, ext_mark_row_0based, 0, {
+    local _mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, ext_mark_row_0based, 0, {
         hl_mode = "combine",
         virt_text = first_line,
         virt_lines = lines, -- rest after first
