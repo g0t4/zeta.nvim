@@ -42,7 +42,6 @@ function step2_lcs_diffs(histogram_line_diff)
                 :map(function(line) return { "=", line } end):totable()
             table.insert(groups, consecutive_anchor_lines)
             -- NO LCS diffing, these are already the same (anchors)
-            current_group = {}
             return
         end
 
@@ -83,6 +82,7 @@ function step2_lcs_diffs(histogram_line_diff)
         local change_from_anchor = (not current_group["="]) and line_type == "="
         if change_to_anchor or change_from_anchor then
             process_group()
+            current_group = {}
         end
 
         current_group[line_type] = current_group[line_type] or {}
