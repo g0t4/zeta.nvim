@@ -19,10 +19,10 @@ describe("test using histogram diff", function()
 
         local expected = {
             { "-", "foo" },
-            { " ", "the cow" },
+            { "=", "the cow" },
             { "+", "qux the flux" },
-            { " ", "the cow" },
-            { " ", "baz" },
+            { "=", "the cow" },
+            { "=", "baz" },
         }
         local diff = histogram.diff(A, B)
 

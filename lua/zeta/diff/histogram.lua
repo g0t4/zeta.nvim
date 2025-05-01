@@ -74,7 +74,7 @@ function M.diff(a, b, diffs)
 
     -- recursively diff before and after
     M.diff({ unpack(a, 1, index_first_match_a - 1) }, { unpack(b, 1, index_first_match_b - 1) }, diffs)
-    table.insert(diffs, { " ", rarest_token })
+    table.insert(diffs, { "=", rarest_token })
     M.diff({ unpack(a, index_first_match_a + 1) }, { unpack(b, index_first_match_b + 1) }, diffs)
     -- TODO recursive is likely a problem here
 

@@ -25,8 +25,8 @@ end]]
         local expected = {
             { "-", "function M.add(a, b )" },
             { "+", "function M.add(a, b, c, d)" },
-            { " ", "    return a + b" },
-            { " ", "end" },
+            { "=", "    return a + b" },
+            { "=", "end" },
         }
 
         should.be_same(expected, diffs)
@@ -41,36 +41,36 @@ describe("test using combined_diff", function()
         local diffs = histogram.split_then_diff_lines(old_text, new_text)
 
         local expected = {
-            { " ", "" }, -- empty line after editable region parsed, should that be removed?
-            { " ", "local M = {}" },
-            { " ", "" },
+            { "=", "" }, -- empty line after editable region parsed, should that be removed?
+            { "=", "local M = {}" },
+            { "=", "" },
             { "-", "function M.add(a, b)" },
             { "-", "    return a + b" },
             { "+", "function M.adder(a, b, c)" },
             { "+", "    return a + b + c" },
-            { " ", "end" },
-            { " ", "" },
+            { "=", "end" },
+            { "=", "" },
             { "-", "<|user_cursor_is_here|>" },
             { "+", "function M.subtract(a, b)" },
             { "+", "    return a - b" },
             { "+", "end" },
-            { " ", "" },
+            { "=", "" },
             { "+", "function M.multiply(a, b)" },
             { "+", "    return a * b" },
             { "+", "end" },
-            { " ", "" },
+            { "=", "" },
             { "+", "function M.divide(a, b)" },
             { "+", "    if b == 0 then" },
             { "+", "        error(\"Division by zero\")" },
             { "+", "    end" },
             { "+", "    return a / b" },
             { "+", "end" },
-            { " ", "" },
+            { "=", "" },
             { "+", "" },
             { "+", "" },
-            { " ", "return M" },
-            { " ", "" },
-            { " ", "" },
+            { "=", "return M" },
+            { "=", "" },
+            { "=", "" },
         }
 
         should.be_same(expected, diffs)
