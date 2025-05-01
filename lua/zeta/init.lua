@@ -1,4 +1,4 @@
-local wesdiff = require("zeta.diff.wesdiff")
+local weslcs = require("zeta.diff.weslcs")
 local parser = require("zeta.helpers.response-parser")
 local files = require("zeta.helpers.files")
 local window = require("zeta.helpers.vimz.windows")
@@ -25,10 +25,10 @@ function M.show_diff_extmarks()
 
     input_editable = input_editable:gsub(parser.tag_cursor_here, "")
 
-    local diff = wesdiff.get_diff_from_text(input_editable, output_editable)
+    local diff = weslcs.get_diff_from_text(input_editable, output_editable)
     BufferDumpAppend(diff)
     -- luadiff: "same", "out",  "in"
-    -- wesdiff: "same", "del", "add"
+    -- weslcs: "same", "del", "add"
 
     -- * highlight groups
     local hl_same = "zeta-same"

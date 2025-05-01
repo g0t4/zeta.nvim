@@ -1,5 +1,5 @@
 local should = require("zeta.helpers.should")
-local wesdiff = require("zeta.diff.wesdiff")
+local weslcs = require("zeta.diff.weslcs")
 
 -- -- FYI if I wanted to use vim.iter w/o plenary test runner...
 -- -- it has no dependencies, so I can import it by path with loadfile
@@ -18,18 +18,18 @@ describe("tiny comparison with no leading/trailing comonality", function()
         -- FYI this is testing the inner details, but I wanna lock those in as the split matters
         -- leaving separator as whitespace default AND keeping separator
         -- IOTW no need to pass anything but first arg
-        local before_tokens = wesdiff.split(before_text)
+        local before_tokens = weslcs.split(before_text)
         should.be_same({ "b", " ", ")" }, before_tokens)
 
-        local after_tokens = wesdiff.split(after_text)
+        local after_tokens = weslcs.split(after_text)
         should.be_same({ "b,", " ", "c,", " ", "d)" }, after_tokens)
     end)
 
     it("computes lcs_matrix", function()
-        local before_tokens = wesdiff.split(before_text)
-        local after_tokens = wesdiff.split(after_text)
+        local before_tokens = weslcs.split(before_text)
+        local after_tokens = weslcs.split(after_text)
 
-        local lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
+        local lcs_matrix = weslcs.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
     end)
 end)
 
@@ -54,8 +54,8 @@ describe("my paper example", function()
     -- FYI whitespace is stripped out, so its only here to make this easier to read the before/after text
     local before_text = "C F A    D Z O    H Z C"
     local after_text = "F A C    F H G    D C O    Z"
-    local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-    local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+    local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+    local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
     local longest_seq_if_prefer_match_up = { "C", "F", "D", "O", "Z" }
     local _longest_seq_if_prefer_match_left = { "F", "A", "D", "O", "Z" }
 
@@ -67,7 +67,7 @@ describe("my paper example", function()
     end)
 
     it("gets longest sequence", function()
-        local longest_sequence = wesdiff.get_longest_sequence(before_tokens, after_tokens)
+        local longest_sequence = weslcs.get_longest_sequence(before_tokens, after_tokens)
         should.be_same(longest_seq_if_prefer_match_up, longest_sequence)
     end)
 
@@ -106,7 +106,7 @@ describe("my paper example", function()
             { "del",  "C" }, -- move up
         }
 
-        local actual_token_diff = wesdiff.get_token_diff(before_tokens, after_tokens)
+        local actual_token_diff = weslcs.get_token_diff(before_tokens, after_tokens)
 
         should.be_same(expected_token_diff, actual_token_diff)
 
@@ -155,7 +155,7 @@ describe("my paper example", function()
     end)
 
     it("get consolidated diff", function()
-        local actual_diff = wesdiff.get_diff(before_tokens, after_tokens)
+        local actual_diff = weslcs.get_diff(before_tokens, after_tokens)
         -- consolidate consecutive sames
         -- and consolidate all adds between sames
         -- and consolidate all dels between sames
@@ -178,7 +178,7 @@ describe("my paper example", function()
     end)
 
     it("computes lcs matrix", function()
-        local actual_lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
+        local actual_lcs_matrix = weslcs.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
 
         ---@format disable -- disables rest of lines in block (so I can have 5 per split)
         -- columns:      1  2  3    4  5  6    7  8  9   10
@@ -224,7 +224,7 @@ describe("my paper example", function()
         --  added _ to see cols/rows, b/c of sparsity
         --
         -- only dumping match_matrix to compare to my manually created versions above
-        -- local _match_matrix = wesdiff.get_match_matrix(before_tokens, after_tokens)
+        -- local _match_matrix = weslcs.get_match_matrix(before_tokens, after_tokens)
         -- print("match_matrix: ", inspect(match_matrix, true))
         -- FYI I can delete match matrix method in diff code.. that would be fine
 
@@ -261,12 +261,12 @@ end)
 describe("diff with AA in before text, and only one A in after text", function()
     local before_text = "D F A A H"
     local after_text = "F A R F H"
-    local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-    local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+    local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+    local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
     -- FTR, do not need to test split again
 
     it("should have LCS FAH, and not FAAH", function()
-        local actual_lcs_matrix = wesdiff.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
+        local actual_lcs_matrix = weslcs.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
 
         ---@format disable -- disables rest of lines in block (so I can have 5 per split)
         -- matches:
@@ -292,7 +292,7 @@ describe("diff with AA in before text, and only one A in after text", function()
         should.be_same(expected_lcs_matrix, actual_lcs_matrix)
 
         -- * also check LCS
-        local actual = wesdiff.get_longest_sequence(before_tokens, after_tokens)
+        local actual = weslcs.get_longest_sequence(before_tokens, after_tokens)
         should.be_same({ "F", "A", "H" }, actual)
     end)
 end)
@@ -306,8 +306,8 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
 
         it("splits off prefix/suffix from middle", function()
             -- FYI before_tokens/after_tokens are changed in-place during suffix/prefix extraction... so must setup in each test method separatley
-            local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-            local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
 
             -- FTR, do not need to test split again
             local expected_middle = {
@@ -315,7 +315,7 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
                 after_tokens = { "C", "D", "E", "X" },
             }
 
-            local same_prefix, middle, same_suffix = wesdiff.split_common_prefix_and_suffix(before_tokens, after_tokens)
+            local same_prefix, middle, same_suffix = weslcs.split_common_prefix_and_suffix(before_tokens, after_tokens)
 
             should.be_same({ "same", "FA" }, same_prefix)
             should.be_same({ "same", "FG" }, same_suffix)
@@ -325,13 +325,13 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
 
         it("get_diff uses shared prefix/suffix", function()
             -- FYI before_tokens/after_tokens are changed in-place during suffix/prefix extraction... so must setup in each test method separatley
-            local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-            local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
 
             -- TODO find a sequence that would be diff if not doing shared prefix/suffix checks
             -- for now just make sure a sequence that has shared prefix and/or suffix is correctly diff'd
 
-            local actual_diff = wesdiff.get_diff(before_tokens, after_tokens)
+            local actual_diff = weslcs.get_diff(before_tokens, after_tokens)
             local expected_diff = {
                 -- shared prefix:
                 { "same", "FA" },
@@ -354,8 +354,8 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
         it("returns correct diff", function()
             local before_text = "B C B"
             local after_text = "A C A"
-            local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-            local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
 
             local expected_diff = {
                 { "del",  "B" },
@@ -365,7 +365,7 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
                 { "add",  "A" },
             }
 
-            local actual_diff = wesdiff.get_diff(before_tokens, after_tokens)
+            local actual_diff = weslcs.get_diff(before_tokens, after_tokens)
 
             should.be_same(expected_diff, actual_diff)
         end)
@@ -375,15 +375,15 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
         it("returns all under same_suffix", function()
             local before_text = "A B C D"
             local after_text = "A B C D"
-            local before_tokens = wesdiff.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-            local after_tokens = wesdiff.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
 
             local expected_middle = {
                 before_tokens = {},
                 after_tokens = {},
             }
 
-            local same_prefix, middle, same_suffix = wesdiff.split_common_prefix_and_suffix(before_tokens, after_tokens)
+            local same_prefix, middle, same_suffix = weslcs.split_common_prefix_and_suffix(before_tokens, after_tokens)
 
             -- FYI doesn't matter if I expect them to be in prefix or suffix, just need to validate I do one of the two
             should.be_same({ "same", "" }, same_prefix) -- TODO what do I want here? nil? "" (emtpy)? {} empty table?
