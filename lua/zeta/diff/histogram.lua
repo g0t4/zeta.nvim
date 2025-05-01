@@ -23,6 +23,9 @@ local function find_rarest_common_token(a, hist_a, hist_b)
     return rare_token
 end
 
+---@param a string
+---@param b string
+---@return table<string, table<string, string>>
 function M.split_then_diff_lines(a, b)
     -- PRN add split for other token types?
     local a_lines = vim.split(a, "\n")
@@ -30,6 +33,9 @@ function M.split_then_diff_lines(a, b)
     return M.diff(a_lines, b_lines)
 end
 
+---@param a string[]
+---@param b string[]
+---@return table<string, table<string, string>>
 function M.diff(a, b, diffs)
     diffs = diffs or {}
 
