@@ -1,14 +1,12 @@
 local histogram = require("zeta.diff.histogram")
 local weslcs = require("zeta.diff.weslcs")
-local should = require("zeta.helpers.should")
-local files = require("zeta.helpers.files")
-local trace = require("zeta.diff.trace")
 require("zeta.helpers.dump")
 
+local M = {}
 
 ---@param histogram_line_diff {type: string, line: string}[]
 ---@return {type: string, chunks: string}[]
-function step2_lcs_diffs(histogram_line_diff)
+function M.step2_lcs_diffs(histogram_line_diff)
     -- FYI, "=" lines are Anchors (they're already matched up)
     -- - "-" and "+" are line level changes, but they might have word level overlap
     -- - so, for every set of "-"/"+" between "=" anchors... run LCS diff on them
@@ -99,7 +97,7 @@ function step2_lcs_diffs(histogram_line_diff)
 end
 
 ---@return { { string, string } } diff_texts
-function step3_final_aggregate_and_standardize(groups)
+function M.step3_final_aggregate_and_standardize(groups)
     local final_diff = {}
     for _, group in ipairs(groups) do
         -- print("group", inspect(group))
@@ -136,218 +134,11 @@ function step3_final_aggregate_and_standardize(groups)
     return final_diff
 end
 
-function combined_diff(old_text, new_text)
+function M.combined_diff(old_text, new_text)
     local histogram_line_diff = histogram.split_then_diff_lines(old_text, new_text)
     -- TODO test this combined_diff end to end too
     local with_lsc = step2_lcs_diffs(histogram_line_diff)
     local lsc_aggregated = step3_final_aggregate_and_standardize(with_lsc)
     return lsc_aggregated
 end
-
-describe("simple comparison", function()
-    local before_text = [[
-local M = {}
-function M.add(a, b )
-    return a + b
-end
-return M]]
-
-    -- FYI first new line doesn't result in a line in diff
-    --  but trailing new line after return N does add a blank line
-    local after_text = [[
-local M = {}
-function M.add(a, b, c, d)
-    return a + b
-end
-return N
-]]
-    it("validate histogram alone", function()
-        local diffs = histogram.split_then_diff_lines(before_text, after_text)
-
-        -- pretty_print(diffs)
-
-        -- FYI I wanted 2+ alternating groups of same/diff lines
-        local expected = {
-            { "=", "local M = {}" },
-            { "-", "function M.add(a, b )" },
-            { "+", "function M.add(a, b, c, d)" },
-            { "=", "    return a + b" },
-            { "=", "end" },
-            { "-", "return M" },
-            -- two consecutive added lines, should be diff'd with single - above
-            { "+", "return N" },
-            { "+", "" },
-        }
-
-        should.be_same(expected, diffs)
-    end)
-
-    it("follows histogram with a 2nd pass, word-level LCS", function()
-        local histogram_line_diff = histogram.split_then_diff_lines(before_text, after_text)
-        local diffs = step2_lcs_diffs(histogram_line_diff)
-        -- trace.flush()
-
-
-        -- pretty_print(diffs)
-
-        -- Notes:
-        -- - I wanted 2+ alternating groups of same vs del/add LCS lines
-        -- - part of the reason I kept =/+/- is so I can track the implicit vs explicit new lines
-        -- - don't forget for LCS, whitesapce is treated as a word too!
-        local expected_groups = {
-
-            -- STEP1/2 Histogram Anchors
-            -- FYI implicit new lines
-            {
-                { "=", "local M = {}" }
-            }, -- implicit \n
-
-            -- STEP2 LCS input:
-            -- FYI implicit new lines:
-            -- { "-", "function M.add(a, b )" }, -- implicit \n
-            -- { "+", "function M.add(a, b, c, d)" }, -- implicit \n
-            --
-            -- STEP2 LCS output:
-            -- FYI explicit new lines
-            {
-                { "same", "function M.add(a, " },
-                { "del",  "b" },
-                { "add",  "b, c," },
-                { "same", " " },
-                { "del",  ")" },
-                { "add",  "d)" },
-                { "same", "\n" },
-            },
-
-            -- STEP1/2 Histogram Anchors
-            -- FYI implicit new lines
-            {
-                { "=", "    return a + b" }, -- implicit \n
-                { "=", "end" },
-            }, -- implicit \n
-
-            -- STEP2 LCS input:
-            -- FYI implicit new lines:
-            -- { "-", "return M" },
-            -- { "+", "return N" },
-            -- { "+", "" },
-            --
-            -- STEP2 LCS output:
-            -- FYI explicit new lines
-            {
-                { "same", "return " },
-                { "del",  "M\n" },
-                { "add",  "N\n\n" },
-            },
-        }
-
-        should.be_same(expected_groups, diffs)
-    end)
-
-
-    it("step 3 is a final aggregate (across '='/'same') and standardize to '+/-/=' for final results", function()
-        local histogram_line_diff = histogram.split_then_diff_lines(before_text, after_text)
-        local step2 = step2_lcs_diffs(histogram_line_diff)
-        local step3 = step3_final_aggregate_and_standardize(step2)
-
-
-        -- Notes:
-        -- - I wanted 2+ alternating groups of same vs del/add LCS lines
-        -- - part of the reason I kept =/+/- is so I can track the implicit vs explicit new lines
-        -- - don't forget for LCS, whitesapce is treated as a word too!
-        local expected_groups = {
-
-            -- STEP1/2 Histogram Anchors
-            -- FYI made remaining "=" newlines explicit
-            -- flatten across groups
-            -- combine consecutive "="/"same" into single record
-            { "=", "local M = {}\nfunction M.add(a, " },
-            { "-", "b" },
-            { "+", "b, c," },
-            { "=", " " },
-            { "-", ")" },
-            { "+", "d)" },
-            { "=", "\n    return a + b\nend\nreturn " },
-            { "-", "M\n" },
-            { "+", "N\n\n" },
-        }
-
-        should.be_same(expected_groups, step3)
-    end)
-end)
-
-describe("simple comparison", function()
-    local before_text = [[
-function M.add(a, b )
-    return a + b
-end]]
-
-    local after_text = [[
-function M.add(a, b, c, d)
-    return a + b
-end]]
-
-    it("validate histogram alone", function()
-        local diffs = histogram.split_then_diff_lines(before_text, after_text)
-
-        -- pretty_print(diffs)
-
-        local expected = {
-            { "-", "function M.add(a, b )" },
-            { "+", "function M.add(a, b, c, d)" },
-            { "=", "    return a + b" },
-            { "=", "end" },
-        }
-
-        should.be_same(expected, diffs)
-    end)
-end)
-
-describe("test using combined_diff", function()
-    local old_text = files.read_example_editable_only("01_request.json")
-    local new_text = files.read_example_editable_only("03_response.json")
-
-    it("test histogram alone", function()
-        local diffs = histogram.split_then_diff_lines(old_text, new_text)
-
-        local expected = {
-            { "=", "" }, -- empty line after editable region parsed, should that be removed?
-            { "=", "local M = {}" },
-            { "=", "" },
-            { "-", "function M.add(a, b)" },
-            { "-", "    return a + b" },
-            { "+", "function M.adder(a, b, c)" },
-            { "+", "    return a + b + c" },
-            { "=", "end" },
-            { "=", "" },
-            { "-", "<|user_cursor_is_here|>" },
-            { "+", "function M.subtract(a, b)" },
-            { "+", "    return a - b" },
-            { "+", "end" },
-            { "=", "" },
-            { "+", "function M.multiply(a, b)" },
-            { "+", "    return a * b" },
-            { "+", "end" },
-            { "=", "" },
-            { "+", "function M.divide(a, b)" },
-            { "+", "    if b == 0 then" },
-            { "+", "        error(\"Division by zero\")" },
-            { "+", "    end" },
-            { "+", "    return a / b" },
-            { "+", "end" },
-            { "=", "" },
-            { "+", "" },
-            { "+", "" },
-            { "=", "return M" },
-            { "=", "" },
-            { "=", "" },
-        }
-
-        should.be_same(expected, diffs)
-    end)
-
-    -- it("with lines", function()
-    --     local diffs = combined_diff(old_text, new_text)
-    --     TODO!!! might be good to do one more... but, feed the LCS lines into LCS and capture output on each group... don't compute this by hand Wes!
-    -- end)
-end)
+return M
