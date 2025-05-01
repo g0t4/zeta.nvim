@@ -8,8 +8,8 @@ function M.show_diff_extmarks()
 
     local zed_request, _ = files.read_example("01_request.json")
     local zed_response, _ = files.read_example("01_response.json")
-    local zed_response, _ = files.read_example("02_response.json")
-    local zed_response, _ = files.read_example("03_response.json")
+    -- local zed_response, _ = files.read_example("02_response.json")
+    -- local zed_response, _ = files.read_example("03_response.json")
 
     local request_decoded = vim.json.decode(zed_request)
     local response_decoded = vim.json.decode(zed_response)
