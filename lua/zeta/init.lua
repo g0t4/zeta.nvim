@@ -121,6 +121,11 @@ function M.show_diff_extmarks()
         -- virt_lines = virt_lines, -- lines below
         virt_text_pos = "overlay", -- "overlay", "eol", "inline"
     })
+
+    -- * scroll down enough to see extmarks that are past the last line of the buffer (so, moving cursor won't work to see them)
+    local view = vim.fn.winsaveview()
+    view.topline = view.topline + #lines + 1
+    vim.fn.winrestview(view)
 end
 
 function M.setup()
