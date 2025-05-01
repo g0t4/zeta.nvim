@@ -167,9 +167,15 @@ return N
             --
             -- STEP2 LCS output:
             -- FYI explicit new lines
-            { { "same", "function M.add(a, " },
-                { "del",  "b )\n" },
-                { "add",  "b, c, d)\n" }, },
+            {
+                { "same", "function M.add(a, " },
+                { "del",  "b" },
+                { "add",  "b, c," },
+                { "same", " " },
+                { "del",  ")" },
+                { "add",  "d)" },
+                { "same", "\n" },
+            },
 
             -- STEP1/2 Histogram Anchors
             -- FYI implicit new lines
