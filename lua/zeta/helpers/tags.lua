@@ -20,6 +20,15 @@ function M.get_editable_region(text)
     return text:sub(start_index, end_index)
 end
 
+-- function M.get_position_of_user_cursor(text)
+--     -- TODO what format do I need this to be in?
+--     local start_index = text:find(M.tag_cursor_here)
+--     if start_index == nil then
+--         return nil
+--     end
+--     return start_index - 1
+-- end
+
 ---@param text string
 ---@return string
 function M.strip_user_cursor_tag(text)

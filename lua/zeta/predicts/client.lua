@@ -45,7 +45,11 @@ local function try_use_prediction(prediction_request, response_body_stdout)
     -- BufferDumpAppend(rewritten)
 
     original_editable = parser.get_editable_region(original) or ""
+    -- PRN use cursor position? i.e. check if cursor has moved since prediction requested (might not need this actually)
+    -- cursor_position = parser.get_position_of_user_cursor(original) or 0
+    -- BufferDumpAppend("## cursor_position:", cursor_position)
     original_editable = parser.strip_user_cursor_tag(original_editable)
+
     rewritten_editable = parser.get_editable_region(rewritten) or ""
 
     local diff = combined.combined_diff(original_editable, rewritten_editable)
