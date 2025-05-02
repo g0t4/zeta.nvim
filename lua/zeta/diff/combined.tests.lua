@@ -2,9 +2,10 @@ local histogram = require("zeta.diff.histogram")
 local should = require("zeta.helpers.should")
 local files = require("zeta.helpers.files")
 require("zeta.helpers.dump")
+require("zeta.helpers.testing")
 local combined = require("zeta.diff.combined")
 
-describe("simple comparison", function()
+_describe("simple comparison", function()
     local before_text = [[
 local M = {}
 function M.add(a, b )
@@ -134,7 +135,7 @@ return N
     end)
 end)
 
-describe("simple comparison", function()
+_describe("simple comparison", function()
     local before_text = [[
 function M.add(a, b )
     return a + b
@@ -161,7 +162,7 @@ end]]
     end)
 end)
 
-describe("test using combined_diff", function()
+_describe("test using combined_diff", function()
     local old_text = files.read_example_editable_only("01_request.json")
     local new_text = files.read_example_editable_only("03_response.json")
 

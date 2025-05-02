@@ -1,8 +1,9 @@
 local parser = require("zeta.helpers.response-parser")
 local files = require("zeta.helpers.files")
 local should = require("zeta.helpers.should")
+require("zeta.helpers.testing")
 
-describe("vim.diff", function()
+_describe("vim.diff", function()
     it("tests vim.diff", function()
         local zed_request = files.read_example("01_request.json")
         local zed_response = files.read_example("01_response.json")

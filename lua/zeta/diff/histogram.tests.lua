@@ -1,8 +1,9 @@
 local should = require("zeta.helpers.should")
 local histogram = require("zeta.diff.histogram")
 require("zeta.helpers.dump")
+require("zeta.helpers.testing")
 
-describe("test using histogram diff", function()
+_describe("test using histogram diff", function()
     it("with lines", function()
         local A = {
             "foo",
