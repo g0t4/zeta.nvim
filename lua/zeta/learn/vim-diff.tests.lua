@@ -21,7 +21,7 @@ _describe("vim.diff", function()
         input_editable = input_editable:gsub(parser.tag_cursor_here, "")
 
         vdiff = vim.diff(input_editable, output_editable)
-        BufferDumpAppend("\n\n## vim diff")
+        BufferDumpHeader("vdiff")
         BufferDumpAppend(vdiff)
 
         ref_vdiff = [[

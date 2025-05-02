@@ -70,7 +70,7 @@ function M.extmarks_for(diff, bufnr, _window_id)
         return accum
     end)
 
-    BufferDumpAppend("## lines")
+    BufferDumpHeader("extmark_lines")
     for _, v in ipairs(extmark_lines) do
         BufferDumpAppend(vim.inspect(v))
     end

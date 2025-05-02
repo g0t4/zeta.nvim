@@ -14,16 +14,16 @@ function M.get_prediction_request()
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
     local cursor_pos = vim.api.nvim_win_get_cursor(0)
-    BufferDumpAppend("## cursor_pos:\n  ")
+    BufferDumpHeader("cursor_pos:")
     BufferDumpAppend(cursor_pos)
 
     -- insert cursor position tag
     local editable = tags.adorn_editable_region(lines, cursor_pos[1], cursor_pos[2])
-    BufferDumpAppend("## editable:\n  ")
-    BufferDumpAppend(vim.inspect(editable))
+    BufferDumpHeader("editable:")
+    BufferDumpAppend(inspect(editable))
 
     local editable_text = table.concat(editable, "\n")
-    BufferDumpAppend("## editable_text:\n  ")
+    BufferDumpHeader("editable_text:")
     BufferDumpAppend(editable_text)
 
     -- TODO get real file content, and the rest is ready to go!
@@ -40,8 +40,8 @@ function M.get_prediction_request()
         -- input_events
         -- outline
     }
-    BufferDumpAppend("## body:\n  ")
-    BufferDumpAppend(vim.inspect(body))
+    BufferDumpHeader("body:")
+    BufferDumpAppend(inspect(body))
 
     return {
         bufnr = bufnr,
@@ -62,31 +62,31 @@ end
 
 local function try_use_prediction(prediction_request, response_body_stdout)
     local decoded = vim.fn.json_decode(response_body_stdout)
-    BufferDumpAppend("## response_body_stdout:\n  ")
+    BufferDumpHeader("response_body_stdout:")
     BufferDumpAppend(inspect(decoded))
     assert(decoded ~= nil, "decoded reponse body should not be nil")
     local rewritten = decoded.output_excerpt
     if rewritten == nil then
-        BufferDumpAppend("## output_excerpt is nil, aborting...")
+        BufferDumpHeader("output_excerpt is nil, aborting...")
         return
     end
 
     local original = prediction_request.body.input_excerpt
-    -- BufferDumpAppend("## input_excerpt:\n  ")
+    -- BufferDumpHeader("input_excerpt:")
     -- BufferDumpAppend(original)
-    -- BufferDumpAppend("## output_excerpt:\n  ")
+    -- BufferDumpHeader("output_excerpt:")
     -- BufferDumpAppend(rewritten)
 
     original_editable = parser.get_editable_region(original) or ""
     -- PRN use cursor position? i.e. check if cursor has moved since prediction requested (might not need this actually)
     -- cursor_position = parser.get_position_of_user_cursor(original) or 0
-    -- BufferDumpAppend("## cursor_position:", cursor_position)
+    -- BufferDumpHeader("cursor_position:", cursor_position)
     original_editable = parser.strip_user_cursor_tag(original_editable)
 
     rewritten_editable = parser.get_editable_region(rewritten) or ""
 
     local diff = combined.combined_diff(original_editable, rewritten_editable)
-    -- BufferDumpAppend("## diff:\n  ")
+    -- BufferDumpHeader("diff:")
     -- BufferDumpAppend(inspect(diff))
 
     local bufnr, _window_id = GetBufferDumpNumbers()
@@ -108,7 +108,7 @@ function M.show_prediction()
     -- save yourself the hassle of forgetting to encode/decode when loading test files
     assert(type(prediction_request.body) == "table", "body must be a table")
 
-    -- BufferDumpAppend("## prediction_request:\n  ")
+    -- BufferDumpHeader("prediction_request:")
     -- BufferDumpAppend(prediction_request.body.input_excerpt)
     -- PRN extra assertions to validate no mistakes in a special troubleshot mode?
     --   i.e. does it include editable region, cursor position, etc...
@@ -127,8 +127,8 @@ function M.show_prediction()
             "-d", vim.fn.json_encode(prediction_request.body)
         }
 
-        BufferDumpAppend("## command:\n  ")
-        BufferDumpAppend(vim.inspect(command))
+        BufferDumpHeader("curl command")
+        BufferDumpAppend(inspect(command))
 
         local result = vim.system(command,
             {
@@ -140,17 +140,17 @@ function M.show_prediction()
                 -- stdout = function(err, data)
                 --     vim.schedule(function()
                 --         if err ~= nil then
-                --             BufferDumpAppend("## STDOUT error:\n  " .. err)
+                --             BufferDumpHeader("STDOUT error:" .. err)
                 --         end
-                --         BufferDumpAppend("## STDOUT data:\n  " .. (data or ""))
+                --         BufferDumpHeader("STDOUT data:" .. (data or ""))
                 --     end)
                 -- end,
                 -- stderr = function(err, data)
                 --     vim.schedule(function()
                 --         if err ~= nil then
-                --             BufferDumpAppend("## STDERR error:\n  " .. err)
+                --             BufferDumpHeader("STDERR error:" .. err)
                 --         end
-                --         BufferDumpAppend("## STDERR data:\n  " .. (data or ""))
+                --         BufferDumpHeader("STDERR data:" .. (data or ""))
                 --     end)
                 -- end,
                 -- timeout = ? seconds? ms? default is?
@@ -165,13 +165,13 @@ function M.show_prediction()
         vim.schedule(function()
             if result.code ~= 0 then
                 -- test failure with wrong URL
-                BufferDumpAppend("## curl on_exit:  " .. vim.inspect(result))
+                BufferDumpHeader("curl on_exit:  " .. inspect(result))
             end
             -- if result.stderr ~= "" then
-            --     BufferDumpAppend("## STDERR:\n  ", result.stderr)
+            --     BufferDumpHeader("STDERR:", result.stderr)
             -- end
             if result.stdout ~= "" then
-                BufferDumpAppend("## STDOUT:\n  ", result.stdout)
+                BufferDumpHeader("STDOUT:", result.stdout)
                 try_use_prediction(prediction_request, result.stdout)
             end
         end)
@@ -180,8 +180,8 @@ function M.show_prediction()
     local ok, err = pcall(make_request)
     if not ok then
         -- this happens when command (curl) is not found
-        BufferDumpAppend("## prediction request failed immediately:\n  ")
-        BufferDumpAppend(vim.inspect(err))
+        BufferDumpHeader("prediction request failed immediately:")
+        BufferDumpAppend(inspect(err))
     end
 end
 
