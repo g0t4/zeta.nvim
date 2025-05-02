@@ -7,9 +7,7 @@
 require("zeta.helpers.dump")
 local trace = require("zeta.diff.trace")
 
-
 local M = {}
-
 
 -----------------------------------------------------------------------------
 -- Split a string into tokens.  (Adapted from Gavin Kistner's split on

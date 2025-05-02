@@ -1,53 +1,21 @@
 local should = require("zeta.helpers.should")
 local weslcs = require("zeta.diff.weslcs")
 
--- -- FYI if I wanted to use vim.iter w/o plenary test runner...
--- -- it has no dependencies, so I can import it by path with loadfile
--- local iter = vim.iter or (loadfile("/opt/homebrew/Cellar/neovim/0.11.0/share/nvim/runtime/lua/vim/iter.lua")())
--- print(inspect(iter({ "foo", "bar", "bam" }):map(function(i) return i:reverse() end):totable()))
-
 local SPLIT_ON_WHITESPACE = "%s+"
 local STRIP_WHITESPACE = true
 
-describe("tiny comparison with no leading/trailing comonality", function()
-    local before_text = [[b )]]
+describe("tiny, no shared prefix/suffix words", function()
+    local before_text = "b )"
+    local after_text = "b, c, d)"
 
-    local after_text = [[b, c, d)]]
-
-    it("splits words", function()
-        -- FYI this is testing the inner details, but I wanna lock those in as the split matters
-        -- leaving separator as whitespace default AND keeping separator
-        -- IOTW no need to pass anything but first arg
+    it("splits words, keep whitespace", function()
         local before_tokens = weslcs.split(before_text)
         should.be_same({ "b", " ", ")" }, before_tokens)
 
         local after_tokens = weslcs.split(after_text)
         should.be_same({ "b,", " ", "c,", " ", "d)" }, after_tokens)
     end)
-
-    it("computes lcs_matrix", function()
-        local before_tokens = weslcs.split(before_text)
-        local after_tokens = weslcs.split(after_text)
-
-        local lcs_matrix = weslcs.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
-    end)
 end)
-
-describe("simple comparison", function()
-    local before_text = [[
-function M.add(a, b )
-    return a + b
-end
-]]
-
-    local after_text = [[
-function M.add(a, b, c, d)
-    return a + b
-end
-]]
-end)
-
--- FYI! REMEMBER REASON TO DO this was to understand how to use the token level diff for this zeta test plugin... diff was not an end in itself!
 
 describe("my paper example", function()
     ---@format disablenext
@@ -111,7 +79,7 @@ describe("my paper example", function()
         should.be_same(expected_token_diff, actual_token_diff)
     end)
 
-    it("get consolidated diff", function()
+    it("get aggregated diff", function()
         local actual_diff = weslcs.get_diff(before_tokens, after_tokens)
         -- consolidate consecutive sames
         -- and consolidate all adds between sames
@@ -215,14 +183,13 @@ describe("my paper example", function()
 end)
 
 
-describe("diff with AA in before text, and only one A in after text", function()
+describe("AA in before, only one A in after", function()
     local before_text = "D F A A H"
     local after_text = "F A R F H"
     local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
     local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-    -- FTR, do not need to test split again
 
-    it("should have LCS FAH, and not FAAH", function()
+    it("should have LCS FAH, not FAAH", function()
         local actual_lcs_matrix = weslcs.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
 
         ---@format disable -- disables rest of lines in block (so I can have 5 per split)
@@ -254,14 +221,12 @@ describe("diff with AA in before text, and only one A in after text", function()
     end)
 end)
 
-
-
-describe("diff first checks for common prefix and/or suffix, and strips them before LCS comparison", function()
-    describe("both prefix and suffix have overlap, with non-overlapping tokens in middle", function()
+describe("strip shared suffix/prefix before LCS diff", function()
+    describe("prefix & suffix have overlap", function()
         local before_text = "F A B C D E F G"
         local after_text = "F A C D E X F G"
 
-        it("splits off prefix/suffix from middle", function()
+        it("extracts non-overlapping middle tokens", function()
             -- FYI before_tokens/after_tokens are changed in-place during suffix/prefix extraction... so must setup in each test method separatley
             local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
             local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
@@ -280,13 +245,10 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
         end)
 
 
-        it("get_diff uses shared prefix/suffix", function()
-            -- FYI before_tokens/after_tokens are changed in-place during suffix/prefix extraction... so must setup in each test method separatley
+        it("get_diff includes shared prefix/suffix", function()
+            -- FYI! before_tokens/after_tokens are changed in-place during suffix/prefix extraction... so must setup in each test method separatley
             local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
             local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-
-            -- TODO find a sequence that would be diff if not doing shared prefix/suffix checks
-            -- for now just make sure a sequence that has shared prefix and/or suffix is correctly diff'd
 
             local actual_diff = weslcs.get_diff(before_tokens, after_tokens)
             local expected_diff = {
@@ -304,11 +266,8 @@ describe("diff first checks for common prefix and/or suffix, and strips them bef
         end)
     end)
 
-    -- TODO test of only shared prefix (don't rely on above test that happens to not have shared prefix/suffix)
-    -- TODO test of only shared suffix    "
-
-    describe("no shared suffix nor prefix", function()
-        it("returns correct diff", function()
+    describe("no shared suffix, nor prefix", function()
+        it("diff works", function()
             local before_text = "B C B"
             local after_text = "A C A"
             local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
