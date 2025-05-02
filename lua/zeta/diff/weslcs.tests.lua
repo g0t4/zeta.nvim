@@ -1,10 +1,10 @@
 local should = require("zeta.helpers.should")
 local weslcs = require("zeta.diff.weslcs")
-
+require("zeta.helpers.testing")
 local SPLIT_ON_WHITESPACE = "%s+"
 local STRIP_WHITESPACE = true
 
-describe("tiny, no shared prefix/suffix words", function()
+_describe("tiny, no shared prefix/suffix words", function()
     local before_text = "b )"
     local after_text = "b, c, d)"
 
@@ -17,7 +17,7 @@ describe("tiny, no shared prefix/suffix words", function()
     end)
 end)
 
-describe("my paper example", function()
+_describe("my paper example", function()
     ---@format disablenext
     -- FYI whitespace is stripped out, so its only here to make this easier to read the before/after text
     local before_text = "C F A    D Z O    H Z C"
@@ -183,7 +183,7 @@ describe("my paper example", function()
 end)
 
 
-describe("AA in before, only one A in after", function()
+_describe("AA in before, only one A in after", function()
     local before_text = "D F A A H"
     local after_text = "F A R F H"
     local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
@@ -221,7 +221,7 @@ describe("AA in before, only one A in after", function()
     end)
 end)
 
-describe("strip shared suffix/prefix before LCS diff", function()
+_describe("strip shared suffix/prefix before LCS diff", function()
     describe("prefix & suffix have overlap", function()
         local before_text = "F A B C D E F G"
         local after_text = "F A C D E X F G"
