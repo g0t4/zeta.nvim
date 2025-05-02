@@ -63,7 +63,7 @@ end
 local function try_use_prediction(prediction_request, response_body_stdout)
     local decoded = vim.fn.json_decode(response_body_stdout)
     BufferDumpAppend("## response_body_stdout:\n  ")
-    BufferDumpAppend(vim.inspect(decoded))
+    BufferDumpAppend(inspect(decoded))
     assert(decoded ~= nil, "decoded reponse body should not be nil")
     local rewritten = decoded.output_excerpt
     if rewritten == nil then
