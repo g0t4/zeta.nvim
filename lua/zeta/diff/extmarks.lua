@@ -91,7 +91,7 @@ function M.extmarks_for(diff, bufnr, _window_id)
     })
 
     -- * scroll down enough to see extmarks that are past the last line of the buffer (so, moving cursor won't work to see them)
-    window.set_topline(num_lines + #extmark_lines)
+    window.set_topline(num_lines + #extmark_lines, _window_id)
 end
 
 return M
