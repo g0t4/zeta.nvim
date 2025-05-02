@@ -1,29 +1,62 @@
 local parser = require("zeta.helpers.tags")
 local files = require("zeta.helpers.files")
 local combined = require("zeta.diff.combined")
+local tags = require("zeta.helpers.tags")
 local extmarks = require("zeta.diff.extmarks")
 
 
 local M = {}
 function M.get_prediction_request()
     local bufnr = vim.api.nvim_get_current_buf()
-    print("## bufnr:", bufnr)
+
+
+    -- step one, take the whole enchilada!
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+
+    local cursor_pos = vim.api.nvim_win_get_cursor(0)
+    BufferDumpAppend("## cursor_pos:\n  ")
+    BufferDumpAppend(cursor_pos)
+
+    -- insert cursor position tag
+    local editable = tags.adorn_editable_region(lines, cursor_pos[1], cursor_pos[2])
+    BufferDumpAppend("## editable:\n  ")
+    BufferDumpAppend(vim.inspect(editable))
+
+    local editable_text = table.concat(editable, "\n")
+    BufferDumpAppend("## editable_text:\n  ")
+    BufferDumpAppend(editable_text)
 
     -- TODO get real file content, and the rest is ready to go!
+    -- TODO later, get editable vs surrounding context
+    -- TODO handle start of file tag
+    -- TODO track position of start of region so you can align it when the response comes back
+    --   put into the request object (not the body) so you can use it in response handler
+    --
     -- use treesitter (if available), otherwise fallback to line ranges
-    -- input_excerpt
-    -- mark editable region (select this first, then expand to gather all of input_excerpt)
 
-    local body_request_01 = files.read_example_json("01_request.json")
+    -- local body = files.read_example_json("01_request.json")
+    local body = {
+        input_excerpt = editable_text,
+        -- input_events
+        -- outline
+    }
+    BufferDumpAppend("## body:\n  ")
+    BufferDumpAppend(vim.inspect(body))
 
     return {
         bufnr = bufnr,
-        body = body_request_01
+        body = body,
         -- body = {
         --     input_excerpt = "",
         --     -- input_events
         --     -- outline
         -- }
+        excerpt_start_line_0based = 0,
+        excerpt_start_column_0based = 0,
+        -- excerpt_end_line = #lines,
+        -- ...
+        -- editable start/end too, whatever is needed...
+        -- ...save it so you don't to reverse engineer it
     }
 end
 

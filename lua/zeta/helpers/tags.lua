@@ -36,4 +36,23 @@ function M.strip_user_cursor_tag(text)
     return cleaned
 end
 
+---@param all_lines string[]
+---@param cursor_on_row integer
+---@param cursor_on_column integer
+function M.adorn_editable_region(all_lines, cursor_on_row, cursor_on_column)
+    -- TODO long term write tests of this tagify function:
+    -- TODO trim down if too many lines in all_lines
+    -- TODO expand beyond editable region
+
+    -- first insert cursor position tag
+    local cursor_line = all_lines[cursor_on_row]
+    cursor_line = cursor_line:sub(1, cursor_on_column) .. M.tag_cursor_here .. cursor_line:sub(cursor_on_column + 1)
+    all_lines[cursor_on_row] = cursor_line
+
+    -- then wrap editable around all lines for now
+    table.insert(all_lines, 1, M.tag_edit_start)
+    table.insert(all_lines, M.tag_edit_end)
+    return all_lines
+end
+
 return M
