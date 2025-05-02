@@ -38,5 +38,10 @@ print(result)
 --   https://huggingface.co/zed-industries/zeta
 --   TODO try running a quantized version
 --      https://huggingface.co/models?other=base_model:quantized:zed-industries/zeta
+--      * LMSTUDIO has it! Q8_0, Q6_K, Q4_K_M, Q3_K_L
+--        https://huggingface.co/lmstudio-community/zeta-GGUF
+--      TRY WITH ollama / llama-server
+--        https://huggingface.co/mradermacher/zeta-GGUF
 --   TODO try on mac:
+--      mlx int8: https://huggingface.co/mlx-community/zed-industries-zeta-8bit
 --      mlx fp16: https://huggingface.co/mlx-community/zed-industries-zeta-fp16
