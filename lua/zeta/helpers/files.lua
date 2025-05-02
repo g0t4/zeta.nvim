@@ -9,11 +9,9 @@ local function get_path_relative_to_examples_dir(relative_path)
     local info = debug.getinfo(1, "S")
     -- zeta.nvim/lua/zeta/helpers/files.lua
     -- zeta.nvim/lua/zeta/learn/examples/
-    BufferDumpAppend(info)
+    -- BufferDumpAppend(info)
     local this_module_path = info.source:sub(2) -- remove the @
-    BufferDumpAppend("this_module", this_module_path)
     local zeta_dir_path = this_module_path:match("(.*/)helpers/files.lua")
-    BufferDumpAppend("dir", zeta_dir_path)
     return zeta_dir_path .. "learn/examples/" .. relative_path
 end
 

@@ -9,11 +9,12 @@ function M.get_prediction_request()
     -- input_excerpt
     -- mark editable region (select this first, then expand to gather all of input_excerpt)
 
-    local body_json_serialized = files.read_example("01_request.json")
+    local body_request_01 = files.read_example("01_request.json")
+    -- BufferDumpAppend(body_request_01)
 
     return {
         bufnr = bufnr,
-        body = vim.fn.json_decode(body_json_serialized),
+        body = body_request_01
         -- body = {
         --     input_excerpt = "",
         --     -- input_events
@@ -27,15 +28,21 @@ function M.show_prediction()
     local prediction_request = M.get_prediction_request()
 
     -- PRN how can I handle errors? pcall?
-    local result = vim.fn.system({
-        "curl",
-        "-H", "Content-Type: application/json",
-        "-X", "POST",
-        "-s", url,
-        "-d", vim.fn.json_encode(prediction_request.body)
-    })
+    function make_request()
+        local result = vim.fn.system({
+            "curl",
+            "-H", "Content-Type: application/json",
+            "-X", "POST",
+            "-s", url,
+            "-d", vim.fn.json_encode(prediction_request.body)
+        })
+        return result
+    end
+
+    local result = make_request()
     print("## result:")
     print(result)
+    do return end
 
     local decoded = vim.fn.json_decode(result)
     local output_excerpt = decoded.output_excerpt
