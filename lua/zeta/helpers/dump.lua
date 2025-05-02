@@ -113,10 +113,10 @@ function inspect(object, pretty, opts, current_depth)
         local items = {}
         for key, value in pairs(object) do
             if is_list then
-                table.insert(items, green(inspect(value, pretty, opts, current_depth + 1)))
+                table.insert(items, green(inspect(value, pretty, opts, current_depth + 1), opts))
             else
                 if type(key) ~= 'number' then key = '"' .. key .. '"' end
-                local item = '[' .. blue(key) .. '] = ' .. green(inspect(value, pretty, opts, current_depth + 1))
+                local item = '[' .. blue(key, opts) .. '] = ' .. green(inspect(value, pretty, opts, current_depth + 1), opts)
                 table.insert(items, item)
             end
         end
@@ -129,10 +129,10 @@ function inspect(object, pretty, opts, current_depth)
         end
         return "{ " .. table.concat(items, ", ") .. " }"
     elseif type(object) == "number" then
-        return magenta(tostring(object))
+        return magenta(tostring(object), opts)
     elseif type(object) == "string" then
         local escaped = object:gsub('"', '\\"')
-        return green('"' .. escaped .. '"')
+        return green('"' .. escaped .. '"', opts)
     else
         -- PRN udf?
         return tostring(object)
