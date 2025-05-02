@@ -27,6 +27,20 @@ function M.read_example(relative_path)
     return content
 end
 
+--- Reads the content of an example file as JSON (decoded).
+--- This function returns the entire JSON object.
+---@param relative_path string
+---@return table content
+function M.read_example_json(relative_path)
+    local repo_path = get_path_relative_to_examples_dir(relative_path)
+    local content, err = M.read_all_to_string(repo_path)
+    if not content then
+        error("Cannot read file: " .. repo_path .. ", error: " .. err)
+    end
+    -- PRN error handling?
+    return vim.json.decode(content)
+end
+
 --- Reads the entire content of a file into a single string.
 ---@param path string
 ---@return string content

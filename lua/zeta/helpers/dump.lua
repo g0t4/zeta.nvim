@@ -33,23 +33,43 @@ local color_keys = {
     whitebg   = 47
 }
 -- print("\27[31mThis is red text\27[0m")
-function black(text)
+function black(text, options)
+    options = options or {}
+    if not options.color then
+        return text
+    end
     return "\27[" .. color_keys.black .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
 end
 
-function red(text)
+function red(text, options)
+    options = options or {}
+    if not options.color then
+        return text
+    end
     return "\27[" .. color_keys.red .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
 end
 
-function blue(text)
+function blue(text, options)
+    options = options or {}
+    if not options.color then
+        return text
+    end
     return "\27[" .. color_keys.blue .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
 end
 
-function magenta(text)
+function magenta(text, options)
+    options = options or {}
+    if not options.color then
+        return text
+    end
     return "\27[" .. color_keys.magenta .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
 end
 
-function green(text)
+function green(text, options)
+    options = options or {}
+    if not options.color then
+        return text
+    end
     return "\27[" .. color_keys.green .. "m" .. text .. "\27[" .. color_keys.reset .. "m"
 end
 
@@ -74,26 +94,29 @@ end
 
 ---@param object any
 ---@return string description
-function inspect(object, pretty, current_depth)
-    local max_depth = 5
+function inspect(object, pretty, opts, current_depth)
+    opts = opts or {}
+    opts.color = opts.color or true
     current_depth = current_depth or 0
+
+    local max_depth = 5
     if current_depth > max_depth then
         print("pretty_print: max depth reached")
         return "..."
     end
     pretty = pretty or false
     if object == nil then
-        return black("nil")
+        return black("nil", opts)
     elseif type(object) == 'table' then
         -- PRN check if all keys/indicies are integer and consecutive => if so, don't print indicies
         local is_list = tbl_is_list(object)
         local items = {}
         for key, value in pairs(object) do
             if is_list then
-                table.insert(items, green(inspect(value, pretty, current_depth + 1)))
+                table.insert(items, green(inspect(value, pretty, opts, current_depth + 1)))
             else
                 if type(key) ~= 'number' then key = '"' .. key .. '"' end
-                local item = '[' .. blue(key) .. '] = ' .. green(inspect(value, pretty, current_depth + 1))
+                local item = '[' .. blue(key) .. '] = ' .. green(inspect(value, pretty, opts, current_depth + 1))
                 table.insert(items, item)
             end
         end

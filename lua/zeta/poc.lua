@@ -18,12 +18,16 @@ function M.show_diff_extmarks()
     BufferDumpAppend("before: " .. before)
     BufferDumpAppend("after: " .. after)
 
+    -- * PICK WHICH DIFF (combined (histogram line level => weslcs word level) or just lcs (weslcs))
     -- local diff = combined.combined_diff(before, after)
     local diff = weslcs.lcs_diff_with_sign_types_from_text(before, after)
     BufferDumpAppend(diff)
     -- weslcs:   "same", "del", "add"
     -- combined: "=",    "-",   "+"
+    M.extmarks_for(diff)
+end
 
+function M.extmarks_for(diff)
     -- * highlight groups
     local hl_same = "zeta-same"
     local hl_added = "zeta-added"
