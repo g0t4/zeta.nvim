@@ -1,5 +1,8 @@
+local window = require("zeta.helpers.vimz.windows")
 
-function M.extmarks_for(diff)
+local M = {}
+
+function M.extmarks_for(diff, bufnr, _window_id)
     -- * highlight groups
     local hl_same = "zeta-same"
     local hl_added = "zeta-added"
@@ -64,7 +67,7 @@ function M.extmarks_for(diff)
     end)
 
     BufferDumpAppend("## lines")
-    for k, v in ipairs(extmark_lines) do
+    for _, v in ipairs(extmark_lines) do
         BufferDumpAppend(vim.inspect(v))
     end
 
@@ -75,7 +78,6 @@ function M.extmarks_for(diff)
 
     -- * extmark
     local ns_id = vim.api.nvim_create_namespace('zeta_diff')
-    local bufnr, _window_id = GetBufferDumpNumbers()
     local num_lines = vim.api.nvim_buf_line_count(bufnr)
     local to_row_1based = num_lines
     local ext_mark_row_0based = to_row_1based - 1
@@ -92,4 +94,4 @@ function M.extmarks_for(diff)
     window.set_topline(num_lines + #extmark_lines)
 end
 
-
+return M

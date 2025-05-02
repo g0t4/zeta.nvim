@@ -2,8 +2,9 @@ local weslcs = require("zeta.diff.weslcs")
 local combined = require("zeta.diff.combined")
 local parser = require("zeta.helpers.response-parser")
 local files = require("zeta.helpers.files")
-local window = require("zeta.helpers.vimz.windows")
+local windows = require("zeta.helpers.vimz.windows")
 local gather = require("zeta.gather")
+local extmarks = require("zeta.diff.extmarks")
 
 
 local M = {}
@@ -24,8 +25,10 @@ function M.show_diff_extmarks()
     BufferDumpAppend(diff)
     -- weslcs:   "same", "del", "add"
     -- combined: "=",    "-",   "+"
-    M.extmarks_for(diff)
+    local bufnr, _window_id = GetBufferDumpNumbers()
+    extmarks.extmarks_for(diff, bufnr, _window_id)
 end
+
 function M.setup()
     vim.keymap.set("n", "<leader>z", function()
         M.show_diff_extmarks()
