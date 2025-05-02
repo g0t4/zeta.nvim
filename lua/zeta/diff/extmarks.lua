@@ -9,8 +9,12 @@ function M.extmarks_for(diff, bufnr, _window_id)
     local hl_deleted = "zeta-deleted"
     -- 0 == global namespace (otherwise have to activate them if not global ns on hlgroup)
     vim.api.nvim_set_hl(0, hl_same, {}) -- for now just keep it as is
-    vim.api.nvim_set_hl(0, hl_added, { fg = "#00ff00", }) -- ctermfg = "green"
-    vim.api.nvim_set_hl(0, hl_deleted, { fg = "#ff0000", }) -- ctermfg = "red"
+    -- vim.api.nvim_set_hl(0, hl_added, { fg = "#a6e3a1", }) -- ctermfg = "green"
+    -- vim.api.nvim_set_hl(0, hl_added, { fg = "#b5f4cb", }) -- ctermfg = "green"
+    vim.api.nvim_set_hl(0, hl_added, { fg = "#81c8be", }) -- ctermfg = "green"
+    -- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#f28b82", }) -- ctermfg = "red"
+    vim.api.nvim_set_hl(0, hl_deleted, { fg = "#ff6b6b", }) -- ctermfg = "red"
+    -- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#e06c75", }) -- ctermfg = "red"
 
     local extmark_lines = vim.iter(diff):fold({ {} }, function(accum, chunk)
         if chunk == nil then
@@ -27,14 +31,14 @@ function M.extmarks_for(diff, bufnr, _window_id)
 
             local type_hlgroup = hl_same
             if type == "+" then
-                -- type_hlgroup = hl_added -- mine (above)
+                type_hlgroup = hl_added -- mine (above)
                 -- FYI nvim and plugins have a bunch of options already registerd too (color/highlight wise)
                 -- type_hlgroup = "Added" -- light green
-                type_hlgroup = "diffAdded" -- darker green/cyan
+                -- type_hlgroup = "diffAdded" -- darker green/cyan - *** FAVORITE
             elseif type == "-" then
-                -- type_hlgroup = hl_deleted mine (above)
+                type_hlgroup = hl_deleted -- mine (above)
                 -- type_hlgroup = "Removed" -- very light red (almost brown/gray)
-                type_hlgroup = "diffRemoved" -- dark red
+                -- type_hlgroup = "diffRemoved" -- dark red - *** FAVORITE
                 -- return accum
                 -- actually, based on how I aggregate between sames... there should only be one delete and one add between any two sames... so, I could just show both and it would appaer like remove / add (probably often lines removed then lines added, my diff processor puts the delete first which makes sense for that to be on top)
             end
