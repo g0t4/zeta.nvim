@@ -58,14 +58,6 @@ local function try_use_prediction(prediction_request, response_body_stdout)
 
     local bufnr, _window_id = GetBufferDumpNumbers()
     extmarks.extmarks_for(diff, bufnr, _window_id)
-
-
-
-
-
-    -- TODO diff
-    -- TODO show extmarks in buffer where request originated
-    -- assert(output_excerpt ~= nil, "output_excerpt should not be nil")
 end
 
 local function fake_response()
