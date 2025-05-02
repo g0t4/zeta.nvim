@@ -1,0 +1,3 @@
+{
+  "input_excerpt": "<|editable_region_start|>\nlocal M = {}\n\nfunction M.add(a, b)\n    -<|user_cursor_is_here|>-\n\n    return a + b\nend\n\nfunction M.sub(a, b)\n\n    return a - b\nend\n\nfunction M.mul(a, b)\n    return a * b\nend\n\nfunction M.div(a, b)\n    return a / b\nend\n\n\nreturn M\n<|editable_region_end|>"
+}
