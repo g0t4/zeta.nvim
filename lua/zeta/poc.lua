@@ -1,6 +1,6 @@
 local weslcs = require("zeta.diff.weslcs")
 local combined = require("zeta.diff.combined")
-local parser = require("zeta.helpers.response-parser")
+local parser = require("zeta.helpers.tags")
 local files = require("zeta.helpers.files")
 local windows = require("zeta.helpers.vimz.windows")
 local gather = require("zeta.gather")

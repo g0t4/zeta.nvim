@@ -1,4 +1,4 @@
-local parser = require("zeta.helpers.response-parser")
+local parser = require("zeta.helpers.tags")
 
 local M = {}
 
@@ -97,7 +97,7 @@ end
 ---@return string
 function M.read_example_editable_only(relative_path)
     local json_excerpt = M.read_example_json_excerpt(relative_path)
-    local editable = parser.get_editable(json_excerpt)
+    local editable = parser.get_editable_region(json_excerpt)
     if not editable then
         error("couldn't find editable in excerpt: " .. relative_path)
     end

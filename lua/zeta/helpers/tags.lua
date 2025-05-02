@@ -6,7 +6,7 @@ M.tag_cursor_here = "<|user_cursor_is_here|>"
 M.tag_start_of_file = "<|start_of_file|>"
 
 ---@param text string
-function M.get_editable(text)
+function M.get_editable_region(text)
     local start_index = text:find(M.tag_edit_start)
     local end_index = text:find(M.tag_edit_end)
     if start_index == nil

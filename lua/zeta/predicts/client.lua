@@ -1,4 +1,4 @@
-local parser = require("zeta.helpers.response-parser")
+local parser = require("zeta.helpers.tags")
 local files = require("zeta.helpers.files")
 local combined = require("zeta.diff.combined")
 local extmarks = require("zeta.diff.extmarks")
@@ -44,8 +44,8 @@ local function try_use_prediction(prediction_request, response_body_stdout)
     -- BufferDumpAppend("## output_excerpt:\n  ")
     -- BufferDumpAppend(rewritten)
 
-    original_editable = parser.get_editable(original) or ""
-    rewritten_editable = parser.get_editable(rewritten) or ""
+    original_editable = parser.get_editable_region(original) or ""
+    rewritten_editable = parser.get_editable_region(rewritten) or ""
 
     local diff = combined.combined_diff(original_editable, rewritten_editable)
     -- BufferDumpAppend("## diff:\n  ")
