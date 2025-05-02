@@ -72,7 +72,8 @@ function M.read_example_json_excerpt(relative_path)
     --  consider json files as definitive source of truth
     local body = vim.json.decode(content)
     if body.input_excerpt then
-        return body.input_excerpt
+        local cleaned = body.input_excerpt:gsub(parser.tag_cursor_here, "")
+        return cleaned
     elseif body.output_excerpt then
         return body.output_excerpt
     end
