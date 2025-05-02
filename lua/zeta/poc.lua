@@ -16,8 +16,6 @@ function M.show_diff_extmarks()
 
     -- local before, after = files.files_difftastic_ada()
     local before, after = files.request1_response2()
-    BufferDumpAppend("before: " .. before)
-    BufferDumpAppend("after: " .. after)
 
     -- * PICK WHICH DIFF (combined (histogram line level => weslcs word level) or just lcs (weslcs))
     -- local diff = combined.combined_diff(before, after)

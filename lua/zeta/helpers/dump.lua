@@ -97,6 +97,8 @@ end
 function inspect(object, pretty, opts, current_depth)
     opts = opts or {}
     opts.color = opts.color or true
+    opts.pretty = pretty or false -- migrate to opts for this
+    opts.pretty_down_to = opts.pretty_down_to or 1 -- default only do pretty 1 level deep
     current_depth = current_depth or 0
 
     local max_depth = 5
@@ -104,7 +106,6 @@ function inspect(object, pretty, opts, current_depth)
         print("pretty_print: max depth reached")
         return "..."
     end
-    pretty = pretty or false
     if object == nil then
         return black("nil", opts)
     elseif type(object) == 'table' then
@@ -124,7 +125,7 @@ function inspect(object, pretty, opts, current_depth)
             -- special case, also don't check this on object itself as it won't work on non-list tables
             return "{}"
         end
-        if pretty then
+        if opts.pretty then
             return "{\n" .. table.concat(items, ",\n") .. "\n}"
         end
         return "{ " .. table.concat(items, ", ") .. " }"
