@@ -11,6 +11,7 @@ local M = {}
 -- !!! right now this just shows a diff using extmarks, the basis of showing the prediction from the zeta model / predictions API server
 function M.show_diff_extmarks()
     BufferDumpClear()
+    BufferDumpOpen()
 
     -- local before, after = files.files_difftastic_ada()
     local before, after = files.request1_response2()
