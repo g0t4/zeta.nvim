@@ -1,6 +1,9 @@
 local files = require("zeta.helpers.files")
 local should = require("zeta.helpers.should")
 
+-- FYI run this with plenary!
+-- :nmap <leader>u <Plug>PlenaryTestFile
+
 describe("test sending 01_request.json", function()
     local body_json_serialized = files.read_example("01_request.json")
     -- print(body_json_serialized)
