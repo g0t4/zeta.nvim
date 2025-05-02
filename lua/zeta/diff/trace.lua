@@ -6,16 +6,17 @@ M.lines = {}
 function M.pretty(...)
     local args = { ... }
     for i, arg in ipairs(args) do
-        args[i] = inspect(arg, true)
+        args[i] = inspect(arg, { pretty = true })
     end
     table.insert(M.lines, args)
 end
 
---- == trace.raw(inspect(arg1, false), inspect(arg2, false), ...)
-function M.inspet_plain(...)
+--- == trace.raw(inspect(arg1, { pretty = true }))
+---
+function M.inspect_plain(...)
     local args = { ... }
     for i, arg in ipairs(args) do
-        args[i] = inspect(arg, false)
+        args[i] = inspect(arg, { pretty = false })
     end
     table.insert(M.lines, args)
 end

@@ -233,8 +233,8 @@ end
 function M.lcs_diff_from_text(before_text, after_text)
     local before_tokens = M.split(before_text)
     local after_tokens  = M.split(after_text)
-    -- trace.raw("before_tokens", inspect(before_tokens, false))
-    -- trace.raw("pafter_tokens", inspect(after_tokens, false))
+    -- trace.raw("before_tokens", inspect(before_tokens))
+    -- trace.raw("after_tokens", inspect(after_tokens))
 
     local diff = M.lcs_diff_from_tokens(before_tokens, after_tokens)
     return diff

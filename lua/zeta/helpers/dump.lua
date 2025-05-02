@@ -94,10 +94,10 @@ end
 
 ---@param object any
 ---@return string description
-function inspect(object, pretty, opts, current_depth)
+function inspect(object, opts, current_depth)
     opts = opts or {}
     opts.color = opts.color or true
-    opts.pretty = pretty or false -- migrate to opts for this
+    opts.pretty = opts.pretty or false -- migrate to opts for this
     opts.pretty_down_to = opts.pretty_down_to or 1 -- default only do pretty 1 level deep
     current_depth = current_depth or 0
 
@@ -114,10 +114,10 @@ function inspect(object, pretty, opts, current_depth)
         local items = {}
         for key, value in pairs(object) do
             if is_list then
-                table.insert(items, green(inspect(value, pretty, opts, current_depth + 1), opts))
+                table.insert(items, green(inspect(value, opts, current_depth + 1), opts))
             else
                 if type(key) ~= 'number' then key = '"' .. key .. '"' end
-                local item = '[' .. blue(key, opts) .. '] = ' .. green(inspect(value, pretty, opts, current_depth + 1), opts)
+                local item = '[' .. blue(key, opts) .. '] = ' .. green(inspect(value, opts, current_depth + 1), opts)
                 table.insert(items, item)
             end
         end
@@ -125,7 +125,7 @@ function inspect(object, pretty, opts, current_depth)
             -- special case, also don't check this on object itself as it won't work on non-list tables
             return "{}"
         end
-        if opts.pretty then
+        if opts.pretty and current_depth <= opts.pretty_down_to then
             return "{\n" .. table.concat(items, ",\n") .. "\n}"
         end
         return "{ " .. table.concat(items, ", ") .. " }"
@@ -140,10 +140,10 @@ function inspect(object, pretty, opts, current_depth)
     end
 end
 
-function print_inspect(object, pretty)
-    print(inspect(object, pretty))
+function print_inspect(object, opts)
+    print(inspect(object, opts))
 end
 
 function pretty_print(object)
-    print_inspect(object, true)
+    print_inspect(object, { pretty = true })
 end

@@ -151,7 +151,7 @@ _describe("my paper example", function()
         --
         -- only dumping match_matrix to compare to my manually created versions above
         -- local _match_matrix = weslcs.get_match_matrix(before_tokens, after_tokens)
-        -- print("match_matrix: ", inspect(match_matrix, true))
+        -- print("match_matrix: ", inspect(match_matrix, { pretty = true }))
         -- FYI I can delete match matrix method in diff code.. that would be fine
 
         -- * just like doing a maze in reverse is easy, likewise with finding a longest sequence
