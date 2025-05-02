@@ -230,22 +230,25 @@ function M.get_token_diff(before_tokens, after_tokens)
     return builder.token_diff
 end
 
-function M.lcs_diff_with_same_add_del_types(before_text, after_text)
+function M.lcs_diff_from_text(before_text, after_text)
     local before_tokens = M.split(before_text)
     local after_tokens  = M.split(after_text)
     -- trace.raw("before_tokens", inspect(before_tokens, false))
     -- trace.raw("pafter_tokens", inspect(after_tokens, false))
 
-    local diff          = M.get_diff(before_tokens, after_tokens)
+    local diff = M.lcs_diff_from_tokens(before_tokens, after_tokens)
     return diff
 end
 
-function M.lcs_diff_with_sign_types(before_text, after_text)
-    local diff = M.lcs_diff_with_same_add_del_types(before_text, after_text)
+function M.lcs_diff_with_sign_types_from_text(before_text, after_text)
+    local diff = M.lcs_diff_from_text(before_text, after_text)
+    for _, change in pairs(diff) do
+        change[1] = change[1] == "add" and "+" or change[1] == "del" and "-" or "=" or change[1]
+    end
     return diff
 end
 
-function M.get_diff(before_tokens, after_tokens)
+function M.lcs_diff_from_tokens(before_tokens, after_tokens)
     -- WIP prefix/suffix strip
     local same_prefix, middle, same_suffix = M.split_common_prefix_and_suffix(before_tokens, after_tokens)
     -- FYI don't need middle b/c actually, I modify before_tokens and after_tokens in place!

@@ -17,7 +17,7 @@ function M.show_diff_extmarks()
     BufferDumpAppend("after: " .. after)
 
     -- local diff = combined.combined_diff(before, after)
-    local diff = weslcs.lcs_diff_with_same_add_del_types(before, after)
+    local diff = weslcs.lcs_diff_from_text(before, after)
     BufferDumpAppend(diff)
     -- weslcs:   "same", "del", "add"
     -- combined: "=",    "-",   "+"

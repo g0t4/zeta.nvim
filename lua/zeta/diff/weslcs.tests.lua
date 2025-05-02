@@ -1,5 +1,6 @@
 local should = require("zeta.helpers.should")
 local weslcs = require("zeta.diff.weslcs")
+local trace = require("zeta.diff.trace")
 require("zeta.helpers.testing")
 local SPLIT_ON_WHITESPACE = "%s+"
 local STRIP_WHITESPACE = true
@@ -80,7 +81,7 @@ _describe("my paper example", function()
     end)
 
     it("get aggregated diff", function()
-        local actual_diff = weslcs.get_diff(before_tokens, after_tokens)
+        local actual_diff = weslcs.lcs_diff_from_tokens(before_tokens, after_tokens)
         -- consolidate consecutive sames
         -- and consolidate all adds between sames
         -- and consolidate all dels between sames
@@ -250,7 +251,7 @@ _describe("strip shared suffix/prefix before LCS diff", function()
             local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
             local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
 
-            local actual_diff = weslcs.get_diff(before_tokens, after_tokens)
+            local actual_diff = weslcs.lcs_diff_from_tokens(before_tokens, after_tokens)
             local expected_diff = {
                 -- shared prefix:
                 { "same", "FA" },
@@ -281,7 +282,7 @@ _describe("strip shared suffix/prefix before LCS diff", function()
                 { "add",  "A" },
             }
 
-            local actual_diff = weslcs.get_diff(before_tokens, after_tokens)
+            local actual_diff = weslcs.lcs_diff_from_tokens(before_tokens, after_tokens)
 
             should.be_same(expected_diff, actual_diff)
         end)
@@ -306,5 +307,55 @@ _describe("strip shared suffix/prefix before LCS diff", function()
             should.be_same({ "same", "ABCD" }, same_suffix)
             should.be_same(expected_middle, middle)
         end)
+    end)
+end)
+
+_describe("can convert to sign types", function()
+    local before_text = "B C B"
+    local after_text = "A C A"
+
+    it("setup is as expected", function()
+        -- *** INCLUDES SPACES as WORDS
+        --   SO, the same sequenceds above won't match... b/c those strip space separators
+        -- intermediate token diff:
+        local expected_token_diff = {
+            { "add",  "A" },
+            { "del",  "B" },
+            { "same", " " },
+            { "same", "C" },
+            { "same", " " },
+            { "add",  "A" },
+            { "del",  "B" },
+        }
+        local token_diff = weslcs.get_token_diff(weslcs.split(before_text), weslcs.split(after_text))
+        should.be_same(expected_token_diff, token_diff)
+
+        -- FYI LCS is " C " which is obvious here:
+        local expected_diff = {
+            { "del",  "B" },
+            { "add",  "A" },
+            { "same", " C " },
+            { "del",  "B" },
+            { "add",  "A" },
+        }
+
+        -- * HONESTLY its fine to just test the final aggregated diff (can skip token diff above):
+        local actual_diff = weslcs.lcs_diff_from_text(before_text, after_text)
+
+        should.be_same(expected_diff, actual_diff)
+    end)
+
+    it("here are the add/del/same", function()
+        local expected_diff = {
+            { "-", "B" },
+            { "+", "A" },
+            { "=", " C " },
+            { "-", "B" },
+            { "+", "A" },
+        }
+
+        local actual_diff = weslcs.lcs_diff_with_sign_types_from_text(before_text, after_text, true)
+
+        should.be_same(expected_diff, actual_diff)
     end)
 end)
