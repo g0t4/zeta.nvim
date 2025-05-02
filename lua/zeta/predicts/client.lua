@@ -1,7 +1,31 @@
 local files = require("zeta.helpers.files")
+local should = require("zeta.helpers.should")
 
-local body_json_serialized = files.read_example("01_request.json")
--- print(body_json_serialized)
+describe("test sending 01_request.json", function()
+    local body_json_serialized = files.read_example("01_request.json")
+    -- print(body_json_serialized)
+
+    it("should return output_excerpt", function()
+        local url = "http://build21:9000/predict_edits"
+        local result = vim.fn.system({
+            "curl",
+            "-H", "Content-Type: application/json",
+            "-X", "POST",
+            "-s", url,
+            -- "-d", vim.fn.json_encode(request_body)
+            "-d", body_json_serialized
+        })
+
+        local decoded = vim.fn.json_decode(result)
+        local output_excerpt = decoded.output_excerpt
+        assert(output_excerpt ~= nil, "output_excerpt should not be nil")
+
+        print("## output_excerpt:")
+        print(output_excerpt)
+        print()
+    end)
+end)
+
 
 
 -- local request_body = {
@@ -18,17 +42,6 @@ local body_json_serialized = files.read_example("01_request.json")
 --     -- DO NOT NEED:
 --     -- can_collect_data = false,
 -- }
-
-local url = "http://build21:9000/predict_edits"
-local result = vim.fn.system({
-    "curl",
-    "-H", "Content-Type: application/json",
-    "-X", "POST",
-    "-s", url,
-    -- "-d", vim.fn.json_encode(request_body)
-    "-d", body_json_serialized
-})
-print(result)
 
 -- TODO
 
