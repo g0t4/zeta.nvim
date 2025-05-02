@@ -1,6 +1,8 @@
 local parser = require("zeta.helpers.response-parser")
 local files = require("zeta.helpers.files")
 local combined = require("zeta.diff.combined")
+local extmarks = require("zeta.diff.extmarks")
+
 
 local M = {}
 function M.get_prediction_request()
@@ -48,6 +50,9 @@ local function try_use_prediction(prediction_request, response_body_stdout)
     local diff = combined.combined_diff(original_editable, rewritten_editable)
     -- BufferDumpAppend("## diff:\n  ")
     -- BufferDumpAppend(inspect(diff))
+
+    local bufnr, _window_id = GetBufferDumpNumbers()
+    extmarks.extmarks_for(diff, bufnr, _window_id)
 
 
 
