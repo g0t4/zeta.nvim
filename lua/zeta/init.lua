@@ -11,27 +11,13 @@ local M = {}
 function M.show_diff_extmarks()
     BufferDumpClear()
 
+    -- local before, after = files.files_difftastic_ada()
+    local before, after = files.request1_response2()
+    BufferDumpAppend("before: " .. before)
+    BufferDumpAppend("after: " .. after)
 
-    -- * get editable regions to diff
-    local zed_request, _ = files.read_example("01_request.json")
-    -- local zed_response, _ = files.read_example("01_response.json")
-    local zed_response, _ = files.read_example("02_response.json")
-    -- local zed_response, _ = files.read_example("03_response.json")
-
-    local request_decoded = vim.json.decode(zed_request)
-    local response_decoded = vim.json.decode(zed_response)
-    local input_excerpt = request_decoded.input_excerpt
-    local output_excerpt = response_decoded.output_excerpt
-
-    local input_editable = parser.get_editable(input_excerpt)
-    local output_editable = parser.get_editable(output_excerpt)
-    assert(input_editable ~= nil)
-    assert(output_editable ~= nil)
-
-    input_editable = input_editable:gsub(parser.tag_cursor_here, "")
-
-    local diff     = combined.combined_diff(input_editable, output_editable)
-    -- local diff = weslcs.get_diff_from_text(input_editable, output_editable)
+    -- local diff = combined.combined_diff(before, after)
+    local diff = weslcs.lcs_diff_with_same_add_del_types(before, after)
     BufferDumpAppend(diff)
     -- weslcs:   "same", "del", "add"
     -- combined: "=",    "-",   "+"

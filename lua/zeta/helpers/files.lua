@@ -22,7 +22,7 @@ end
 ---@return string content
 function M.read_example(relative_path)
     local repo_path = get_path_relative_to_examples_dir(relative_path)
-    local content, err = M.read_file(repo_path)
+    local content, err = M.read_all_to_string(repo_path)
     if not content then
         error("Cannot read file: " .. repo_path .. ", error: " .. err)
     end
@@ -32,7 +32,7 @@ end
 --- Reads the entire content of a file into a single string.
 ---@param path string
 ---@return string content
-function M.read_file(path)
+function M.read_all_to_string(path)
     local file, err = io.open(path, "r")
     if not file then
         error("Cannot open file: " .. path .. ", error: " .. err)
@@ -60,9 +60,10 @@ function M.read_lines(path)
     return lines
 end
 
+---@return string
 function M.read_example_json_excerpt(relative_path)
     local repo_path = get_path_relative_to_examples_dir(relative_path)
-    local content, err = M.read_file(repo_path)
+    local content, err = M.read_all_to_string(repo_path)
     if not content then
         error("Cannot read file: " .. repo_path .. ", error: " .. err)
     end
@@ -80,6 +81,7 @@ function M.read_example_json_excerpt(relative_path)
 end
 
 --- extract just the content inside of <|editable_region_start|> tags
+---@return string
 function M.read_example_editable_only(relative_path)
     local json_excerpt = M.read_example_json_excerpt(relative_path)
     local editable = parser.get_editable(json_excerpt)
@@ -87,6 +89,31 @@ function M.read_example_editable_only(relative_path)
         error("couldn't find editable in excerpt: " .. relative_path)
     end
     return editable
+end
+
+function M.resolve_path(path)
+    return path:gsub("^~", os.getenv("HOME"))
+end
+
+local function load_difftastic_sample(relative_path)
+    local repo_path = M.resolve_path("~/repos/github/Wilfred/difftastic/sample_files")
+    local file_path = repo_path .. "/" .. relative_path
+    return M.read_all_to_string(file_path)
+end
+---@alias FilesProvider fun(): string, string
+
+---@type FilesProvider
+function M.request1_response2()
+    return
+        M.read_example_editable_only("01_request.json"),
+        M.read_example_editable_only("02_response.json")
+end
+
+---@type FilesProvider
+function M.files_difftastic_ada()
+    return
+        load_difftastic_sample("ada_1.adb"),
+        load_difftastic_sample("ada_2.adb")
 end
 
 return M

@@ -232,13 +232,18 @@ function M.get_token_diff(before_tokens, after_tokens)
     return builder.token_diff
 end
 
-function M.get_diff_from_text(before_text, after_text)
+function M.lcs_diff_with_same_add_del_types(before_text, after_text)
     local before_tokens = M.split(before_text)
     local after_tokens  = M.split(after_text)
     -- trace.raw("before_tokens", inspect(before_tokens, false))
     -- trace.raw("pafter_tokens", inspect(after_tokens, false))
 
-    local diff = M.get_diff(before_tokens, after_tokens)
+    local diff          = M.get_diff(before_tokens, after_tokens)
+    return diff
+end
+
+function M.lcs_diff_with_sign_types(before_text, after_text)
+    local diff = M.lcs_diff_with_same_add_del_types(before_text, after_text)
     return diff
 end
 

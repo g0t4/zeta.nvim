@@ -64,7 +64,7 @@ function M.step2_lcs_diffs(histogram_line_diff)
                 return line .. "\n"
             end)
             :join("")
-        local lcs_diff = weslcs.get_diff_from_text(before_text_string, after_text_string)
+        local lcs_diff = weslcs.lcs_diff_with_same_add_del_types(before_text_string, after_text_string)
         table.insert(groups, lcs_diff)
         -- FYI get_diff (lcs) aggregates consecutive tokens of the same type
         --  so, the result here is ready to be turned into extmarks (for the LCS diff'd lines)
