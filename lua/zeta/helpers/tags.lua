@@ -20,4 +20,11 @@ function M.get_editable_region(text)
     return text:sub(start_index, end_index)
 end
 
+---@param text string
+---@return string
+function M.strip_user_cursor_tag(text)
+    local cleaned = text:gsub(M.tag_cursor_here, "")
+    return cleaned
+end
+
 return M
