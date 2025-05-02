@@ -20,7 +20,6 @@ function M.extmarks_for(diff, bufnr, _window_id)
         if chunk == nil then
             BufferDumpAppend("nil chunk: " .. tostring(chunk))
         else
-            BufferDumpAppend("chunk", chunk)
             -- each chunk has has two strings: { "text\nfoo\nbar", "type" }
             --   type == "same", "add", "del"
             -- text must be split on new line into an array
@@ -52,7 +51,6 @@ function M.extmarks_for(diff, bufnr, _window_id)
                 local splits = vim.split(text, "\n")
                 for i, piece in ipairs(splits) do
                     -- FYI often v will be empty (i.e. a series of newlines)... do not exclude these empty lines!
-                    BufferDumpAppend("  piece: " .. piece)
                     local len_text = #piece
                     if len_text > 0 then
                         -- don't add empty pieces, just make sure we add the lines (even if empty)
@@ -70,10 +68,10 @@ function M.extmarks_for(diff, bufnr, _window_id)
         return accum
     end)
 
-    BufferDumpHeader("extmark_lines")
-    for _, v in ipairs(extmark_lines) do
-        BufferDumpAppend(vim.inspect(v))
-    end
+    -- BufferDumpHeader("extmark_lines")
+    -- for _, v in ipairs(extmark_lines) do
+    --     BufferDumpAppend(vim.inspect(v))
+    -- end
 
     if #extmark_lines < 1 then
         BufferDumpAppend("no lines")
