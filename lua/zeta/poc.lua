@@ -8,6 +8,7 @@ local gather = require("zeta.gather")
 
 local M = {}
 
+-- !!! right now this just shows a diff using extmarks, the basis of showing the prediction from the zeta model / predictions API server
 function M.show_diff_extmarks()
     BufferDumpClear()
 
