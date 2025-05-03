@@ -5,6 +5,7 @@ local M = {}
 
 function M.learn_treesitter_node_APIs()
     -- :h treesitter-node
+    dump.ensure_open()
 
     -- local node = vim.treesitter.get_node({ bufnr = 0, pos = vim.api.nvim_win_get_cursor(0) })
     local success, node = pcall(vim.treesitter.get_node, { bufnr = 0, pos = vim.api.nvim_win_get_cursor(0) })

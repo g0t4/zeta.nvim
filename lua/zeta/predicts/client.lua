@@ -61,6 +61,8 @@ function M.get_prediction_request()
 end
 
 local function try_use_prediction(prediction_request, response_body_stdout)
+    dump.ensure_open()
+
     local decoded = vim.fn.json_decode(response_body_stdout)
     dump.header("response_body_stdout:")
     dump.append(inspect(decoded))
@@ -107,6 +109,7 @@ function M.show_prediction()
     local prediction_request = M.get_prediction_request()
     -- save yourself the hassle of forgetting to encode/decode when loading test files
     assert(type(prediction_request.body) == "table", "body must be a table")
+    dump.ensure_open()
 
     -- dump.header("prediction_request:")
     -- dump.append(prediction_request.body.input_excerpt)
