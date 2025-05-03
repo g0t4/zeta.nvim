@@ -29,27 +29,27 @@ function M.learn_treesitter_node_APIs()
     --       Use |vim.treesitter.get_node()|
     --       and |TSNode:type()| instead.
 
-    -- BufferDumpAppend("\nrange:", node:range()) -- not in a table
-    BufferDumpAppend("\nrange:", vim.treesitter.get_range(node)) -- table w/ start row/col/bytes, end row/col/bytes
-    BufferDumpAppend("\nid:", node:id())
-    BufferDumpAppend("\nhas_error (syntax):", node:has_error()) -- if node has syntax error, would be useful to pass!
-    BufferDumpAppend("\nhas_changes:", node:has_changes())
-    BufferDumpAppend("\nroot:", node:root())
+    -- dump.append("\nrange:", node:range()) -- not in a table
+    dump.append("\nrange:", vim.treesitter.get_range(node)) -- table w/ start row/col/bytes, end row/col/bytes
+    dump.append("\nid:", node:id())
+    dump.append("\nhas_error (syntax):", node:has_error()) -- if node has syntax error, would be useful to pass!
+    dump.append("\nhas_changes:", node:has_changes())
+    dump.append("\nroot:", node:root())
     -- TODO node:root seems to be missing :type() and others?
 
 
 
-    BufferDumpAppend("\ntype:", node:type())
+    dump.append("\ntype:", node:type())
     --  identifier, escape_sequence, string_content, return_statement
     --  function_declaration (function/end), variable_declaration (local)
     --  block (inside function)
-    BufferDumpAppend("\nsymbol:", node:symbol())
-    BufferDumpAppend("\nchild_count:", node:child_count())
+    dump.append("\nsymbol:", node:symbol())
+    dump.append("\nchild_count:", node:child_count())
 
-    -- BufferDumpAppend("\nparent symbol:", node:parent():symbol())
+    -- dump.append("\nparent symbol:", node:parent():symbol())
 
-    BufferDumpAppend("\ntext:", vim.treesitter.get_node_text(node, 0))
-    -- BufferDumpAppend("\nparent text:", vim.treesitter.get_node_text(node:parent(), 0))
+    dump.append("\ntext:", vim.treesitter.get_node_text(node, 0))
+    -- dump.append("\nparent text:", vim.treesitter.get_node_text(node:parent(), 0))
 end
 
 -- describe("gathering", function()

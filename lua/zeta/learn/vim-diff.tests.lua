@@ -1,6 +1,7 @@
 local parser = require("zeta.helpers.tags")
 local files = require("zeta.helpers.files")
 local should = require("zeta.helpers.should")
+local dump = require("helpers.dump")
 require("zeta.helpers.testing")
 
 _describe("vim.diff", function()
@@ -21,8 +22,8 @@ _describe("vim.diff", function()
         input_editable = input_editable:gsub(parser.tag_cursor_here, "")
 
         vdiff = vim.diff(input_editable, output_editable)
-        BufferDumpHeader("vdiff")
-        BufferDumpAppend(vdiff)
+        dump.header("vdiff")
+        dump.append(vdiff)
 
         ref_vdiff = [[
 @@ -7,0 +8,7 @@

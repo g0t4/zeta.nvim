@@ -51,6 +51,7 @@ function M.adorn_editable_region(all_lines, cursor_on_row, cursor_on_column)
 
     -- then wrap editable around all lines for now
     table.insert(all_lines, 1, M.tag_edit_start)
+    -- table.insert(all_lines, 1, M.tag_start_of_file) -- does this help with repeating responses?
     table.insert(all_lines, M.tag_edit_end)
     return all_lines
 end

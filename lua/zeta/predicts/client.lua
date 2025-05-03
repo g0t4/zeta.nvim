@@ -3,7 +3,7 @@ local files = require("zeta.helpers.files")
 local combined = require("zeta.diff.combined")
 local tags = require("zeta.helpers.tags")
 local extmarks = require("zeta.diff.extmarks")
-
+local dump = require("helpers.dump")
 
 local M = {}
 function M.get_prediction_request()
@@ -14,17 +14,17 @@ function M.get_prediction_request()
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
     local cursor_pos = vim.api.nvim_win_get_cursor(0)
-    BufferDumpHeader("cursor_pos:")
-    BufferDumpAppend(cursor_pos)
+    dump.header("cursor_pos:")
+    dump.append(cursor_pos)
 
     -- insert cursor position tag
     local editable = tags.adorn_editable_region(lines, cursor_pos[1], cursor_pos[2])
-    BufferDumpHeader("editable:")
-    BufferDumpAppend(inspect(editable))
+    dump.header("editable:")
+    dump.append(inspect(editable))
 
     local editable_text = table.concat(editable, "\n")
-    BufferDumpHeader("editable_text:")
-    BufferDumpAppend(editable_text)
+    dump.header("editable_text:")
+    dump.append(editable_text)
 
     -- TODO get real file content, and the rest is ready to go!
     -- TODO later, get editable vs surrounding context
@@ -40,8 +40,8 @@ function M.get_prediction_request()
         -- input_events
         -- outline
     }
-    BufferDumpHeader("body:")
-    BufferDumpAppend(inspect(body))
+    dump.header("body:")
+    dump.append(inspect(body))
 
     return {
         bufnr = bufnr,
@@ -62,32 +62,32 @@ end
 
 local function try_use_prediction(prediction_request, response_body_stdout)
     local decoded = vim.fn.json_decode(response_body_stdout)
-    BufferDumpHeader("response_body_stdout:")
-    BufferDumpAppend(inspect(decoded))
+    dump.header("response_body_stdout:")
+    dump.append(inspect(decoded))
     assert(decoded ~= nil, "decoded reponse body should not be nil")
     local rewritten = decoded.output_excerpt
     if rewritten == nil then
-        BufferDumpHeader("output_excerpt is nil, aborting...")
+        dump.header("output_excerpt is nil, aborting...")
         return
     end
 
     local original = prediction_request.body.input_excerpt
-    -- BufferDumpHeader("input_excerpt:")
-    -- BufferDumpAppend(original)
-    -- BufferDumpHeader("output_excerpt:")
-    -- BufferDumpAppend(rewritten)
+    -- dump.header("input_excerpt:")
+    -- dump.append(original)
+    -- dump.header("output_excerpt:")
+    -- dump.append(rewritten)
 
     original_editable = parser.get_editable_region(original) or ""
     -- PRN use cursor position? i.e. check if cursor has moved since prediction requested (might not need this actually)
     -- cursor_position = parser.get_position_of_user_cursor(original) or 0
-    -- BufferDumpHeader("cursor_position:", cursor_position)
+    -- dump.header("cursor_position:", cursor_position)
     original_editable = parser.strip_user_cursor_tag(original_editable)
 
     rewritten_editable = parser.get_editable_region(rewritten) or ""
 
     local diff = combined.combined_diff(original_editable, rewritten_editable)
-    -- BufferDumpHeader("diff:")
-    -- BufferDumpAppend(inspect(diff))
+    -- dump.header("diff:")
+    -- dump.append(inspect(diff))
 
     local bufnr, _window_id = GetBufferDumpNumbers()
     extmarks.extmarks_for(diff, bufnr, _window_id)
@@ -108,8 +108,8 @@ function M.show_prediction()
     -- save yourself the hassle of forgetting to encode/decode when loading test files
     assert(type(prediction_request.body) == "table", "body must be a table")
 
-    -- BufferDumpHeader("prediction_request:")
-    -- BufferDumpAppend(prediction_request.body.input_excerpt)
+    -- dump.header("prediction_request:")
+    -- dump.append(prediction_request.body.input_excerpt)
     -- PRN extra assertions to validate no mistakes in a special troubleshot mode?
     --   i.e. does it include editable region, cursor position, etc...
 
@@ -127,8 +127,8 @@ function M.show_prediction()
             "-d", vim.fn.json_encode(prediction_request.body)
         }
 
-        BufferDumpHeader("curl command")
-        BufferDumpAppend(inspect(command, { pretty = true }))
+        dump.header("curl command")
+        dump.append(inspect(command, { pretty = true }))
 
         local result = vim.system(command,
             {
@@ -140,17 +140,17 @@ function M.show_prediction()
                 -- stdout = function(err, data)
                 --     vim.schedule(function()
                 --         if err ~= nil then
-                --             BufferDumpHeader("STDOUT error:" .. err)
+                --             dump.header("STDOUT error:" .. err)
                 --         end
-                --         BufferDumpHeader("STDOUT data:" .. (data or ""))
+                --         dump.header("STDOUT data:" .. (data or ""))
                 --     end)
                 -- end,
                 -- stderr = function(err, data)
                 --     vim.schedule(function()
                 --         if err ~= nil then
-                --             BufferDumpHeader("STDERR error:" .. err)
+                --             dump.header("STDERR error:" .. err)
                 --         end
-                --         BufferDumpHeader("STDERR data:" .. (data or ""))
+                --         dump.header("STDERR data:" .. (data or ""))
                 --     end)
                 -- end,
                 -- timeout = ? seconds? ms? default is?
@@ -165,13 +165,13 @@ function M.show_prediction()
         vim.schedule(function()
             if result.code ~= 0 then
                 -- test failure with wrong URL
-                BufferDumpHeader("curl on_exit:  " .. inspect(result))
+                dump.header("curl on_exit:  " .. inspect(result))
             end
             -- if result.stderr ~= "" then
-            --     BufferDumpHeader("STDERR:", result.stderr)
+            --     dump.header("STDERR:", result.stderr)
             -- end
             if result.stdout ~= "" then
-                BufferDumpHeader("STDOUT:", result.stdout)
+                dump.header("STDOUT:", result.stdout)
                 try_use_prediction(prediction_request, result.stdout)
             end
         end)
@@ -180,8 +180,8 @@ function M.show_prediction()
     local ok, err = pcall(make_request)
     if not ok then
         -- this happens when command (curl) is not found
-        BufferDumpHeader("prediction request failed immediately:")
-        BufferDumpAppend(inspect(err))
+        dump.header("prediction request failed immediately:")
+        dump.append(inspect(err))
     end
 end
 

@@ -5,14 +5,14 @@ local files = require("zeta.helpers.files")
 local windows = require("zeta.helpers.vimz.windows")
 local gather = require("zeta.gather")
 local extmarks = require("zeta.diff.extmarks")
-
+local dump = require("helpers.dump")
 
 local M = {}
 
 -- !!! right now this just shows a diff using extmarks, the basis of showing the prediction from the zeta model / predictions API server
 function M.show_diff_extmarks()
-    BufferDumpOpen()
-    BufferDumpClear()
+    dump.ensure_open()
+    dump.clear()
 
     -- local before, after = files.files_difftastic_ada()
     local before, after = files.request1_response2()
@@ -20,10 +20,10 @@ function M.show_diff_extmarks()
     -- * PICK WHICH DIFF (combined (histogram line level => weslcs word level) or just lcs (weslcs))
     -- local diff = combined.combined_diff(before, after)
     local diff = weslcs.lcs_diff_with_sign_types_from_text(before, after)
-    BufferDumpAppend(diff)
+    dump.append(diff)
     -- weslcs:   "same", "del", "add"
     -- combined: "=",    "-",   "+"
-    local bufnr, _window_id = GetBufferDumpNumbers()
+    local bufnr, _window_id = dump.get_ids()
     extmarks.extmarks_for(diff, bufnr, _window_id)
 end
 

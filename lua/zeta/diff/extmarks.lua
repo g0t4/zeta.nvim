@@ -1,4 +1,5 @@
 local window = require("zeta.helpers.vimz.windows")
+local dump = require("helpers.dump")
 
 local M = {}
 
@@ -18,7 +19,7 @@ function M.extmarks_for(diff, bufnr, _window_id)
 
     local extmark_lines = vim.iter(diff):fold({ {} }, function(accum, chunk)
         if chunk == nil then
-            BufferDumpAppend("nil chunk: " .. tostring(chunk))
+            dump.append("nil chunk: " .. tostring(chunk))
         else
             -- each chunk has has two strings: { "text\nfoo\nbar", "type" }
             --   type == "same", "add", "del"
@@ -68,13 +69,13 @@ function M.extmarks_for(diff, bufnr, _window_id)
         return accum
     end)
 
-    -- BufferDumpHeader("extmark_lines")
+    -- dump.header("extmark_lines")
     -- for _, v in ipairs(extmark_lines) do
-    --     BufferDumpAppend(vim.inspect(v))
+    --     dump.append(vim.inspect(v))
     -- end
 
     if #extmark_lines < 1 then
-        BufferDumpAppend("no lines")
+        dump.append("no lines")
         return
     end
 
