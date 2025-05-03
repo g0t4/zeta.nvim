@@ -89,7 +89,7 @@ local function try_use_prediction(prediction_request, response_body_stdout)
     -- dump.header("diff:")
     -- dump.append(inspect(diff))
 
-    local bufnr, _window_id = GetBufferDumpNumbers()
+    local bufnr, _window_id = dump.get_ids()
     extmarks.extmarks_for(diff, bufnr, _window_id)
 end
 
