@@ -128,7 +128,7 @@ function M.show_prediction()
         }
 
         BufferDumpHeader("curl command")
-        BufferDumpAppend(inspect(command))
+        BufferDumpAppend(inspect(command, { pretty = true }))
 
         local result = vim.system(command,
             {
