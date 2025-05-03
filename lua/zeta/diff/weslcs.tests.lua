@@ -1,6 +1,5 @@
 local should = require("zeta.helpers.should")
 local weslcs = require("zeta.diff.weslcs")
-local trace = require("zeta.diff.trace")
 require("zeta.helpers.testing")
 local SPLIT_ON_WHITESPACE = "%s+"
 local STRIP_WHITESPACE = true

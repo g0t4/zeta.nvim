@@ -46,8 +46,6 @@ return N
     it("follows histogram with a 2nd pass, word-level LCS", function()
         local histogram_line_diff = histogram.split_then_diff_lines(before_text, after_text)
         local diffs = combined.step2_lcs_diffs(histogram_line_diff)
-        -- trace.flush()
-
 
         -- pretty_print(diffs)
 
