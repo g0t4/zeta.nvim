@@ -1,4 +1,4 @@
-require("zeta.helpers.inspect")
+require("devtools.inspect")
 local dump = require("helpers.dump")
 
 local M = {}

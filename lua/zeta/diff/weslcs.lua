@@ -4,7 +4,7 @@
 --   even if I don't like how it works, it works and what it produces is all I care about
 --   but I would like practice with LCS so I would like to revist it
 --     probably will nag at me and make me do it tonight
-require("zeta.helpers.inspect")
+local inspect = require("devtools.inspect")
 local trace = require("zeta.diff.trace")
 
 local M = {}
@@ -236,7 +236,7 @@ function M.lcs_diff_from_text(before_text, after_text)
     -- trace.raw("before_tokens", inspect(before_tokens))
     -- trace.raw("after_tokens", inspect(after_tokens))
 
-    local diff = M.lcs_diff_from_tokens(before_tokens, after_tokens)
+    local diff          = M.lcs_diff_from_tokens(before_tokens, after_tokens)
     return diff
 end
 

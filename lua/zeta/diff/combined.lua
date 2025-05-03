@@ -1,6 +1,6 @@
 local histogram = require("zeta.diff.histogram")
 local weslcs = require("zeta.diff.weslcs")
-require("zeta.helpers.inspect")
+require("devtools.inspect")
 
 local M = {}
 

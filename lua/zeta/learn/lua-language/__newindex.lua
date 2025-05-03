@@ -11,7 +11,7 @@ local should = require("zeta.helpers.should")
 --   only use iron.nvim if you're working on generic lua libraries or otherwise
 --   paths will be an issue for all requires (can fix by modifying RTP but lets just use plenary for consistency and it works fine)
 
-require("zeta.helpers.inspect")
+require("devtools.inspect")
 t = { x = 1 }
 setmetatable(t, {
     __newindex = function(table, key, value)

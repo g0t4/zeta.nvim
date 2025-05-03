@@ -1,4 +1,4 @@
-local inspect = require("zeta.helpers.inspect")
+local inspect = require("devtools.inspect")
 
 local M = {}
 
