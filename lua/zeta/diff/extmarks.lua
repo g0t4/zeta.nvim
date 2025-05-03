@@ -93,8 +93,11 @@ function M.extmarks_for(diff, bufnr, _window_id)
         virt_text_pos = "overlay", -- "overlay", "eol", "inline"
     })
 
-    -- * scroll down enough to see extmarks that are past the last line of the buffer (so, moving cursor won't work to see them)
-    window.set_topline(num_lines + #extmark_lines, _window_id)
+    if _window_id ~= nil then
+        -- if window is open, then scroll down
+        -- * scroll down enough to see extmarks that are past the last line of the buffer (so, moving cursor won't work to see them)
+        window.set_topline(num_lines + #extmark_lines, _window_id)
+    end
 end
 
 return M
