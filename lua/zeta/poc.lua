@@ -9,10 +9,12 @@ local dump = require("helpers.dump")
 
 local M = {}
 
--- !!! right now this just shows a diff using extmarks, the basis of showing the prediction from the zeta model / predictions API server
 function M.show_diff_extmarks()
+    -- this was an early prototype to test showing a diff with extmarks
+    -- FYI this can be removed
+
     dump.ensure_open()
-    dump.clear()
+    -- dump.clear()
 
     -- local before, after = files.files_difftastic_ada()
     local before, after = files.request1_response2()
