@@ -1,5 +1,5 @@
 local client = require("zeta.predicts.client")
-local poc = require("zeta.poc")
+local poc = require("zeta.learn.diff.poc")
 local M = {}
 
 function M.setup()
