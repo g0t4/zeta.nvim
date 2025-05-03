@@ -1,6 +1,6 @@
 local should = require("zeta.helpers.should")
 local histogram = require("zeta.diff.histogram")
-require("zeta.helpers.dump")
+require("zeta.helpers.inspect")
 require("zeta.helpers.testing")
 
 _describe("test using histogram diff", function()

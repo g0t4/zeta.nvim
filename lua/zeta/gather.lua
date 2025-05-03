@@ -1,6 +1,5 @@
-local buffers = require("zeta.helpers.vimz.buffers")
-require("zeta.helpers.dump")
-local ts_utils = require('nvim-treesitter.ts_utils')
+require("zeta.helpers.inspect")
+local dump = require("helpers.dump")
 
 local M = {}
 
