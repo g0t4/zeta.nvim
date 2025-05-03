@@ -10,6 +10,11 @@
 
     "workspace.library": [
         "$VIMRUNTIME",
-        "~/.local/share/nvim/lazy/rxlua"
+        "~/.local/share/nvim/lazy/rxlua",
+        // so I get completions for my helpers like lua/helpers/dump.lua (messages buffer)
+        // TODO long term move common parts into another repo, i.e. g0t4/devtools.nvim repo? or g0t4/helpers.nvim
+        // for now this is super helpful!
+        //  at runtime this repo is included with lazy definitions in dotfiles, so don't have to worry about the linkage beyond LS purposes
+        "~/repos/github/g0t4/dotfiles/.config/nvim/",
     ]
 }
