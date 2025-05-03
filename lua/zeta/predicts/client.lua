@@ -4,6 +4,7 @@ local combined = require("zeta.diff.combined")
 local tags = require("zeta.helpers.tags")
 local extmarks = require("zeta.diff.extmarks")
 local dump = require("helpers.dump")
+local inspect = require("devtools.inspect")
 
 local M = {}
 function M.get_prediction_request()
