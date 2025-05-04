@@ -192,8 +192,12 @@ end
 function M.setup_trigger_on_editing_buffer()
     local ns = vim.api.nvim_create_namespace("zeta-prediction")
 
-
-
+    vim.api.nvim_create_autocmd("InsertLeave", {
+        pattern = "*",
+        callback = function()
+            vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+        end,
+    })
 
     vim.api.nvim_create_autocmd("CursorMovedI", {
         -- PRN also trigger on TextChangedI? => merge signals into one stream>?
