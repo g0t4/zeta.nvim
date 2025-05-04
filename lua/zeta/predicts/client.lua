@@ -191,39 +191,46 @@ end
 
 function M.setup_trigger_on_editing_buffer()
     local ns = vim.api.nvim_create_namespace("zeta-prediction")
+    local mark_id = 10
 
     vim.api.nvim_create_autocmd("InsertLeave", {
         pattern = "*",
         callback = function()
-            vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+            -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
         end,
     })
 
     vim.api.nvim_create_autocmd("CursorMoved", {
         pattern = "*",
         callback = function()
-            vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+            -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
 
             -- for fun, make it green
             local cursor = vim.api.nvim_win_get_cursor(0)
             local row_0b = cursor[1] - 1
             local col_0b = cursor[2]
+            local mark = vim.api.nvim_buf_get_extmark_by_id(0, ns, mark_id, {})
+            if mark ~= nil then
+                local mark_row_0b = mark[1]
+                local mark_col_0b = mark[2]
+                if mark_row_0b == row_0b and mark_col_0b == col_0b then
+                    return
+                end
+            end
+            -- PRN find a way to test how much lag is added by clear/add every time, vs not
+            --   when line no change (left/right movement)
+            --   OR, when line is changing
+            --   TODO also, cache the last position so you don't have to lookup the mark (that's extra overhead)
+            --     doubles the operations to change it and I think I can feel some of the difference when typing
+            -- add if not there, or if cursor moved to a new line
             vim.api.nvim_buf_set_extmark(0, ns, row_0b, 0, {
+                id = mark_id,
                 -- virt_text = { { "prediction", "Comment" } },
                 -- virt_text_pos = "overlay",
                 sign_text = "*",
                 sign_hl_group = "DiffAdd",
                 hl_mode = "combine",
-                -- hl_group = "DiffAdd",
-                -- hl_eol = true,
             })
-            --
-            -- messages.clear()
-            --
-            -- messages.header("moved cursor")
-            -- messages.append(inspect(vim.api.nvim_win_get_cursor(0)))
-            -- messages.append(inspect(vim.api.nvim_win_get_cursor(0)))
-            -- messages.append(inspect(vim.api.nvim_win_get_cursor(0)))
         end,
     })
 
@@ -235,11 +242,12 @@ function M.setup_trigger_on_editing_buffer()
             -- TODO start new request (might include a slight delay too,
             --   consider that as part of the cancelable request)
 
-            vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+            -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
             local cursor = vim.api.nvim_win_get_cursor(0)
             local row_0b = cursor[1] - 1
             local col_0b = cursor[2]
             vim.api.nvim_buf_set_extmark(0, ns, row_0b, 0, {
+                id = mark_id,
                 -- virt_text = { { "prediction", "Comment" } },
                 -- virt_text_pos = "overlay",
                 sign_text = "*",
@@ -268,7 +276,7 @@ function M.setup()
     vim.keymap.set("n", "<leader>p", M.show_prediction, { desc = "show prediction" })
     vim.keymap.set("n", "<leader>pf", fake_response, { desc = "bypass request to test prediction response handling" })
 
-    M.setup_trigger_on_editing_buffer()
+    -- M.setup_trigger_on_editing_buffer()
 end
 
 return M
