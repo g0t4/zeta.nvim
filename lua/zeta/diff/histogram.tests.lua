@@ -27,6 +27,9 @@ _describe("test using histogram diff", function()
         }
         local diff = histogram.diff(A, B)
 
+        -- FYI this is example of NOT pretty printing nicely
+        --   needs indentation, for first level (at least)
+        --   but second level down, probably best to show each table as 1 line
         inspect.pretty_print(diff)
 
         should.be_same(expected, diff)
