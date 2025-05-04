@@ -282,7 +282,7 @@ function M.setup()
     vim.keymap.set("n", "<leader>p", M.show_prediction, { desc = "show prediction" })
     vim.keymap.set("n", "<leader>pf", fake_response, { desc = "bypass request to test prediction response handling" })
 
-    M.setup_trigger_on_editing_buffer()
+    -- M.setup_trigger_on_editing_buffer()
 end
 
 return M
