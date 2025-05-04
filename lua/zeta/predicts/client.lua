@@ -3,7 +3,7 @@ local files = require("zeta.helpers.files")
 local combined = require("zeta.diff.combined")
 local tags = require("zeta.helpers.tags")
 local extmarks = require("zeta.diff.extmarks")
-local dump = require("devtools.messages")
+local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
 
 local M = {}
@@ -15,17 +15,17 @@ function M.get_prediction_request()
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
     local cursor_pos = vim.api.nvim_win_get_cursor(0)
-    dump.header("cursor_pos:")
-    dump.append(cursor_pos)
+    messages.header("cursor_pos:")
+    messages.append(cursor_pos)
 
     -- insert cursor position tag
     local editable = tags.adorn_editable_region(lines, cursor_pos[1], cursor_pos[2])
-    dump.header("editable:")
-    dump.append(inspect(editable))
+    messages.header("editable:")
+    messages.append(inspect(editable))
 
     local editable_text = table.concat(editable, "\n")
-    dump.header("editable_text:")
-    dump.append(editable_text)
+    messages.header("editable_text:")
+    messages.append(editable_text)
 
     -- TODO get real file content, and the rest is ready to go!
     -- TODO later, get editable vs surrounding context
@@ -41,8 +41,8 @@ function M.get_prediction_request()
         -- input_events
         -- outline
     }
-    dump.header("body:")
-    dump.append(inspect(body))
+    messages.header("body:")
+    messages.append(inspect(body))
 
     return {
         bufnr = bufnr,
@@ -62,15 +62,15 @@ function M.get_prediction_request()
 end
 
 local function try_use_prediction(prediction_request, response_body_stdout)
-    dump.ensure_open()
+    messages.ensure_open()
 
     local decoded = vim.fn.json_decode(response_body_stdout)
-    dump.header("response_body_stdout:")
-    dump.append(inspect(decoded))
+    messages.header("response_body_stdout:")
+    messages.append(inspect(decoded))
     assert(decoded ~= nil, "decoded reponse body should not be nil")
     local rewritten = decoded.output_excerpt
     if rewritten == nil then
-        dump.header("output_excerpt is nil, aborting...")
+        messages.header("output_excerpt is nil, aborting...")
         return
     end
 
@@ -92,7 +92,7 @@ local function try_use_prediction(prediction_request, response_body_stdout)
     -- dump.header("diff:")
     -- dump.append(inspect(diff))
 
-    local bufnr, _window_id = dump.get_ids()
+    local bufnr, _window_id = messages.get_ids()
     extmarks.extmarks_for(diff, bufnr, _window_id)
 end
 
@@ -110,7 +110,7 @@ function M.show_prediction()
     local prediction_request = M.get_prediction_request()
     -- save yourself the hassle of forgetting to encode/decode when loading test files
     assert(type(prediction_request.body) == "table", "body must be a table")
-    dump.ensure_open()
+    messages.ensure_open()
 
     -- dump.header("prediction_request:")
     -- dump.append(prediction_request.body.input_excerpt)
@@ -131,8 +131,8 @@ function M.show_prediction()
             "-d", vim.fn.json_encode(prediction_request.body)
         }
 
-        dump.header("curl command")
-        dump.append(inspect(command, { pretty = true }))
+        messages.header("curl command")
+        messages.append(inspect(command, { pretty = true }))
 
         local result = vim.system(command,
             {
@@ -169,13 +169,13 @@ function M.show_prediction()
         vim.schedule(function()
             if result.code ~= 0 then
                 -- test failure with wrong URL
-                dump.header("curl on_exit:  " .. inspect(result))
+                messages.header("curl on_exit:  " .. inspect(result))
             end
             -- if result.stderr ~= "" then
             --     dump.header("STDERR:", result.stderr)
             -- end
             if result.stdout ~= "" then
-                dump.header("STDOUT:", result.stdout)
+                messages.header("STDOUT:", result.stdout)
                 try_use_prediction(prediction_request, result.stdout)
             end
         end)
@@ -184,8 +184,8 @@ function M.show_prediction()
     local ok, err = pcall(make_request)
     if not ok then
         -- this happens when command (curl) is not found
-        dump.header("prediction request failed immediately:")
-        dump.append(inspect(err))
+        messages.header("prediction request failed immediately:")
+        messages.append(inspect(err))
     end
 end
 

@@ -1,11 +1,11 @@
 require("devtools.inspect")
-local dump = require("devtools.messages")
+local messages = require("devtools.messages")
 
 local M = {}
 
 function M.learn_treesitter_node_APIs()
     -- :h treesitter-node
-    dump.ensure_open()
+    messages.ensure_open()
 
     -- local node = vim.treesitter.get_node({ bufnr = 0, pos = vim.api.nvim_win_get_cursor(0) })
     local success, node = pcall(vim.treesitter.get_node, { bufnr = 0, pos = vim.api.nvim_win_get_cursor(0) })
@@ -30,25 +30,25 @@ function M.learn_treesitter_node_APIs()
     --       and |TSNode:type()| instead.
 
     -- dump.append("\nrange:", node:range()) -- not in a table
-    dump.append("\nrange:", vim.treesitter.get_range(node)) -- table w/ start row/col/bytes, end row/col/bytes
-    dump.append("\nid:", node:id())
-    dump.append("\nhas_error (syntax):", node:has_error()) -- if node has syntax error, would be useful to pass!
-    dump.append("\nhas_changes:", node:has_changes())
-    dump.append("\nroot:", node:root())
+    messages.append("\nrange:", vim.treesitter.get_range(node)) -- table w/ start row/col/bytes, end row/col/bytes
+    messages.append("\nid:", node:id())
+    messages.append("\nhas_error (syntax):", node:has_error()) -- if node has syntax error, would be useful to pass!
+    messages.append("\nhas_changes:", node:has_changes())
+    messages.append("\nroot:", node:root())
     -- TODO node:root seems to be missing :type() and others?
 
 
 
-    dump.append("\ntype:", node:type())
+    messages.append("\ntype:", node:type())
     --  identifier, escape_sequence, string_content, return_statement
     --  function_declaration (function/end), variable_declaration (local)
     --  block (inside function)
-    dump.append("\nsymbol:", node:symbol())
-    dump.append("\nchild_count:", node:child_count())
+    messages.append("\nsymbol:", node:symbol())
+    messages.append("\nchild_count:", node:child_count())
 
     -- dump.append("\nparent symbol:", node:parent():symbol())
 
-    dump.append("\ntext:", vim.treesitter.get_node_text(node, 0))
+    messages.append("\ntext:", vim.treesitter.get_node_text(node, 0))
     -- dump.append("\nparent text:", vim.treesitter.get_node_text(node:parent(), 0))
 end
 
