@@ -193,11 +193,10 @@ function M.setup_trigger_on_editing_buffer()
     vim.api.nvim_create_autocmd("CursorMovedI", {
         pattern = "*",
         callback = function()
-            -- practice select the node and its parent?
-            --  good news, get/log node text for node and parent...
-            --  is not slowing down typing, at least not AFAICT
+            -- TODO cancel outstanding request(s)
+            -- TODO start new request (might include a slight delay too,
+            --   consider that as part of the cancelable request)
 
-            do return end
             messages.clear()
 
             messages.header("moved")
