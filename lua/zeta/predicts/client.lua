@@ -192,6 +192,26 @@ end
 function M.setup()
     vim.keymap.set("n", "<leader>p", M.show_prediction, { desc = "show prediction" })
     vim.keymap.set("n", "<leader>pf", fake_response, { desc = "bypass request to test prediction response handling" })
+
+
+    -- register CursorHoldI instead of CursorMovedI?
+    --  or, moved => cancel    hold => request
+    vim.api.nvim_create_autocmd("CursorMovedI", {
+        pattern = "*",
+        callback = function()
+            messages.append("cancel (movedi) ")
+        end
+    })
+    vim.api.nvim_create_autocmd("CursorHoldI", {
+        pattern = "*",
+        callback = function()
+            messages.append("request (holdi) ")
+            -- echo &updatetime (default 4000), mine is 300
+            -- ... hrm not good enough!
+            -- FYI exit insert mode => enter insert mode => triggers HoldI again
+            -- if cursor pos not changed, show previous?
+        end
+    })
 end
 
 return M
