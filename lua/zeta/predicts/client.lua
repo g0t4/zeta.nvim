@@ -199,6 +199,34 @@ function M.setup_trigger_on_editing_buffer()
         end,
     })
 
+    vim.api.nvim_create_autocmd("CursorMoved", {
+        pattern = "*",
+        callback = function()
+            vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+
+            -- for fun, make it green
+            local cursor = vim.api.nvim_win_get_cursor(0)
+            local row_0b = cursor[1] - 1
+            local col_0b = cursor[2]
+            vim.api.nvim_buf_set_extmark(0, ns, row_0b, 0, {
+                -- virt_text = { { "prediction", "Comment" } },
+                -- virt_text_pos = "overlay",
+                sign_text = "*",
+                sign_hl_group = "DiffAdd",
+                hl_mode = "combine",
+                -- hl_group = "DiffAdd",
+                -- hl_eol = true,
+            })
+            --
+            -- messages.clear()
+            --
+            -- messages.header("moved cursor")
+            -- messages.append(inspect(vim.api.nvim_win_get_cursor(0)))
+            -- messages.append(inspect(vim.api.nvim_win_get_cursor(0)))
+            -- messages.append(inspect(vim.api.nvim_win_get_cursor(0)))
+        end,
+    })
+
     vim.api.nvim_create_autocmd("CursorMovedI", {
         -- PRN also trigger on TextChangedI? => merge signals into one stream>?
         pattern = "*",
