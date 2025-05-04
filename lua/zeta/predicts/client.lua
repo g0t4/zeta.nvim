@@ -190,24 +190,44 @@ function M.show_prediction()
 end
 
 function M.setup_trigger_on_editing_buffer()
+    local ns = vim.api.nvim_create_namespace("zeta-prediction")
+
+
+
+
     vim.api.nvim_create_autocmd("CursorMovedI", {
+        -- PRN also trigger on TextChangedI? => merge signals into one stream>?
         pattern = "*",
         callback = function()
             -- TODO cancel outstanding request(s)
             -- TODO start new request (might include a slight delay too,
             --   consider that as part of the cancelable request)
 
-            messages.clear()
-
-            messages.header("moved")
-            local node = vim.treesitter.get_node() -- current buffer
-            assert(node ~= nil)
-            -- local text = vim.treesitter.get_node_text(node, 0)
-
-            local parent = node:parent()
-            assert(parent ~= nil)
-            local text = vim.treesitter.get_node_text(parent, 0)
-            messages.append(text)
+            vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+            local cursor = vim.api.nvim_win_get_cursor(0)
+            local row_0b = cursor[1] - 1
+            local col_0b = cursor[2]
+            vim.api.nvim_buf_set_extmark(0, ns, row_0b, 0, {
+                -- virt_text = { { "prediction", "Comment" } },
+                -- virt_text_pos = "overlay",
+                sign_text = "*",
+                sign_hl_group = "DiffDelete",
+                hl_mode = "combine",
+                -- hl_group = "DiffRemove",
+                -- hl_eol = true,
+            })
+            --
+            -- messages.clear()
+            --
+            -- messages.header("moved")
+            -- local node = vim.treesitter.get_node() -- current buffer
+            -- assert(node ~= nil)
+            -- -- local text = vim.treesitter.get_node_text(node, 0)
+            --
+            -- local parent = node:parent()
+            -- assert(parent ~= nil)
+            -- local text = vim.treesitter.get_node_text(parent, 0)
+            -- messages.append(text)
         end
     })
 end
@@ -216,7 +236,7 @@ function M.setup()
     vim.keymap.set("n", "<leader>p", M.show_prediction, { desc = "show prediction" })
     vim.keymap.set("n", "<leader>pf", fake_response, { desc = "bypass request to test prediction response handling" })
 
-    -- M.setup_trigger_on_editing_buffer()
+    M.setup_trigger_on_editing_buffer()
 end
 
 return M
