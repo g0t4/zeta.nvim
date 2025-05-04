@@ -2,7 +2,7 @@ require("zeta.helpers.testing")
 local parser = require("zeta.helpers.tags")
 local files = require("zeta.helpers.files")
 local should = require("zeta.helpers.should")
-local dump = require("helpers.dump")
+local dump = require("devtools.messages")
 
 _describe("vim.diff", function()
     it("tests vim.diff", function()

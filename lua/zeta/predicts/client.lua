@@ -3,7 +3,7 @@ local files = require("zeta.helpers.files")
 local combined = require("zeta.diff.combined")
 local tags = require("zeta.helpers.tags")
 local extmarks = require("zeta.diff.extmarks")
-local dump = require("helpers.dump")
+local dump = require("devtools.messages")
 local inspect = require("devtools.inspect")
 
 local M = {}

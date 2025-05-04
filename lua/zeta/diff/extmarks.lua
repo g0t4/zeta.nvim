@@ -1,5 +1,5 @@
 local window = require("zeta.helpers.vimz.windows")
-local dump = require("helpers.dump")
+local dump = require("devtools.messages")
 
 local M = {}
 

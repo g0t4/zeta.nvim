@@ -4,7 +4,7 @@ local parser = require("zeta.helpers.tags")
 local files = require("zeta.helpers.files")
 local windows = require("zeta.helpers.vimz.windows")
 local extmarks = require("zeta.diff.extmarks")
-local dump = require("helpers.dump")
+local dump = require("devtools.messages")
 
 local M = {}
 
