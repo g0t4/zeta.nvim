@@ -189,29 +189,35 @@ function M.show_prediction()
     end
 end
 
+function M.setup_trigger_on_editing_buffer()
+    vim.api.nvim_create_autocmd("CursorMovedI", {
+        pattern = "*",
+        callback = function()
+            -- practice select the node and its parent?
+            --  good news, get/log node text for node and parent...
+            --  is not slowing down typing, at least not AFAICT
+
+            do return end
+            messages.clear()
+
+            messages.header("moved")
+            local node = vim.treesitter.get_node() -- current buffer
+            assert(node ~= nil)
+            -- local text = vim.treesitter.get_node_text(node, 0)
+
+            local parent = node:parent()
+            assert(parent ~= nil)
+            local text = vim.treesitter.get_node_text(parent, 0)
+            messages.append(text)
+        end
+    })
+end
+
 function M.setup()
     vim.keymap.set("n", "<leader>p", M.show_prediction, { desc = "show prediction" })
     vim.keymap.set("n", "<leader>pf", fake_response, { desc = "bypass request to test prediction response handling" })
 
-
-    -- register CursorHoldI instead of CursorMovedI?
-    --  or, moved => cancel    hold => request
-    vim.api.nvim_create_autocmd("CursorMovedI", {
-        pattern = "*",
-        callback = function()
-            messages.append("cancel (movedi) ")
-        end
-    })
-    vim.api.nvim_create_autocmd("CursorHoldI", {
-        pattern = "*",
-        callback = function()
-            messages.append("request (holdi) ")
-            -- echo &updatetime (default 4000), mine is 300
-            -- ... hrm not good enough!
-            -- FYI exit insert mode => enter insert mode => triggers HoldI again
-            -- if cursor pos not changed, show previous?
-        end
-    })
+    -- M.setup_trigger_on_editing_buffer()
 end
 
 return M
