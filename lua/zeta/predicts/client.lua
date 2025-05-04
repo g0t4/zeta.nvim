@@ -192,6 +192,7 @@ end
 function M.setup_trigger_on_editing_buffer()
     local ns = vim.api.nvim_create_namespace("zeta-prediction")
     local mark_id = 10
+    local which = false
 
     vim.api.nvim_create_autocmd("InsertLeave", {
         pattern = "*",
@@ -213,10 +214,12 @@ function M.setup_trigger_on_editing_buffer()
             if mark ~= nil then
                 local mark_row_0b = mark[1]
                 local mark_col_0b = mark[2]
-                if mark_row_0b == row_0b and mark_col_0b == col_0b then
+                if mark_row_0b == row_0b then -- and mark_col_0b == col_0b then
                     return
                 end
             end
+
+            which = not which
             -- PRN find a way to test how much lag is added by clear/add every time, vs not
             --   when line no change (left/right movement)
             --   OR, when line is changing
@@ -227,9 +230,10 @@ function M.setup_trigger_on_editing_buffer()
                 id = mark_id,
                 -- virt_text = { { "prediction", "Comment" } },
                 -- virt_text_pos = "overlay",
-                sign_text = "*",
+                sign_text = which and "*" or "-",
                 sign_hl_group = "DiffAdd",
-                hl_mode = "combine",
+                -- hl_group = "DiffAdd",
+                -- hl_mode = "combine",
             })
         end,
     })
@@ -246,13 +250,15 @@ function M.setup_trigger_on_editing_buffer()
             local cursor = vim.api.nvim_win_get_cursor(0)
             local row_0b = cursor[1] - 1
             local col_0b = cursor[2]
+            -- PRN would wanna use get here too or cache in var
+            which = not which
             vim.api.nvim_buf_set_extmark(0, ns, row_0b, 0, {
                 id = mark_id,
                 -- virt_text = { { "prediction", "Comment" } },
                 -- virt_text_pos = "overlay",
-                sign_text = "*",
+                sign_text = which and "*" or "-",
                 sign_hl_group = "DiffDelete",
-                hl_mode = "combine",
+                -- hl_mode = "combine",
                 -- hl_group = "DiffRemove",
                 -- hl_eol = true,
             })
@@ -276,7 +282,7 @@ function M.setup()
     vim.keymap.set("n", "<leader>p", M.show_prediction, { desc = "show prediction" })
     vim.keymap.set("n", "<leader>pf", fake_response, { desc = "bypass request to test prediction response handling" })
 
-    -- M.setup_trigger_on_editing_buffer()
+    M.setup_trigger_on_editing_buffer()
 end
 
 return M
