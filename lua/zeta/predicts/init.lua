@@ -41,8 +41,7 @@ local displayer = nil
 ---@type PredictionRequest|nil
 local current_request = nil
 
--- TODO set false by default and toggle on with keymap
-local toggle_highlighting = true
+local toggle_highlighting = false
 
 ---@param window WindowController0Indexed
 local function cancel_current_request(window)
@@ -81,6 +80,18 @@ local function trigger_prediction(window, select_only)
     end)
 end
 
+local function immediate_on_cursor_moved(window)
+    if not toggle_highlighting then
+        return
+    end
+
+    local request = PredictionRequest:new(window)
+    local details = request.details
+
+    local highlighter = ExcerptHighlighter:new(window:buffer().buffer_number)
+    highlighter:highlight_lines(details)
+end
+
 function M.setup_events()
     -- PRN use WinEnter (change window event), plus when first loading should trigger for current window (since that's not a change window event)
     vim.api.nvim_create_autocmd({ "BufEnter" }, {
@@ -89,7 +100,9 @@ function M.setup_events()
             local has_ts = pcall(vim.treesitter.get_parser, args.buf)
             if has_ts then
                 watcher = WindowWatcher:new(window_id, args.buf, "zeta-prediction")
-                watcher:watch(trigger_prediction, cancel_current_request)
+                watcher:watch(trigger_prediction,
+                    cancel_current_request,
+                    immediate_on_cursor_moved)
                 displayer = Displayer:new(watcher.window)
             else
                 messages.append("No Tree-sitter parser for buffer " .. args.buf)

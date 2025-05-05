@@ -18,8 +18,12 @@ function WindowWatcher:new(window_id, buffer_number, augroup_name)
     return self
 end
 
---- @param trigger_prediction function
-function WindowWatcher:watch(trigger_prediction, cancel_current_request)
+--- @param trigger_prediction function(window: WindowController0Indexed)
+--- @param cancel_current_request function(window: WindowController0Indexed)
+--- @param immediate_on_cursor_moved function(window: WindowController0Indexed)
+function WindowWatcher:watch(trigger_prediction,
+                             cancel_current_request,
+                             immediate_on_cursor_moved)
     vim.api.nvim_create_augroup(self.augroup_name, { clear = true })
 
     local window = self.window
@@ -80,7 +84,17 @@ function WindowWatcher:watch(trigger_prediction, cancel_current_request)
             --   that said, the former (send request) could maybe have a shorter debounce intended
             --     to avoid overwhelming the backend with requests
             debounced_trigger.call()
+            immediate_on_cursor_moved(window)
         end,
+    })
+
+    vim.api.nvim_create_autocmd("CursorMoved", {
+        group = self.augroup_name,
+        -- buffer = self.buffer_number,
+        callback = function()
+            -- PRN
+            immediate_on_cursor_moved(window)
+        end
     })
 end
 
