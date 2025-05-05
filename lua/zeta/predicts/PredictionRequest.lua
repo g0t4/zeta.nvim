@@ -56,8 +56,8 @@ local function build_request(window)
         --     -- input_events
         --     -- outline
         -- }
-        editable_start_line = excerpt.start_line,
-        editable_end_line = excerpt.end_line,
+        editable_start_line = excerpt.editable_start_line,
+        editable_end_line = excerpt.editable_end_line,
     }
 end
 

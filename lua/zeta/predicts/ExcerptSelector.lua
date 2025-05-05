@@ -77,34 +77,35 @@ function ExcerptSelector:line_range_at_position(row, column)
     end
 
     -- TODO is :range() inclusive or exclusive?
-    local start_row, start_column, end_row, end_column = enclosing:range()
+    -- TODO! capture editable start/end lines... beyond that doesn't matter (just context)
+    local editable_start_line, start_column, editable_end_line, end_column = enclosing:range()
     messages.header("enclosing: " .. tostring(enclosing:type()))
     messages.append({
-        _start_row = start_row,
+        _start_row = editable_start_line,
         _start_column = start_column,
-        end_row = end_row,
+        end_row = editable_end_line,
         end_column = end_column,
     })
 
     -- TODO look at size of it to expand or contract it:
     -- local text = vim.treesitter.get_node_text(node, self.buffer.buffer_number)
     -- for now lets just use the first enclosing node
-    return start_row, end_row
+    return editable_start_line, editable_end_line
 end
 
 ---@param row integer 0-indexed
 ---@param column integer 0-indexed
 ---@return Excerpt|nil
 function ExcerptSelector:text_at_position(row, column)
-    local start_line, end_line = self:line_range_at_position(row, column)
-    if start_line == nil or end_line == nil then
+    local editable_start_line, editable_end_line = self:line_range_at_position(row, column)
+    if editable_start_line == nil or editable_end_line == nil then
         return nil
     end
-    local text_lines = self.buffer:get_lines(start_line, end_line)
+    local text_lines = self.buffer:get_lines(editable_start_line, editable_end_line)
     -- TODO make sure lines are joined correctly...
     --   that w/ serialization we get \n as appropriate (vs new lines)... not sure just check what is needed for model's template and what I have here (for fake and real requests)
     text = table.concat(text_lines, "\n")
-    return Excerpt:new(text, start_line, end_line)
+    return Excerpt:new(text, editable_start_line, editable_end_line)
 end
 
 return ExcerptSelector

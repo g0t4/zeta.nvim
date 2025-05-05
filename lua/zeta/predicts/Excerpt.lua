@@ -1,17 +1,17 @@
 ---@class Excerpt
 ---@field text string
----@field start_line integer 0-indexed
----@field end_line integer 0-indexed
+---@field editable_start_line integer 0-indexed
+---@field editable_end_line integer 0-indexed
 local Excerpt = {}
 Excerpt.__index = Excerpt
 
 ---@param text string - single string, not lines
----@param start_line integer 0-indexed
----@param end_line integer 0-indexed
-function Excerpt:new(text, start_line, end_line)
+---@param editable_start_line integer 0-indexed
+---@param editable_end_line integer 0-indexed
+function Excerpt:new(text, editable_start_line, editable_end_line)
     self.text = text
-    self.start_line = start_line
-    self.end_line = end_line
+    self.editable_start_line = editable_start_line
+    self.editable_end_line = editable_end_line
     return self
 end
 
