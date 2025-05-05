@@ -2,16 +2,17 @@ local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
 
 ---@class PredictionRequest
+---@field window WindowController0Indexed
+---@field details table|nil
 local PredictionRequest = {}
 PredictionRequest.__index = PredictionRequest
 
 ---@param window WindowController0Indexed
+---@return table|nil
 local function build_request(window)
     local buffer = window:buffer()
 
-    local bufnr = buffer.buffer_number
-
-    -- step one, take the whole enchilada!
+    -- FYI can use to do simple testing
     -- local all_lines = buffer:get_all_lines()
 
     local excerpt = window:get_excerpt_text_at_cursor()
@@ -49,7 +50,6 @@ local function build_request(window)
     }
 
     return {
-        bufnr = bufnr,
         body = body,
         -- body = {
         --     input_excerpt = "",
@@ -75,6 +75,7 @@ function PredictionRequest:cancel()
     self.task = nil
 end
 
+---@param window WindowController0Indexed
 function PredictionRequest:new(window)
     self = setmetatable({}, PredictionRequest)
     -- TODO rename details and/or re-org it
@@ -87,6 +88,17 @@ function PredictionRequest:new(window)
     return self
 end
 
+--- a container to pass data when faking a request/response
+---@param window WindowController0Indexed
+---@param details table
+function PredictionRequest:new_fake_request(window, details)
+    self = setmetatable({}, PredictionRequest)
+    self.window = window
+    self.details = details
+    return self
+end
+
+---@param on_response function
 function PredictionRequest:send(on_response)
     -- PRN how can I handle errors? pcall?
     function make_request()
