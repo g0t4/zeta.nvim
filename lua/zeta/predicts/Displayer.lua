@@ -153,19 +153,14 @@ function Displayer:_extmarks_for(diff)
         return
     end
 
-    -- * extmark
-    local ns_id = vim.api.nvim_create_namespace('zeta_diff')
-    local num_lines = vim.api.nvim_buf_line_count(bufnr)
-    local to_row_1indexed = num_lines
-    local ext_mark_row_0indexed = to_row_1indexed - 1
-    local _mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, ext_mark_row_0indexed, 0, {
-        hl_mode = "combine",
-        virt_text = { { "" } }, -- add blank line
-        virt_lines = extmark_lines, -- rest after first
-        -- virt_text = { { "twat waffl3", hl_added } }, -- line of extmark
-        -- virt_lines = virt_lines, -- lines below
-        virt_text_pos = "overlay", -- "overlay", "eol", "inline"
-    })
+    -- self.marks:set(select_excerpt_mark, {
+    --     start_line = row_0b,
+    --     start_col = 0,
+    --
+    --     id = select_excerpt_mark,
+    --     virt_lines = extmark_lines,
+    --     virt_text_pos = "overlay",
+    -- })
 end
 
 return Displayer
