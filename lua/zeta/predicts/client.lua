@@ -9,18 +9,19 @@ local WindowController0Based = require("zeta.predicts.window")
 
 local M = {}
 function M.get_prediction_request()
+    -- TODOw window:buffer()
     local bufnr = vim.api.nvim_get_current_buf()
 
-
     -- step one, take the whole enchilada!
+    -- TODOw move to a window:buffer():get_all_lines()
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
-    local cursor_pos = vim.api.nvim_win_get_cursor(0)
-    messages.header("cursor_pos:")
-    messages.append(cursor_pos)
+    local window = WindowController0Based:new_from_current_window()
+    local row, col = window:get_cursor_position()
 
     -- insert cursor position tag
-    local editable = tags.adorn_editable_region(lines, cursor_pos[1], cursor_pos[2])
+    -- TODOw make adorn 0 based for row too
+    local editable = tags.adorn_editable_region(lines, row + 1, col)
     messages.header("editable:")
     messages.append(inspect(editable))
 
@@ -112,6 +113,8 @@ function M.show_prediction()
     -- save yourself the hassle of forgetting to encode/decode when loading test files
     assert(type(prediction_request.body) == "table", "body must be a table")
     messages.ensure_open()
+    -- TODOw
+    do return end
 
     -- dump.header("prediction_request:")
     -- dump.append(prediction_request.body.input_excerpt)
@@ -206,25 +209,12 @@ function M.setup_trigger_on_editing_buffer()
         pattern = "*",
         callback = function()
             local window = WindowController0Based:new_from_current_window()
-            messages.header("moved")
-            local row_0b, col_0b = window:get_cursor_position()
-            messages.append("row_0b:", row_0b)
-            messages.append("col_0b:", col_0b)
-            local row = window:get_cursor_row()
-            messages.append("row:", row)
-            local col = window:get_cursor_column()
-            messages.append("col:", col)
-            --
-
-
-
 
             -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
 
             -- for fun, make it green
-            local cursor = vim.api.nvim_win_get_cursor(0)
-            local row_0b = cursor[1] - 1
-            local col_0b = cursor[2]
+            local row_0b = window:get_cursor_row()
+
             local mark = vim.api.nvim_buf_get_extmark_by_id(0, ns, mark_id, {})
             if mark ~= nil then
                 local mark_row_0b = mark[1]
@@ -257,15 +247,15 @@ function M.setup_trigger_on_editing_buffer()
         -- PRN also trigger on TextChangedI? => merge signals into one stream>?
         pattern = "*",
         callback = function()
+            local window = WindowController0Based:new_from_current_window()
+
             -- TODO cancel outstanding request(s)
             -- TODO start new request (might include a slight delay too,
             --   consider that as part of the cancelable request)
 
             -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
-            local cursor = vim.api.nvim_win_get_cursor(0)
-            local row_0b = cursor[1] - 1
-            local col_0b = cursor[2]
-            -- PRN would wanna use get here too or cache in var
+            local row_0b = window:get_cursor_row()
+
             which = not which
             vim.api.nvim_buf_set_extmark(0, ns, row_0b, 0, {
                 id = mark_id,
