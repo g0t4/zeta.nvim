@@ -20,11 +20,8 @@ function M.get_prediction_request()
     -- local all_lines = buffer:get_all_lines()
 
 
-    local row, col = window:get_cursor_position()
-    local selector = ExcerptSelector:new(buffer)
-    local excerpt  = selector:select_at_position(row, col)
+    local excerpt = window:get_excerpt_at_cursor()
     messages.header("excerpt:")
-    messages.append("row: " .. row .. ", col: " .. col)
     messages.append(inspect(excerpt))
 
     --
