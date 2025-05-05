@@ -2,7 +2,6 @@ local parser = require("zeta.helpers.tags")
 local combined = require("zeta.diff.combined")
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
-local extmarks = require("zeta.diff.extmarks")
 local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
 
 ---@class Displayer
@@ -34,7 +33,27 @@ end
 -- })
 
 local select_excerpt_mark = 11
-function Displayer:on_response(prediction_request, response_body_stdout)
+
+function Displayer:clear()
+    self.marks:clear_all()
+end
+
+-- * highlight groups (for now use builtin styles)
+-- local hl_same = "zeta-same"
+-- local hl_added = "zeta-added"
+-- local hl_deleted = "zeta-deleted"
+-- -- 0 == global namespace (otherwise have to activate them if not global ns on hlgroup)
+-- vim.api.nvim_set_hl(0, hl_same, {}) -- for now just keep it as is
+-- -- vim.api.nvim_set_hl(0, hl_added, { fg = "#a6e3a1", }) -- ctermfg = "green"
+-- -- vim.api.nvim_set_hl(0, hl_added, { fg = "#b5f4cb", }) -- ctermfg = "green"
+-- vim.api.nvim_set_hl(0, hl_added, { fg = "#81c8be", }) -- ctermfg = "green"
+-- -- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#f28b82", }) -- ctermfg = "red"
+-- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#ff6b6b", }) -- ctermfg = "red"
+-- -- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#e06c75", }) -- ctermfg = "red"
+
+---@param request PredictionRequest
+---@param response_body_stdout string
+function Displayer:on_response(request, response_body_stdout)
     messages.ensure_open()
 
     local decoded = vim.fn.json_decode(response_body_stdout)
@@ -47,7 +66,7 @@ function Displayer:on_response(prediction_request, response_body_stdout)
         return
     end
 
-    local original = prediction_request.body.input_excerpt
+    local original = request.body.input_excerpt
     -- dump.header("input_excerpt:")
     -- dump.append(original)
     -- dump.header("output_excerpt:")
@@ -65,32 +84,6 @@ function Displayer:on_response(prediction_request, response_body_stdout)
     -- dump.header("diff:")
     -- dump.append(inspect(diff))
 
-    self:_extmarks_for(diff)
-end
-
-function Displayer:clear()
-    self.marks:clear_all()
-end
-
-local hl_same = "zeta-same"
-local hl_added = "zeta-added"
-local hl_deleted = "zeta-deleted"
-
-function Displayer:_extmarks_for(diff)
-    local bufnr = self.window:buffer().buffer_number
-    local _window_id = self.window:window_id()
-
-    -- FYI leaving POC intact and separate of this new impl, so rewrite its extmarks here:
-    -- * highlight groups
-    -- 0 == global namespace (otherwise have to activate them if not global ns on hlgroup)
-    vim.api.nvim_set_hl(0, hl_same, {}) -- for now just keep it as is
-    -- vim.api.nvim_set_hl(0, hl_added, { fg = "#a6e3a1", }) -- ctermfg = "green"
-    -- vim.api.nvim_set_hl(0, hl_added, { fg = "#b5f4cb", }) -- ctermfg = "green"
-    vim.api.nvim_set_hl(0, hl_added, { fg = "#81c8be", }) -- ctermfg = "green"
-    -- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#f28b82", }) -- ctermfg = "red"
-    vim.api.nvim_set_hl(0, hl_deleted, { fg = "#ff6b6b", }) -- ctermfg = "red"
-    -- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#e06c75", }) -- ctermfg = "red"
-
     local extmark_lines = vim.iter(diff):fold({ {} }, function(accum, chunk)
         if chunk == nil then
             messages.append("nil chunk: " .. tostring(chunk))
@@ -103,16 +96,16 @@ function Displayer:_extmarks_for(diff)
             local type = chunk[1]
             local text = chunk[2]
 
-            local type_hlgroup = hl_same
+            local type_hlgroup = nil -- nil = TODO don't change it right?
             if type == "+" then
-                type_hlgroup = hl_added -- mine (above)
+                -- type_hlgroup = hl_added -- mine (above)
                 -- FYI nvim and plugins have a bunch of options already registerd too (color/highlight wise)
                 -- type_hlgroup = "Added" -- light green
-                -- type_hlgroup = "diffAdded" -- darker green/cyan - *** FAVORITE
+                type_hlgroup = "diffAdded" -- darker green/cyan - *** FAVORITE
             elseif type == "-" then
-                type_hlgroup = hl_deleted -- mine (above)
+                -- type_hlgroup = hl_deleted -- mine (above)
                 -- type_hlgroup = "Removed" -- very light red (almost brown/gray)
-                -- type_hlgroup = "diffRemoved" -- dark red - *** FAVORITE
+                type_hlgroup = "diffRemoved" -- dark red - *** FAVORITE
                 -- return accum
                 -- actually, based on how I aggregate between sames... there should only be one delete and one add between any two sames... so, I could just show both and it would appaer like remove / add (probably often lines removed then lines added, my diff processor puts the delete first which makes sense for that to be on top)
             end
@@ -152,6 +145,14 @@ function Displayer:_extmarks_for(diff)
         messages.append("no lines")
         return
     end
+
+    -- hide the original edtiable lines?
+    -- show the diff where they were?
+    -- or do like I do on AskRewrite, just show it all at the top of the selection as extmarks
+    --   and then accept / reject accordingly... thats a good start point...
+    --   then later can decide if I wanna hide the original
+    --   I kinda like how that approach pushes the original down for easy reference too
+    --   OR, popup window w/ diff?
 
     -- self.marks:set(select_excerpt_mark, {
     --     start_line = row_0b,
