@@ -56,8 +56,9 @@ local function build_request(window)
         --     -- input_events
         --     -- outline
         -- }
-        excerpt_start_line_0indexed = 0,
-        excerpt_start_column_0indexed = 0,
+        -- TODO wire up actual excerpt positions
+        excerpt_start_line = 0,
+        excerpt_start_column = 0,
         -- excerpt_end_line = #lines,
         -- ...
         -- editable start/end too, whatever is needed...
