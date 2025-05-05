@@ -6,6 +6,7 @@ local extmarks = require("zeta.diff.extmarks")
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
 local WindowController0Indexed = require("zeta.predicts.WindowController")
+local ExcerptSelector = require("zeta.predicts.ExcerptSelector")
 
 local M = {}
 function M.get_prediction_request()
@@ -15,19 +16,27 @@ function M.get_prediction_request()
     local bufnr = buffer.buffer_number
 
     -- step one, take the whole enchilada!
-    local all_lines = buffer:get_all_lines()
+    -- local all_lines = buffer:get_all_lines()
+
 
     local row, col = window:get_cursor_position()
+    local selector = ExcerptSelector.new(buffer)
+    local excerpt  = selector:select_at_position(row, col)
+    messages.header("excerpt:")
+    messages.append("row: " .. row .. ", col: " .. col)
+    messages.append(inspect(excerpt))
 
-    -- insert cursor position tag
-    local editable = tags.mark_editable_region(all_lines, row, col)
-    messages.header("editable:")
-    messages.append(inspect(editable))
-
-    local editable_text = table.concat(editable, "\n")
-    messages.header("editable_text:")
-    messages.append(editable_text)
-
+    --
+    -- -- insert cursor position tag
+    -- local editable = tags.mark_editable_region(excerpt, row, col)
+    -- -- TODO
+    -- messages.header("editable:")
+    -- messages.append(inspect(editable))
+    --
+    -- local editable_text = table.concat(editable, "\n")
+    -- messages.header("editable_text:")
+    -- messages.append(editable_text)
+    --
     -- TODO get real file content, and the rest is ready to go!
     -- TODO later, get editable vs surrounding context
     -- TODO handle start of file tag
@@ -38,12 +47,10 @@ function M.get_prediction_request()
 
     -- local body = files.read_example_json("01_request.json")
     local body = {
-        input_excerpt = editable_text,
+        input_excerpt = excerpt,
         -- input_events
         -- outline
     }
-    messages.header("body:")
-    messages.append(inspect(body))
 
     return {
         bufnr = bufnr,
@@ -278,18 +285,7 @@ function M.setup_trigger_on_editing_buffer()
                 -- hl_group = "DiffRemove",
                 -- hl_eol = true,
             })
-            --
-            -- messages.clear()
-            --
-            -- messages.header("moved")
-            -- local node = vim.treesitter.get_node() -- current buffer
-            -- assert(node ~= nil)
-            -- -- local text = vim.treesitter.get_node_text(node, 0)
-            --
-            -- local parent = node:parent()
-            -- assert(parent ~= nil)
-            -- local text = vim.treesitter.get_node_text(parent, 0)
-            -- messages.append(text)
+
         end
     })
 end
