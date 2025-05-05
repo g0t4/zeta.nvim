@@ -31,7 +31,11 @@ function ExtmarksSet:clear_all()
     vim.api.nvim_buf_clear_namespace(self.buffer_number, self.namespace_id, 0, -1)
 end
 
-function ExtmarksSet:get_mark(mark_id)
+--- get an extmark by id
+--- @param mark_id integer
+---@return vim.api.keyset.get_extmark_item_by_id # 0-indexed (row, col) tuple or empty list ()
+function ExtmarksSet:get(mark_id)
+    -- FYI probably it's more useful to cache this in the consumer, unless multiple consumers can change it
     return vim.api.nvim_buf_get_extmark_by_id(self.buffer_number, self.namespace_id, mark_id, {})
 end
 
@@ -39,10 +43,11 @@ end
 --- @param mark_id integer
 --- @param opts table
 ---@return integer mark_id # useful if you didn't provide a mark_id and want the generated id
-function ExtmarksSet:set_mark(mark_id, opts)
+function ExtmarksSet:set(mark_id, opts)
     -- PRN how about create helpers for different types of marks that I commonly use?
     --   then can make params for required args? and map to opts
 
+    -- PRN pass in opts too?
     opts.id = mark_id
 
     -- TODO is it useful to pass start line/col in opts?

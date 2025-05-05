@@ -7,6 +7,7 @@ local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
 local WindowController0Indexed = require("zeta.predicts.WindowController")
 local ExcerptSelector = require("zeta.predicts.ExcerptSelector")
+local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
 
 local M = {}
 function M.get_prediction_request()
@@ -214,15 +215,16 @@ function M.setup_trigger_on_editing_buffer()
     vim.api.nvim_create_autocmd("CursorMoved", {
         pattern = "*",
         callback = function()
+            -- PRN cache these object instances per window? and on buffer change update them?
             local window = WindowController0Indexed:new_from_current_window()
-
+            local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, ns)
 
             local row_0b = window:get_cursor_row()
 
-            local mark = vim.api.nvim_buf_get_extmark_by_id(0, ns, mark_id, {})
+            local mark = prediction_marks:get(mark_id)
             if mark ~= nil then
                 local mark_row_0b = mark[1]
-                if mark_row_0b == row_0b then -- and mark_col_0b == col_0b then
+                if mark_row_0b == row_0b then
                     return
                 end
             end
@@ -234,8 +236,10 @@ function M.setup_trigger_on_editing_buffer()
             --   TODO also, cache the last position so you don't have to lookup the mark (that's extra overhead)
             --     doubles the operations to change it and I think I can feel some of the difference when typing
             -- add if not there, or if cursor moved to a new line
-            vim.api.nvim_buf_set_extmark(0, ns, row_0b, 0, {
-                id = mark_id,
+            prediction_marks:set(mark_id, {
+                start_line = row_0b,
+                start_col = 0,
+
                 -- virt_text = { { "prediction", "Comment" } },
                 -- virt_text_pos = "overlay",
                 sign_text = which and "*" or "-",
@@ -251,16 +255,20 @@ function M.setup_trigger_on_editing_buffer()
         pattern = "*",
         callback = function()
             local window = WindowController0Indexed:new_from_current_window()
+            local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, ns)
 
             -- TODO cancel outstanding request(s)
             -- TODO start new request (might include a slight delay too,
             --   consider that as part of the cancelable request)
 
-            -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
-            local row_0b = window:get_cursor_row()
+            -- prediction_marks:clear_all()
 
             which = not which
-            vim.api.nvim_buf_set_extmark(0, ns, row_0b, 0, {
+            local row_0b = window:get_cursor_row()
+            prediction_marks:set(mark_id, {
+                start_line = row_0b,
+                start_col = 0,
+
                 id = mark_id,
                 -- virt_text = { { "prediction", "Comment" } },
                 -- virt_text_pos = "overlay",
@@ -270,7 +278,6 @@ function M.setup_trigger_on_editing_buffer()
                 -- hl_group = "DiffRemove",
                 -- hl_eol = true,
             })
-
         end
     })
 end
