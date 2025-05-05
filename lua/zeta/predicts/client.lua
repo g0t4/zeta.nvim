@@ -210,6 +210,9 @@ function M.setup_trigger_on_editing_buffer()
         end,
     })
 
+    -- TODO detect if not treesitter capable buffer and stop trying?
+    --   attach/detach event handlers on buffer file type change?
+
     vim.api.nvim_create_autocmd("CursorMoved", {
         pattern = "*",
         callback = function()
