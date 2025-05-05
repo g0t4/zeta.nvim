@@ -235,8 +235,14 @@ function M.register_prediction_autocmds(buffer_number)
         --     -- hl_eol = true,
         -- })
     end
-    -- not until after events stop firing for 1 s (1000ms)
-    local debounced_trigger = debounce(trigger_prediction, 1000)
+
+    -- this way, when typing it's not trying to show a prediction
+    -- TODO fire off the request in the background (cancel it on every key stroke)
+    -- - but, DO NOT SHOW IT until the delay has elapsed...
+    -- - that way you don't wait both the debounce delay + service r/t
+    -- - instead these two happen in parallel
+    -- - completions backends have no trouble keeping up and canceling previous requests
+    local debounced_trigger = debounce(trigger_prediction, 500)
 
     vim.api.nvim_create_autocmd("InsertEnter", {
         group = prediction_augroup,
@@ -244,9 +250,10 @@ function M.register_prediction_autocmds(buffer_number)
         callback = debounced_trigger.call,
     })
 
-    -- FYI nothing says I have to cancel it on leave... the prediction can be left visible after exit to normal mode
-    --   then on re-entry to insert mode you trigger a new prediction
     vim.api.nvim_create_autocmd("InsertLeave", {
+        -- FYI nothing says I have to cancel it on leave... the prediction can be left visible after exit to normal mode
+        --   then on re-entry to insert mode you trigger a new prediction
+        -- one benefit to stop on exit is you can prevent the prediction by hitting escape as last key when typing
         group = prediction_augroup,
         buffer = buffer_number,
         callback = debounced_trigger.cancel,
