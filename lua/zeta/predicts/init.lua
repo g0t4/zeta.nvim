@@ -70,22 +70,36 @@ local function trigger_prediction(window, select_only)
         vim.api.nvim_set_hl(0, hl_editable, { bg = "green" })
         vim.api.nvim_set_hl(0, hl_context, { bg = "blue" })
         local zeta_excerpts_ns_id = vim.api.nvim_create_namespace("zeta-excerpts")
-        local zeta_excerpts_editable_mark_id = 20
+        local editable_mark_id = 20
+        local ctx_before_mark_id = 21
+        local ctx_after_mark_id = 22
         local excerpt_marks = ExtmarksSet:new(window:buffer().buffer_number, zeta_excerpts_ns_id)
         excerpt_marks:highlight_lines({
-            id = zeta_excerpts_editable_mark_id,
+            id = editable_mark_id,
             hl_group = hl_editable,
             start_line = request.details.editable_start_line,
             end_line = request.details.editable_end_line,
         })
-        -- TODO highlight context around editable too (before and after)
-        --
-        return
-
+        -- * highlight the context before/after
+        local context_before_start_line = request.details.editable_start_line - 3
+        excerpt_marks:highlight_lines({
+            id = ctx_before_mark_id,
+            hl_group = hl_context,
+            start_line = context_before_start_line,
+            end_line = request.details.editable_start_line,
+        })
+        local context_after_end_line = request.details.editable_end_line + 3
+        excerpt_marks:highlight_lines({
+            id = ctx_after_mark_id,
+            hl_group = hl_context,
+            start_line = request.details.editable_end_line,
+            end_line = context_after_end_line,
+        })
         -- TODO what if I had a keymap that would allow me to select one off context for next predictions?
         -- or that allowed setting to go one more level past current func ... to somehoww conditionally expand or contract the selected func/block?
         -- can I have a keycombo that enables showing the context as I type! (not selecting cuz that would mess up the context)
         --   but toggle context on/off! and then controls to alter the selection with live feedback!
+        return
     end
 
     request:send(function(_request, stdout)
