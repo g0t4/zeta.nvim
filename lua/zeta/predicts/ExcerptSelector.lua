@@ -28,23 +28,22 @@ local function get_enclosing_function_node(node)
     -- messages.append(inspect(root))
 
     while true do
-        local parent = node:parent()
-        if parent == nil then
-            -- assume at the root
-            return node
-        end
-        if parent == node then
-            -- does this ever happen? or would it be nil when reach root?
-            return node
-        end
-        local parent_type = parent:type()
-        if parent_type == "function_declaration"
-            or parent_type == "function_definition"
-            or parent_type == "arrow_function"
-            or parent_type == "lambda"
-            or parent_type == "function_expression"
+        local node_type = node:type()
+        if node_type == "function_declaration"
+            or node_type == "function_definition"
+            or node_type == "arrow_function"
+            or node_type == "lambda"
+            or node_type == "function_expression"
         then
-            return parent
+            return node
+        end
+
+        -- move up to parent
+        local parent = node:parent()
+        if parent == nil or parent == node then
+            -- nil => assume == root
+            -- same node, assume root most too
+            return node
         end
         node = parent
     end

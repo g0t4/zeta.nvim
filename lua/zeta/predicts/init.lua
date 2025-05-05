@@ -98,6 +98,7 @@ end
 function M.setup()
     vim.keymap.set("n", "<leader>p", function()
         if not watcher then
+            messages.append("No watcher for current window")
             return
         end
         -- FYI requires tree-sitter even when manually triggered, so use the watcher.window
@@ -114,6 +115,7 @@ function M.setup()
 
     vim.keymap.set("n", "<leader>pa", function()
         if not displayer then
+            messages.append("No displayer for current window")
             return
         end
         local accepter = Accepter:new(watcher.window)
@@ -122,6 +124,7 @@ function M.setup()
 
     vim.keymap.set("n", "<leader>pc", function()
         if not watcher then
+            messages.append("No watcher for current window")
             return
         end
         cancel_current_request(watcher.window)

@@ -10,8 +10,6 @@ PredictionRequest.__index = PredictionRequest
 ---@param window WindowController0Indexed
 ---@return { body: string, editable_start_line: integer, editable_end_line: integer } | nil
 local function build_request(window)
-    local buffer = window:buffer()
-
     -- FYI can use to do simple testing
     -- local all_lines = buffer:get_all_lines()
 
