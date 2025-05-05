@@ -214,6 +214,8 @@ function M.setup_trigger_on_editing_buffer()
 
             local row_0b = window:get_cursor_row()
 
+            -- TODOw move to buffer:get_extmark_by_id
+            --      OR, buffer:extmarks():get_by_id()
             local mark = vim.api.nvim_buf_get_extmark_by_id(0, ns, mark_id, {})
             if mark ~= nil then
                 local mark_row_0b = mark[1]
