@@ -200,7 +200,7 @@ end
 local prediction_augroup = "zeta-prediction"
 
 ---@param buffer_number integer
-function M.setup_trigger_on_editing_buffer(buffer_number)
+function M.register_prediction_autocmds(buffer_number)
     local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
     local gutter_mark_id = 10
     local select_excerpt_mark = 11
@@ -297,18 +297,16 @@ function M.setup_events()
             -- only attach events if the buffer has a treesitter parser
             local has_ts = pcall(vim.treesitter.get_parser, args.buf)
             if has_ts then
-                -- print("Tree-sitter is available in buffer " .. args.buf)
-                M.setup_trigger_on_editing_buffer(args.buf)
+                messages.append("Tree-sitter is available in buffer " .. args.buf)
+                M.register_prediction_autocmds(args.buf)
             else
-                print("No Tree-sitter parser for buffer " .. args.buf)
+                messages.append("No Tree-sitter parser for buffer " .. args.buf)
             end
         end,
     })
 
     vim.api.nvim_create_autocmd({ "BufLeave" }, {
         callback = function(args)
-            -- detach, clear autocommands
-            -- vim.api.nvim_del_augroup_by_name(augroup_name)
             vim.api.nvim_clear_autocmds({ buffer = args.buf, group = prediction_augroup })
         end,
     })
