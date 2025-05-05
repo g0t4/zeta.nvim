@@ -198,10 +198,10 @@ function M.show_prediction()
 end
 
 local select_excerpt_mark = 11
+local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
 
 ---@param window WindowController0Indexed
 local function trigger_prediction(window)
-    local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
     local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
     -- FYI only reason I am doing this here is to keep one instance of prediction_marks which is NOT AT ALL NECESSARY
     -- this is bleeding concerns, but it's fine
@@ -239,8 +239,13 @@ local function trigger_prediction(window)
     -- })
 end
 
-local function cancel_current_request()
-    -- TODO
+---@param window WindowController0Indexed
+local function cancel_current_request(window)
+    messages.append("cancelling...")
+    local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
+    prediction_marks:clear_all()
+
+    -- TODO cancel outstanding request too
 end
 
 function M.setup_events()

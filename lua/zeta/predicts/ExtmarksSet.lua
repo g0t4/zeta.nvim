@@ -11,6 +11,9 @@ ExtmarksSet.__index = ExtmarksSet
 --   prediction_marks:set(mark_id, {})
 --   prediction_marks:clear_all()
 
+---@param buffer_number integer
+---@param namespace_id integer
+---@return ExtmarksSet
 function ExtmarksSet:new(buffer_number, namespace_id)
     self = setmetatable({}, ExtmarksSet)
     self.buffer_number = buffer_number

@@ -64,7 +64,7 @@ function WindowWatcher:watch(trigger_prediction, cancel_current_request)
         group = self.augroup_name,
         -- buffer = self.buffer_number,
         callback = function()
-            cancel_current_request()
+            cancel_current_request(window)
             debounced_trigger.cancel()
         end,
     })
@@ -74,7 +74,7 @@ function WindowWatcher:watch(trigger_prediction, cancel_current_request)
         group = self.augroup_name,
         -- buffer = self.buffer_number,
         callback = function()
-            cancel_current_request()
+            cancel_current_request(window)
             -- PRN differentiate between sending request and when can show prediction
             --   arguably, only latter (show prediction) needs debounced
             --     to avoid interfering iwth user typing!
