@@ -226,6 +226,8 @@ function M.setup_trigger_on_editing_buffer()
             -- - IIAC if the node is the same as the last request, that at least would be a good optimization
             --   - assuming nothing has changed in the doc? could invalidate any cache on text changed event
 
+            local excerpt = window:get_excerpt_at_cursor()
+
             local mark = prediction_marks:get(mark_id)
             if mark ~= nil then
                 local mark_row_0b = mark[1]
