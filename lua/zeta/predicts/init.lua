@@ -71,10 +71,6 @@ local function trigger_prediction(window, select_only)
         --   just have to return those start/end lines and then I can do that here!
         -- vim.cmd("highlight PredictionSelect ctermbg=red guibg=red")
         --
-        -- actually select it with cursor:
-        vim.api.nvim_buf_set_mark(window:buffer().buffer_number, "<", start_line, 0, {})
-        vim.api.nvim_buf_set_mark(window:buffer().buffer_number, ">", end_line, 0, {})
-        vim.api.nvim_feedkeys("'<v'>", "n", true)
         return
     end
 
