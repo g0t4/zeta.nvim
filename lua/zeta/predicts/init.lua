@@ -56,11 +56,27 @@ local function cancel_current_request(window)
 end
 
 ---@param window WindowController0Indexed
-local function trigger_prediction(window)
+local function trigger_prediction(window, select_only)
+    select_only = select_only or false
     messages.append("requesting...")
 
     -- PRN... a displayer is tied to a request... hrm...
     local request = PredictionRequest:new(window)
+
+    if select_only then
+        local start_line = request.details.editable_start_line
+        local end_line   = request.details.editable_end_line
+        -- TODO use extmarks to show it (next):
+        -- PRN highlight other parts of excerpt in different colors!
+        --   just have to return those start/end lines and then I can do that here!
+        -- vim.cmd("highlight PredictionSelect ctermbg=red guibg=red")
+        --
+        -- actually select it with cursor:
+        vim.api.nvim_buf_set_mark(window:buffer().buffer_number, "<", start_line, 0, {})
+        vim.api.nvim_buf_set_mark(window:buffer().buffer_number, ">", end_line, 0, {})
+        vim.api.nvim_feedkeys("'<v'>", "n", true)
+        return
+    end
 
     request:send(function(_request, stdout)
         displayer:on_response(_request, stdout)
@@ -112,6 +128,14 @@ function M.setup()
         displayer    = Displayer:new(window)
         display_fake_response(window, displayer)
     end, { desc = "demo fake request/response" })
+    vim.keymap.set("n", "<leader>ps", function()
+        -- visually display the current excerpt
+        if not watcher then
+            messages.append("No watcher for current window")
+            return
+        end
+        trigger_prediction(watcher.window, true)
+    end)
 
     vim.keymap.set("n", "<leader>pa", function()
         if not displayer then
