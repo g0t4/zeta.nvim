@@ -216,23 +216,8 @@ function M.setup_trigger_on_editing_buffer()
         callback = function()
             local window = WindowController0Indexed:new_from_current_window()
 
-            -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
 
             local row_0b = window:get_cursor_row()
-
-            -- ?? buffer:extmarks():get_by_id()
-            --  ExtmarksCollectionController - a collection of extmarks (by ns)...
-            --   or ExtmarksNamespaceController?
-            --
-            --  maybe:
-            --   predition_marks = buffer:extmarks(prediction_ns)
-            --   prediction_marks:clear()
-            --   prediction_marks:get(mark_id, {})
-            --   prediction_marks:set(mark_id, {})
-            --   etc
-            --
-            --   maybe even wrap a mark into its own controller (stores mark_id)
-            --     links back to its extmarks controller (to get/set/delete it)
 
             local mark = vim.api.nvim_buf_get_extmark_by_id(0, ns, mark_id, {})
             if mark ~= nil then
