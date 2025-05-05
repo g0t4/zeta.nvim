@@ -5,7 +5,7 @@ local tags = require("zeta.helpers.tags")
 local extmarks = require("zeta.diff.extmarks")
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
-local WindowController0Based = require("zeta.predicts.window")
+local WindowController0Based = require("zeta.predicts.WindowController")
 
 local M = {}
 function M.get_prediction_request()

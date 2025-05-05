@@ -1,4 +1,4 @@
-local BufferController0Based = require("zeta.predicts.buffer")
+local BufferController0Based = require("zeta.predicts.BufferController")
 
 ---This entire class operates on 0-based row and column positions
 ---   or if that seems wrong I'll go to all 1-based
