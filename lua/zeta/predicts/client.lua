@@ -20,8 +20,7 @@ function M.get_prediction_request()
     local row, col = window:get_cursor_position()
 
     -- insert cursor position tag
-    -- TODOw make adorn 0 based for row too
-    local editable = tags.adorn_editable_region(all_lines, row + 1, col)
+    local editable = tags.adorn_editable_region(all_lines, row, col)
     messages.header("editable:")
     messages.append(inspect(editable))
 
