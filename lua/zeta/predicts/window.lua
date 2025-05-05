@@ -1,3 +1,5 @@
+local BufferController0Based = require("zeta.predicts.buffer")
+
 ---This entire class operates on 0-based row and column positions
 ---   or if that seems wrong I'll go to all 1-based
 ---Also intended to hide away complexities in nvim_ apis
@@ -47,6 +49,11 @@ end
 ---@param column integer 0-based
 function WindowController0Based:set_cursor_position(row, column)
     vim.api.nvim_win_set_cursor(self.window_id, { row + 1, column })
+end
+
+function WindowController0Based:buffer()
+    local buffer_number = vim.api.nvim_win_get_buf(self.window_id)
+    return BufferController0Based:new(buffer_number)
 end
 
 return WindowController0Based

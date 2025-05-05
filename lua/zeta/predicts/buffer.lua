@@ -20,4 +20,14 @@ function BufferController0Based:new_for_current_buffer()
     return BufferController0Based:new(vim.api.nvim_get_current_win())
 end
 
+function BufferController0Based:get_all_lines()
+    -- FYI add/reshape the line access method to new scenarios that you actually use
+    -- i.e. maybe add
+    --    get_lines_after()
+    --    get_lines_before()
+    --    get_lines_in_range()
+
+    return vim.api.nvim_buf_get_lines(self.buffer_number, 0, -1, true)
+end
+
 return BufferController0Based

@@ -9,19 +9,19 @@ local WindowController0Based = require("zeta.predicts.window")
 
 local M = {}
 function M.get_prediction_request()
-    -- TODOw window:buffer()
-    local bufnr = vim.api.nvim_get_current_buf()
+    local window = WindowController0Based:new_from_current_window()
+    local buffer = window:buffer()
+
+    local bufnr = buffer.buffer_number
 
     -- step one, take the whole enchilada!
-    -- TODOw move to a window:buffer():get_all_lines()
-    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    local all_lines = buffer:get_all_lines()
 
-    local window = WindowController0Based:new_from_current_window()
     local row, col = window:get_cursor_position()
 
     -- insert cursor position tag
     -- TODOw make adorn 0 based for row too
-    local editable = tags.adorn_editable_region(lines, row + 1, col)
+    local editable = tags.adorn_editable_region(all_lines, row + 1, col)
     messages.header("editable:")
     messages.append(inspect(editable))
 
