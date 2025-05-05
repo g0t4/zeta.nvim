@@ -1,14 +1,22 @@
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
 
+---@alias PredictionDetails {
+---   body: string,
+---   editable_start_line: integer,
+---   editable_end_line: integer,
+---   context_before_start_line: integer,
+---   context_after_end_line: integer
+---} | nil
+
 ---@class PredictionRequest
 ---@field window WindowController0Indexed
----@field details { body: string, editable_start_line: integer, editable_end_line: integer } | nil
+---@field details PredictionDetails | nil
 local PredictionRequest = {}
 PredictionRequest.__index = PredictionRequest
 
 ---@param window WindowController0Indexed
----@return { body: string, editable_start_line: integer, editable_end_line: integer } | nil
+---@return PredictionDetails
 local function build_request(window)
     -- FYI can use to do simple testing
     -- local all_lines = buffer:get_all_lines()
@@ -54,8 +62,11 @@ local function build_request(window)
         --     -- input_events
         --     -- outline
         -- }
+        -- TODO get expanded context too
+        context_before_start_line = excerpt.editable_start_line - 4, -- FYI just for testing highlighting
         editable_start_line = excerpt.editable_start_line,
         editable_end_line = excerpt.editable_end_line,
+        context_after_end_line = excerpt.editable_end_line + 3, -- FYI just for testing highlighting
     }
 end
 
@@ -84,7 +95,7 @@ end
 
 --- a container to pass data when faking a request/response
 ---@param window WindowController0Indexed
----@param details {body: string, editable_start_line: integer, editable_end_line: integer}
+---@param details PredictionDetails
 function PredictionRequest:new_fake_request(window, details)
     self = setmetatable({}, PredictionRequest)
     self.window = window
