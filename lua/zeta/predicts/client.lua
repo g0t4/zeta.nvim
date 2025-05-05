@@ -199,94 +199,64 @@ function M.show_prediction()
 end
 
 local prediction_augroup = "zeta-prediction"
+local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
+local select_excerpt_mark = 11
 
 ---@param buffer_number integer
 function M.register_prediction_autocmds(buffer_number)
-    local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
-    local gutter_mark_id = 10
-    local select_excerpt_mark = 11
-    local which = false
+    local function trigger_prediction()
+        messages.append("fuck")
 
+        -- -- PRN cache these object instances per window? and on buffer change update them?
+        -- local window = WindowController0Indexed:new_from_current_window()
+        -- local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
+        --
+        -- local row_0b = window:get_cursor_row()
+        --
+        -- -- PRN for marks, profile timing to optimize caching vs get vs set always
+        -- -- PRN likewise for excerpt selection, find out if caching matters or if its fast enough
+        -- -- - IIAC if the node is the same as the last request, that at least would be a good optimization
+        -- --   - assuming nothing has changed in the doc? could invalidate any cache on text changed event
+        --
+        -- local excerpt = window:get_excerpt_text_at_cursor()
+
+        -- local row_0b = window:get_cursor_row()
+        -- prediction_marks:set(gutter_mark_id, {
+        --     start_line = row_0b,
+        --     start_col = 0,
+        --
+        --     id = gutter_mark_id,
+        --     -- virt_text = { { "prediction", "Comment" } },
+        --     -- virt_text_pos = "overlay",
+        --     sign_text = which and "*" or "-",
+        --     sign_hl_group = "DiffDelete",
+        --     -- hl_mode = "combine",
+        --     -- hl_group = "DiffRemove",
+        --     -- hl_eol = true,
+        -- })
+    end
+    -- not until after events stop firing for 1 s (1000ms)
+    local debounced_trigger = debounce(trigger_prediction, 1000)
+
+    vim.api.nvim_create_autocmd("InsertEnter", {
+        group = prediction_augroup,
+        buffer = buffer_number,
+        callback = debounced_trigger.call,
+    })
+
+    -- FYI nothing says I have to cancel it on leave... the prediction can be left visible after exit to normal mode
+    --   then on re-entry to insert mode you trigger a new prediction
     vim.api.nvim_create_autocmd("InsertLeave", {
         group = prediction_augroup,
         buffer = buffer_number,
-        callback = function()
-            -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
-        end,
-    })
-    vim.api.nvim_create_autocmd("CursorMoved", {
-        group = prediction_augroup,
-        buffer = buffer_number,
-        callback = function()
-            -- PRN cache these object instances per window? and on buffer change update them?
-            local window = WindowController0Indexed:new_from_current_window()
-            local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
-
-            local row_0b = window:get_cursor_row()
-
-            -- PRN for marks, profile timing to optimize caching vs get vs set always
-            -- PRN likewise for excerpt selection, find out if caching matters or if its fast enough
-            -- - IIAC if the node is the same as the last request, that at least would be a good optimization
-            --   - assuming nothing has changed in the doc? could invalidate any cache on text changed event
-
-            local excerpt = window:get_excerpt_text_at_cursor()
-
-
-
-            -- local mark = prediction_marks:get(mark_id)
-            -- if mark ~= nil then
-            --     local mark_row_0b = mark[1]
-            --     if mark_row_0b == row_0b then
-            --         return
-            --     end
-            -- end
-            --
-            -- which = not which
-            --
-            -- prediction_marks:set(mark_id, {
-            --     start_line = row_0b,
-            --     start_col = 0,
-            --
-            --     -- virt_text = { { "prediction", "Comment" } },
-            --     -- virt_text_pos = "overlay",
-            --     sign_text = which and "*" or "-",
-            --     sign_hl_group = "DiffAdd",
-            --     -- hl_group = "DiffAdd",
-            --     -- hl_mode = "combine",
-            -- })
-        end,
+        callback = debounced_trigger.cancel,
     })
 
     vim.api.nvim_create_autocmd("CursorMovedI", {
         -- PRN also trigger on TextChangedI? => merge signals into one stream>?
         group = prediction_augroup,
         buffer = buffer_number,
-        callback = function()
-            local window = WindowController0Indexed:new_from_current_window()
-            local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
-
-            -- TODO cancel outstanding request(s)
-            -- TODO start new request (might include a slight delay too,
-            --   consider that as part of the cancelable request)
-
-            -- prediction_marks:clear_all()
-
-            which = not which
-            local row_0b = window:get_cursor_row()
-            prediction_marks:set(gutter_mark_id, {
-                start_line = row_0b,
-                start_col = 0,
-
-                id = gutter_mark_id,
-                -- virt_text = { { "prediction", "Comment" } },
-                -- virt_text_pos = "overlay",
-                sign_text = which and "*" or "-",
-                sign_hl_group = "DiffDelete",
-                -- hl_mode = "combine",
-                -- hl_group = "DiffRemove",
-                -- hl_eol = true,
-            })
-        end
+        callback = debounced_trigger.call,
     })
 end
 
