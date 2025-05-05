@@ -75,6 +75,11 @@ function WindowWatcher:watch(trigger_prediction, cancel_current_request)
         -- buffer = self.buffer_number,
         callback = function()
             cancel_current_request()
+            -- PRN differentiate between sending request and when can show prediction
+            --   arguably, only latter (show prediction) needs debounced
+            --     to avoid interfering iwth user typing!
+            --   that said, the former (send request) could maybe have a shorter debounce intended
+            --     to avoid overwhelming the backend with requests
             debounced_trigger.call()
         end,
     })
