@@ -239,6 +239,10 @@ local function trigger_prediction(window)
     -- })
 end
 
+local function cancel_current_request()
+    -- TODO
+end
+
 function M.setup_events()
     -- FYI for now the code is all designed to have ONE watcher at a time
     --   only modify this if I truly need multiple watchers (across windows)
@@ -254,7 +258,7 @@ function M.setup_events()
             if has_ts then
                 messages.append("Tree-sitter is available in buffer " .. args.buf)
                 watcher = WindowWatcher:new(window_id, args.buf, "zeta-prediction")
-                watcher:watch(trigger_prediction)
+                watcher:watch(trigger_prediction, cancel_current_request)
             else
                 messages.append("No Tree-sitter parser for buffer " .. args.buf)
             end

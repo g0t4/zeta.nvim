@@ -19,7 +19,7 @@ function WindowWatcher:new(window_id, buffer_number, augroup_name)
 end
 
 --- @param trigger_prediction function
-function WindowWatcher:watch(trigger_prediction)
+function WindowWatcher:watch(trigger_prediction, cancel_current_request)
     vim.api.nvim_create_augroup(self.augroup_name, { clear = true })
 
 
@@ -51,6 +51,7 @@ function WindowWatcher:watch(trigger_prediction)
         -- FYI technically I don't nee the buffer filter b/c there's only ever one of these active at a time
         -- buffer = self.buffer_number,
         callback = function()
+            -- PRN immediately trigger and don't delay?
             debounced_trigger.call()
         end,
     })
@@ -63,6 +64,7 @@ function WindowWatcher:watch(trigger_prediction)
         group = self.augroup_name,
         -- buffer = self.buffer_number,
         callback = function()
+            cancel_current_request()
             debounced_trigger.cancel()
         end,
     })
@@ -72,6 +74,7 @@ function WindowWatcher:watch(trigger_prediction)
         group = self.augroup_name,
         -- buffer = self.buffer_number,
         callback = function()
+            cancel_current_request()
             debounced_trigger.call()
         end,
     })
