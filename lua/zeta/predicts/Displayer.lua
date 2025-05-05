@@ -136,10 +136,10 @@ function Displayer:on_response(request, response_body_stdout)
         return accum
     end)
 
-    messages.header("extmark_lines")
-    for _, v in ipairs(extmark_lines) do
-        messages.append(vim.inspect(v))
-    end
+    -- messages.header("extmark_lines")
+    -- for _, v in ipairs(extmark_lines) do
+    --     messages.append(vim.inspect(v))
+    -- end
 
     if #extmark_lines < 1 then
         messages.append("no lines")

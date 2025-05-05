@@ -14,12 +14,13 @@ local function display_fake_response()
 
     local fake_stdout  = files.read_example("01_response.json")
     local fake_body    = files.read_example_json("01_request.json")
+    local row          = window:get_cursor_row()
     local fake_details = {
         body = fake_body,
 
-        -- make up a position for now
-        editable_start_line = 2,
-        editable_end_line = 10,
+        -- make up a position for now using cursor in current file, doesn't matter what that file has in it
+        editable_start_line = row,
+        editable_end_line = row + 10, -- right now this is not used
     }
     local fake_request = PredictionRequest:new_fake_request(window, fake_details)
     displayer:on_response(fake_request, fake_stdout)
