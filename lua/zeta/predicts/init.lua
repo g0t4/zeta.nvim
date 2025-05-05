@@ -59,19 +59,11 @@ local function cancel_current_request(window)
 end
 
 ---@param window WindowController0Indexed
-local function trigger_prediction(window, select_only)
-    select_only = select_only or false
+local function trigger_prediction(window)
     messages.append("requesting...")
 
     -- PRN... a displayer is tied to a request... hrm...
     local request = PredictionRequest:new(window)
-    local details = request.details
-
-    if select_only then
-        local highlighter = ExcerptHighlighter:new(window:buffer().buffer_number)
-        highlighter:highlight_lines(details)
-        return
-    end
 
     request:send(function(_request, stdout)
         displayer:on_response(_request, stdout)
