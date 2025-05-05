@@ -16,8 +16,10 @@ local function display_fake_response()
     local fake_request = {
         body = files.read_example_json("01_request.json"),
         -- make up a position for now
-        excerpt_start_line = 0,
-        excerpt_start_column = 0,
+        excerpt = {
+            start_row = 1,
+            end_row = 2,
+        }
     }
     displayer:on_response(fake_request, fake_stdout)
 end

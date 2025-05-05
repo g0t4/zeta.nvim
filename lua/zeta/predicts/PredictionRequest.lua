@@ -44,7 +44,7 @@ local function build_request(window)
 
     -- local body = files.read_example_json("01_request.json")
     local body = {
-        input_excerpt = excerpt,
+        input_excerpt = excerpt.text,
         -- input_events
         -- outline
     }
@@ -56,13 +56,7 @@ local function build_request(window)
         --     -- input_events
         --     -- outline
         -- }
-        -- TODO wire up actual excerpt positions
-        excerpt_start_line = 0,
-        excerpt_start_column = 0,
-        -- excerpt_end_line = #lines,
-        -- ...
-        -- editable start/end too, whatever is needed...
-        -- ...save it so you don't to reverse engineer it
+        excerpt = excerpt
     }
 end
 
