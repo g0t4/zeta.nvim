@@ -199,7 +199,8 @@ end
 
 function M.setup_trigger_on_editing_buffer()
     local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
-    local mark_id = 10
+    local gutter_mark_id = 10
+    local select_excerpt_mark = 11
     local which = false
 
     vim.api.nvim_create_autocmd("InsertLeave", {
@@ -225,27 +226,29 @@ function M.setup_trigger_on_editing_buffer()
 
             local excerpt = window:get_excerpt_at_cursor()
 
-            local mark = prediction_marks:get(mark_id)
-            if mark ~= nil then
-                local mark_row_0b = mark[1]
-                if mark_row_0b == row_0b then
-                    return
-                end
-            end
 
-            which = not which
 
-            prediction_marks:set(mark_id, {
-                start_line = row_0b,
-                start_col = 0,
-
-                -- virt_text = { { "prediction", "Comment" } },
-                -- virt_text_pos = "overlay",
-                sign_text = which and "*" or "-",
-                sign_hl_group = "DiffAdd",
-                -- hl_group = "DiffAdd",
-                -- hl_mode = "combine",
-            })
+            -- local mark = prediction_marks:get(mark_id)
+            -- if mark ~= nil then
+            --     local mark_row_0b = mark[1]
+            --     if mark_row_0b == row_0b then
+            --         return
+            --     end
+            -- end
+            --
+            -- which = not which
+            --
+            -- prediction_marks:set(mark_id, {
+            --     start_line = row_0b,
+            --     start_col = 0,
+            --
+            --     -- virt_text = { { "prediction", "Comment" } },
+            --     -- virt_text_pos = "overlay",
+            --     sign_text = which and "*" or "-",
+            --     sign_hl_group = "DiffAdd",
+            --     -- hl_group = "DiffAdd",
+            --     -- hl_mode = "combine",
+            -- })
         end,
     })
 
@@ -264,11 +267,11 @@ function M.setup_trigger_on_editing_buffer()
 
             which = not which
             local row_0b = window:get_cursor_row()
-            prediction_marks:set(mark_id, {
+            prediction_marks:set(gutter_mark_id, {
                 start_line = row_0b,
                 start_col = 0,
 
-                id = mark_id,
+                id = gutter_mark_id,
                 -- virt_text = { { "prediction", "Comment" } },
                 -- virt_text_pos = "overlay",
                 sign_text = which and "*" or "-",
