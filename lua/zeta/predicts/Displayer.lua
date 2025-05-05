@@ -66,8 +66,7 @@ function Displayer:on_response(request, response_body_stdout)
         return
     end
 
-    -- TODO original excerpt
-    local original = request.details.body.input_excerpt
+    local original = request.details.body.input_excerpt or ""
     messages.header("input_excerpt:")
     messages.append(original)
     messages.header("output_excerpt:")

@@ -3,12 +3,12 @@ local inspect = require("devtools.inspect")
 
 ---@class PredictionRequest
 ---@field window WindowController0Indexed
----@field details { body: any, excerpt: Excerpt }|nil
+---@field details { body: string, editable_start_line: integer, editable_end_line: integer } | nil
 local PredictionRequest = {}
 PredictionRequest.__index = PredictionRequest
 
 ---@param window WindowController0Indexed
----@return table|nil
+---@return { body: string, editable_start_line: integer, editable_end_line: integer } | nil
 local function build_request(window)
     local buffer = window:buffer()
 
@@ -56,7 +56,8 @@ local function build_request(window)
         --     -- input_events
         --     -- outline
         -- }
-        excerpt = excerpt
+        editable_start_line = excerpt.start_line,
+        editable_end_line = excerpt.end_line,
     }
 end
 
@@ -85,7 +86,7 @@ end
 
 --- a container to pass data when faking a request/response
 ---@param window WindowController0Indexed
----@param details table
+---@param details {body: string, editable_start_line: integer, editable_end_line: integer}
 function PredictionRequest:new_fake_request(window, details)
     self = setmetatable({}, PredictionRequest)
     self.window = window
