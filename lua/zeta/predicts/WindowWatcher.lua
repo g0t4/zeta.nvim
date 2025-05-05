@@ -46,6 +46,7 @@ function WindowWatcher:watch(trigger_prediction)
     -- - instead these two happen in parallel
     -- - completions backends have no trouble keeping up and canceling previous requests
     local debounced_trigger = debounce(function()
+        -- FYI only reason I am doing this here is to keep one instance of prediction_marks which is NOT AT ALL NECESSARY
         -- this is bleeding concerns, but it's fine
         -- TODO rename this to PredictionsWindowWatcher is fine!
         trigger_prediction(window, prediction_marks)
