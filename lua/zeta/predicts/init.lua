@@ -162,6 +162,8 @@ function M.setup()
         cancel_current_request(watcher.window)
     end, { desc = "reject prediction" })
 
+    -- require("zeta.predicts.miscTsGotoMaps").setup()
+
     M.setup_events()
 end
 
