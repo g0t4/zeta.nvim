@@ -56,4 +56,9 @@ function WindowController0Based:buffer()
     return BufferController0Based:new(buffer_number)
 end
 
+function WindowController0Based:get_node_at_cursor()
+    local row, column = self:get_cursor_position()
+    return self:buffer():get_node_at_position(row, column)
+end
+
 return WindowController0Based
