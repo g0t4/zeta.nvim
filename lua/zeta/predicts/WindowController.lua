@@ -5,7 +5,7 @@ local ExcerptSelector = require("zeta.predicts.ExcerptSelector")
 ---   or if that seems wrong I'll go to all 1-indexed
 ---Also intended to hide away complexities in nvim_ apis
 ---  esp the need to track window ids, buffer #s, etc
----@class Window
+---@class WindowController0Indexed
 ---@field window_id integer
 local WindowController0Indexed = {}
 WindowController0Indexed.__index = WindowController0Indexed
