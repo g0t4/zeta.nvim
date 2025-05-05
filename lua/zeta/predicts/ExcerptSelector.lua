@@ -7,8 +7,8 @@ local ExcerptSelector = {}
 ExcerptSelector.__index = ExcerptSelector
 
 ---@param buffer BufferController0Indexed
-function ExcerptSelector.new(buffer)
-    local self = setmetatable({}, ExcerptSelector)
+function ExcerptSelector:new(buffer)
+    self = setmetatable(self, ExcerptSelector)
     self.buffer = buffer
     return self
 end

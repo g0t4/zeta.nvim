@@ -21,7 +21,7 @@ function M.get_prediction_request()
 
 
     local row, col = window:get_cursor_position()
-    local selector = ExcerptSelector.new(buffer)
+    local selector = ExcerptSelector:new(buffer)
     local excerpt  = selector:select_at_position(row, col)
     messages.header("excerpt:")
     messages.append("row: " .. row .. ", col: " .. col)
