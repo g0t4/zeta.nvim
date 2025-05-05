@@ -122,6 +122,7 @@ function M.setup_events()
 end
 
 function M.setup()
+    -- * real prediction, on-demand
     vim.keymap.set("n", "<leader>p", function()
         if not watcher then
             messages.append("No watcher for current window")
@@ -131,6 +132,7 @@ function M.setup()
         trigger_prediction(watcher.window)
     end, { desc = "show prediction" })
 
+    -- * fake prediction
     vim.keymap.set("n", "<leader>pf", function()
         -- this should always work, using the current window/buffer (regardless of type) b/c its a fake request/response
         local window = WindowController0Indexed:new_from_current_window()
@@ -138,8 +140,9 @@ function M.setup()
         displayer    = Displayer:new(window)
         display_fake_response(window, displayer)
     end, { desc = "demo fake request/response" })
+
+    -- * toggle [h]ighlighting excerpt as cursor moves
     vim.keymap.set("n", "<leader>ph", function()
-        -- toggle highlighting as I move around
         if not watcher then
             messages.append("No watcher for current window")
             return
@@ -147,15 +150,8 @@ function M.setup()
         toggle_highlighting = not toggle_highlighting
         immediate_on_cursor_moved(watcher.window)
     end)
-    vim.keymap.set("n", "<leader>pf", function()
-        -- "freeze" highlight
-        if not watcher then
-            messages.append("No watcher for current window")
-            return
-        end
-        trigger_prediction(watcher.window, true)
-    end)
 
+    -- * accept prediction
     vim.keymap.set("n", "<leader>pa", function()
         if not displayer then
             messages.append("No displayer for current window")
@@ -165,6 +161,7 @@ function M.setup()
         accepter:accept(displayer)
     end, { desc = "accept prediction" })
 
+    -- * cancel prediction
     vim.keymap.set("n", "<leader>pc", function()
         if not watcher then
             messages.append("No watcher for current window")
