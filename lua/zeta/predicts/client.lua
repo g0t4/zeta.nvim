@@ -1,14 +1,12 @@
 local parser = require("zeta.helpers.tags")
 local files = require("zeta.helpers.files")
 local combined = require("zeta.diff.combined")
-local tags = require("zeta.helpers.tags")
 local extmarks = require("zeta.diff.extmarks")
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
 local WindowController0Indexed = require("zeta.predicts.WindowController")
 local ExcerptSelector = require("zeta.predicts.ExcerptSelector")
-local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
-local debounce = require("zeta.predicts.debounce")
+local WindowWatcher = require("zeta.predicts.WindowWatcher")
 
 local M = {}
 function M.get_prediction_request()
@@ -198,103 +196,57 @@ function M.show_prediction()
     end
 end
 
-local prediction_augroup = "zeta-prediction"
-local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
 local select_excerpt_mark = 11
 
----@param buffer_number integer
-function M.register_prediction_autocmds(buffer_number, window_id)
-    local window = WindowController0Indexed:new(window_id)
-    if not window:buffer().buffer_number == buffer_number then
-        -- sanity check, should never happen
-        -- the event BufEnter fires for a buffer which can be in multiple windows
-        -- so, get current window right away (happens in event handler)
-        -- and then here I make sure that matches
-        -- FYI could use WinEnter too to get around this
-        error("unexpected buffer number on current window, expected bufnr: " .. buffer_number
-            .. " but got bufnr: " .. window:buffer().buffer_number
-            .. " (window: " .. window.window_id .. ")")
-        return
-    end
+local function trigger_prediction(window, prediction_marks)
+    -- FYI even the time here to query the node structures,
+    -- if you run that in parallel with your debounce
+    -- will never be consequential
+    -- but, might lock access to the buffer?
 
-    local prediction_marks = ExtmarksSet:new(buffer_number, prediction_namespace)
+    messages.append("requesting...")
 
-    local function trigger_prediction()
-        -- FYI even the time here to query the node structures,
-        -- if you run that in parallel with your debounce
-        -- will never be consequential
-        -- but, might lock access to the buffer?
+    local row_0b = window:get_cursor_row()
 
-        messages.append("requesting...")
+    -- PRN for marks, profile timing to optimize caching vs get vs set always
+    -- PRN likewise for excerpt selection, find out if caching matters or if its fast enough
+    -- - IIAC if the node is the same as the last request, that at least would be a good optimization
+    --   - assuming nothing has changed in the doc? could invalidate any cache on text changed event
 
-        local row_0b = window:get_cursor_row()
+    local excerpt = window:get_excerpt_text_at_cursor()
 
-        -- PRN for marks, profile timing to optimize caching vs get vs set always
-        -- PRN likewise for excerpt selection, find out if caching matters or if its fast enough
-        -- - IIAC if the node is the same as the last request, that at least would be a good optimization
-        --   - assuming nothing has changed in the doc? could invalidate any cache on text changed event
-
-        local excerpt = window:get_excerpt_text_at_cursor()
-
-        -- local row_0b = window:get_cursor_row()
-        -- prediction_marks:set(gutter_mark_id, {
-        --     start_line = row_0b,
-        --     start_col = 0,
-        --
-        --     id = gutter_mark_id,
-        --     -- virt_text = { { "prediction", "Comment" } },
-        --     -- virt_text_pos = "overlay",
-        --     sign_text = which and "*" or "-",
-        --     sign_hl_group = "DiffDelete",
-        --     -- hl_mode = "combine",
-        --     -- hl_group = "DiffRemove",
-        --     -- hl_eol = true,
-        -- })
-    end
-
-    -- this way, when typing it's not trying to show a prediction
-    -- TODO fire off the request in the background (cancel it on every key stroke)
-    -- - but, DO NOT SHOW IT until the delay has elapsed...
-    -- - that way you don't wait both the debounce delay + service r/t
-    -- - instead these two happen in parallel
-    -- - completions backends have no trouble keeping up and canceling previous requests
-    local debounced_trigger = debounce(trigger_prediction, 500)
-
-    vim.api.nvim_create_autocmd("InsertEnter", {
-        group = prediction_augroup,
-        buffer = buffer_number,
-        callback = debounced_trigger.call,
-    })
-
-    vim.api.nvim_create_autocmd("InsertLeave", {
-        -- FYI nothing says I have to cancel it on leave... the prediction can be left visible after exit to normal mode
-        --   then on re-entry to insert mode you trigger a new prediction
-        -- one benefit to stop on exit is you can prevent the prediction by hitting escape as last key when typing
-        group = prediction_augroup,
-        buffer = buffer_number,
-        callback = debounced_trigger.cancel,
-    })
-
-    vim.api.nvim_create_autocmd("CursorMovedI", {
-        -- PRN also trigger on TextChangedI? => merge signals into one stream>?
-        group = prediction_augroup,
-        buffer = buffer_number,
-        callback = debounced_trigger.call,
-    })
+    -- local row_0b = window:get_cursor_row()
+    -- prediction_marks:set(gutter_mark_id, {
+    --     start_line = row_0b,
+    --     start_col = 0,
+    --
+    --     id = gutter_mark_id,
+    --     -- virt_text = { { "prediction", "Comment" } },
+    --     -- virt_text_pos = "overlay",
+    --     sign_text = which and "*" or "-",
+    --     sign_hl_group = "DiffDelete",
+    --     -- hl_mode = "combine",
+    --     -- hl_group = "DiffRemove",
+    --     -- hl_eol = true,
+    -- })
 end
 
 function M.setup_events()
-    vim.api.nvim_create_augroup(prediction_augroup, { clear = true })
+    -- FYI for now the code is all designed to have ONE watcher at a time
+    --   only modify this if I truly need multiple watchers (across windows)
+    --   but that's not the current design
+    --   would have to have autocmd group that is segmented by window id too
+    local watcher = nil
 
     -- PRN use WinEnter (change window event), plus when first loading should trigger for current window (since that's not a change window event)
     vim.api.nvim_create_autocmd({ "BufEnter" }, {
         callback = function(args)
             local window_id = vim.api.nvim_get_current_win()
-            -- only attach events if the buffer has a treesitter parser
             local has_ts = pcall(vim.treesitter.get_parser, args.buf)
             if has_ts then
                 messages.append("Tree-sitter is available in buffer " .. args.buf)
-                M.register_prediction_autocmds(args.buf, window_id)
+                watcher = WindowWatcher:new(window_id, args.buf)
+                watcher:watch(trigger_prediction)
             else
                 messages.append("No Tree-sitter parser for buffer " .. args.buf)
             end
@@ -303,7 +255,10 @@ function M.setup_events()
 
     vim.api.nvim_create_autocmd({ "BufLeave" }, {
         callback = function(args)
-            vim.api.nvim_clear_autocmds({ buffer = args.buf, group = prediction_augroup })
+            if watcher then
+                watcher:unwatch()
+                watcher = nil
+            end
         end,
     })
 end
