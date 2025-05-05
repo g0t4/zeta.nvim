@@ -20,7 +20,7 @@ function M.get_prediction_request()
     local row, col = window:get_cursor_position()
 
     -- insert cursor position tag
-    local editable = tags.adorn_editable_region(all_lines, row, col)
+    local editable = tags.mark_editable_region(all_lines, row, col)
     messages.header("editable:")
     messages.append(inspect(editable))
 
