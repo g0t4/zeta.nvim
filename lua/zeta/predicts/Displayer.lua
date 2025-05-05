@@ -32,7 +32,7 @@ end
 --     -- hl_eol = true,
 -- })
 
-local select_excerpt_mark = 11
+local select_excerpt_mark_id = 11
 
 function Displayer:clear()
     self.marks:clear_all()
@@ -67,10 +67,10 @@ function Displayer:on_response(request, response_body_stdout)
     end
 
     local original = request.details.body.input_excerpt or ""
-    messages.header("input_excerpt:")
-    messages.append(original)
-    messages.header("output_excerpt:")
-    messages.append(rewritten)
+    -- messages.header("input_excerpt:")
+    -- messages.append(original)
+    -- messages.header("output_excerpt:")
+    -- messages.append(rewritten)
 
     original_editable = parser.get_editable_region(original) or ""
     -- PRN use cursor position? i.e. check if cursor has moved since prediction requested (might not need this actually)
@@ -136,10 +136,10 @@ function Displayer:on_response(request, response_body_stdout)
         return accum
     end)
 
-    -- messages.header("extmark_lines")
-    -- for _, v in ipairs(extmark_lines) do
-    --     messages.append(vim.inspect(v))
-    -- end
+    messages.header("extmark_lines")
+    for _, v in ipairs(extmark_lines) do
+        messages.append(vim.inspect(v))
+    end
 
     if #extmark_lines < 1 then
         messages.append("no lines")
@@ -154,14 +154,14 @@ function Displayer:on_response(request, response_body_stdout)
     --   I kinda like how that approach pushes the original down for easy reference too
     --   OR, popup window w/ diff?
 
-    -- self.marks:set(select_excerpt_mark, {
-    --     start_line = row_0b,
-    --     start_col = 0,
-    --
-    --     id = select_excerpt_mark,
-    --     virt_lines = extmark_lines,
-    --     virt_text_pos = "overlay",
-    -- })
+    self.marks:set(select_excerpt_mark_id, {
+        start_line = request.details.editable_start_line,
+        start_col = 0,
+
+        id = select_excerpt_mark_id,
+        virt_lines = extmark_lines,
+        virt_text_pos = "overlay",
+    })
 end
 
 return Displayer
