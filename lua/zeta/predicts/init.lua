@@ -5,6 +5,7 @@ local WindowController0Indexed = require("zeta.predicts.WindowController")
 local WindowWatcher = require("zeta.predicts.WindowWatcher")
 local PredictionRequest = require("zeta.predicts.PredictionRequest")
 local Displayer = require("zeta.predicts.Displayer")
+local Excerpt = require("zeta.predicts.Excerpt")
 
 local M = {}
 
@@ -13,17 +14,15 @@ local function display_fake_response()
     local displayer    = Displayer:new(window)
 
     local fake_stdout  = files.read_example("01_response.json")
-    local fake_request = {
-        body = files.read_example_json("01_request.json"),
+    local fake_body    = files.read_example_json("01_request.json")
+    local fake_details = {
+        body = fake_body,
         -- make up a position for now
-        excerpt = {
-            start_row = 1,
-            end_row = 2,
-        }
+        excerpt = Excerpt:new(fake_body, 2, 10)
     }
+    local fake_request = PredictionRequest:new_fake_request(window, fake_details)
     displayer:on_response(fake_request, fake_stdout)
 end
-
 
 local current_request = nil
 ---@param window WindowController0Indexed
