@@ -8,6 +8,7 @@ local inspect = require("devtools.inspect")
 local WindowController0Indexed = require("zeta.predicts.WindowController")
 local ExcerptSelector = require("zeta.predicts.ExcerptSelector")
 local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
+local debounce = require("zeta.predicts.debounce")
 
 local M = {}
 function M.get_prediction_request()
