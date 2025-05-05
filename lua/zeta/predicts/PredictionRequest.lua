@@ -14,10 +14,13 @@ local function build_request(window)
     -- step one, take the whole enchilada!
     -- local all_lines = buffer:get_all_lines()
 
-
     local excerpt = window:get_excerpt_text_at_cursor()
     messages.header("excerpt:")
     messages.append(inspect(excerpt))
+    if excerpt == nil then
+        messages.header("excerpt not found, aborting...")
+        return
+    end
 
     --
     -- -- insert cursor position tag
