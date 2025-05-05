@@ -45,9 +45,6 @@ local function trigger_prediction(window)
     local request = PredictionRequest:new(window)
     local displayer = Displayer:new(window)
 
-    -- save yourself the hassle of forgetting to encode/decode when loading test files
-    assert(type(request.details.body) == "table", "body must be a table")
-
     request:send(function(_request, stdout)
         displayer:on_response(_request, stdout)
         -- clear request once it's done:
