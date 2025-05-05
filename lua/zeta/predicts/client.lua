@@ -198,7 +198,7 @@ function M.show_prediction()
 end
 
 function M.setup_trigger_on_editing_buffer()
-    local ns = vim.api.nvim_create_namespace("zeta-prediction")
+    local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
     local mark_id = 10
     local which = false
 
@@ -214,7 +214,7 @@ function M.setup_trigger_on_editing_buffer()
         callback = function()
             -- PRN cache these object instances per window? and on buffer change update them?
             local window = WindowController0Indexed:new_from_current_window()
-            local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, ns)
+            local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
 
             local row_0b = window:get_cursor_row()
 
@@ -254,7 +254,7 @@ function M.setup_trigger_on_editing_buffer()
         pattern = "*",
         callback = function()
             local window = WindowController0Indexed:new_from_current_window()
-            local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, ns)
+            local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
 
             -- TODO cancel outstanding request(s)
             -- TODO start new request (might include a slight delay too,
