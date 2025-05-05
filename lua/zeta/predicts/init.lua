@@ -10,7 +10,7 @@ local Excerpt = require("zeta.predicts.Excerpt")
 local M = {}
 
 local function display_fake_response()
-    local window       = WindowController0Indexed:new(1)
+    local window       = WindowController0Indexed:new_from_current_window()
     local displayer    = Displayer:new(window)
 
     local fake_stdout  = files.read_example("01_response.json")
