@@ -220,17 +220,21 @@ function M.register_prediction_autocmds(buffer_number, window_id)
     local prediction_marks = ExtmarksSet:new(buffer_number, prediction_namespace)
 
     local function trigger_prediction()
+        -- FYI even the time here to query the node structures,
+        -- if you run that in parallel with your debounce
+        -- will never be consequential
+        -- but, might lock access to the buffer?
+
         messages.append("requesting...")
 
-        --
-        -- local row_0b = window:get_cursor_row()
-        --
-        -- -- PRN for marks, profile timing to optimize caching vs get vs set always
-        -- -- PRN likewise for excerpt selection, find out if caching matters or if its fast enough
-        -- -- - IIAC if the node is the same as the last request, that at least would be a good optimization
-        -- --   - assuming nothing has changed in the doc? could invalidate any cache on text changed event
-        --
-        -- local excerpt = window:get_excerpt_text_at_cursor()
+        local row_0b = window:get_cursor_row()
+
+        -- PRN for marks, profile timing to optimize caching vs get vs set always
+        -- PRN likewise for excerpt selection, find out if caching matters or if its fast enough
+        -- - IIAC if the node is the same as the last request, that at least would be a good optimization
+        --   - assuming nothing has changed in the doc? could invalidate any cache on text changed event
+
+        local excerpt = window:get_excerpt_text_at_cursor()
 
         -- local row_0b = window:get_cursor_row()
         -- prediction_marks:set(gutter_mark_id, {
