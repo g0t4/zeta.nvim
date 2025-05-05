@@ -66,4 +66,24 @@ function ExtmarksSet:set(mark_id, opts)
         opts)
 end
 
+function ExtmarksSet:highlight_lines(opts)
+    assert(opts.id, "must provide an id")
+    assert(opts.hl_group, "must provide an hl_group")
+    assert(opts.start_line, "must provide a start_line")
+    -- assert(opts.start_col, "must provide a start_col")
+    assert(opts.end_line, "must provide an end_line")
+    -- assert(opts.end_col, "must provide an end_col")
+
+    local start_line = opts.start_line or 0
+    local start_col = opts.start_col or 0
+    opts.start_line = nil
+    opts.start_col = nil
+
+
+    return vim.api.nvim_buf_set_extmark(
+        self.buffer_number, self.namespace_id,
+        start_line, start_col,
+        opts)
+end
+
 return ExtmarksSet
