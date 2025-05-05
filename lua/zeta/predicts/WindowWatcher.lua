@@ -50,7 +50,9 @@ function WindowWatcher:watch(trigger_prediction)
         group = self.augroup_name,
         -- FYI technically I don't nee the buffer filter b/c there's only ever one of these active at a time
         -- buffer = self.buffer_number,
-        callback = debounced_trigger.call,
+        callback = function()
+            debounced_trigger.call()
+        end,
     })
 
     vim.api.nvim_create_autocmd("InsertLeave", {
@@ -60,14 +62,18 @@ function WindowWatcher:watch(trigger_prediction)
 
         group = self.augroup_name,
         -- buffer = self.buffer_number,
-        callback = debounced_trigger.cancel,
+        callback = function()
+            debounced_trigger.cancel()
+        end,
     })
 
     vim.api.nvim_create_autocmd("CursorMovedI", {
         -- PRN also trigger on TextChangedI? => merge signals into one stream>?
         group = self.augroup_name,
         -- buffer = self.buffer_number,
-        callback = debounced_trigger.call,
+        callback = function()
+            debounced_trigger.call()
+        end,
     })
 end
 
