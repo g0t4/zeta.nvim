@@ -54,6 +54,9 @@ end
 ---@param request PredictionRequest
 ---@param response_body_stdout string
 function Displayer:on_response(request, response_body_stdout)
+    self.current_request = request
+    self.current_response_body_stdout = response_body_stdout
+
     messages.ensure_open()
 
     local decoded = vim.fn.json_decode(response_body_stdout)

@@ -5,13 +5,15 @@ local WindowController0Indexed = require("zeta.predicts.WindowController")
 local WindowWatcher = require("zeta.predicts.WindowWatcher")
 local PredictionRequest = require("zeta.predicts.PredictionRequest")
 local Displayer = require("zeta.predicts.Displayer")
+local Accepter = require("zeta.predicts.Accepter")
+
 
 local M = {}
 
-local function display_fake_response()
+---@param window WindowController0Indexed
+---@param displayer Displayer
+local function display_fake_response(window, displayer)
     -- FYI not using watcher.window b/c I want this to work even when I disabled the watcher event handlers
-    local window       = WindowController0Indexed:new_from_current_window()
-    local displayer    = Displayer:new(window)
 
     local fake_stdout  = files.read_example("01_response.json")
     local fake_body    = files.read_example_json("01_request.json")
@@ -27,12 +29,24 @@ local function display_fake_response()
     displayer:on_response(fake_request, fake_stdout)
 end
 
+-- FYI for now the code is all designed to have ONE watcher at a time
+--   only modify this if I truly need multiple watchers (across windows)
+--   but that's not the current design
+--   would have to have autocmd group that is segmented by window id too
+---@type WindowWatcher|nil
+local watcher = nil
+---@type Displayer|nil
+local displayer = nil
+---@type PredictionRequest|nil
 local current_request = nil
+
 ---@param window WindowController0Indexed
 local function cancel_current_request(window)
     messages.append("cancelling...")
-    local displayer = Displayer:new(window)
-    displayer:clear()
+
+    if displayer ~= nil then
+        displayer:clear()
+    end
 
     if current_request == nil then
         return
@@ -47,7 +61,6 @@ local function trigger_prediction(window)
 
     -- PRN... a displayer is tied to a request... hrm...
     local request = PredictionRequest:new(window)
-    local displayer = Displayer:new(window)
 
     request:send(function(_request, stdout)
         displayer:on_response(_request, stdout)
@@ -56,12 +69,6 @@ local function trigger_prediction(window)
     end)
 end
 
--- FYI for now the code is all designed to have ONE watcher at a time
---   only modify this if I truly need multiple watchers (across windows)
---   but that's not the current design
---   would have to have autocmd group that is segmented by window id too
-local watcher = nil
-
 function M.setup_events()
     -- PRN use WinEnter (change window event), plus when first loading should trigger for current window (since that's not a change window event)
     vim.api.nvim_create_autocmd({ "BufEnter" }, {
@@ -69,9 +76,9 @@ function M.setup_events()
             local window_id = vim.api.nvim_get_current_win()
             local has_ts = pcall(vim.treesitter.get_parser, args.buf)
             if has_ts then
-                messages.append("Tree-sitter is available in buffer " .. args.buf)
                 watcher = WindowWatcher:new(window_id, args.buf, "zeta-prediction")
                 watcher:watch(trigger_prediction, cancel_current_request)
+                displayer = Displayer:new(watcher.window)
             else
                 messages.append("No Tree-sitter parser for buffer " .. args.buf)
             end
@@ -99,14 +106,18 @@ function M.setup()
 
     vim.keymap.set("n", "<leader>pf", function()
         -- this should always work, using the current window/buffer (regardless of type) b/c its a fake request/response
-        display_fake_response()
+        local window = WindowController0Indexed:new_from_current_window()
+        -- set here so we can use with accepter
+        displayer    = Displayer:new(window)
+        display_fake_response(window, displayer)
     end, { desc = "demo fake request/response" })
 
     vim.keymap.set("n", "<leader>pa", function()
-        if not watcher then
+        if not displayer then
             return
         end
-        -- TODO
+        local accepter = Accepter:new(watcher.window)
+        accepter:accept(displayer)
     end, { desc = "accept prediction" })
 
     vim.keymap.set("n", "<leader>pc", function()

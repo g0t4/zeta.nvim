@@ -60,4 +60,11 @@ function BufferController0Indexed:get_node_at_position(row, column)
     --   and convenient (i.e. class tracks buffer number)
 end
 
+function BufferController0Indexed:replace_lines(start_row, end_row, lines)
+    vim.api.nvim_buf_set_text(self.buffer_number,
+        start_row, 0,
+        end_row, 0,
+        lines)
+end
+
 return BufferController0Indexed
