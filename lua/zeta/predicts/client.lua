@@ -53,8 +53,8 @@ function M.get_prediction_request()
         --     -- input_events
         --     -- outline
         -- }
-        excerpt_start_line_0based = 0,
-        excerpt_start_column_0based = 0,
+        excerpt_start_line_0indexed = 0,
+        excerpt_start_column_0indexed = 0,
         -- excerpt_end_line = #lines,
         -- ...
         -- editable start/end too, whatever is needed...
