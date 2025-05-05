@@ -95,6 +95,16 @@ function M.setup()
 
     vim.keymap.set("n", "<leader>pf", display_fake_response, { desc = "bypass request to test prediction response handling" })
 
+    -- accept:
+    vim.keymap.set("n", "<leader>pa", function()
+        -- TODO
+    end, { desc = "accept prediction" })
+
+    -- reject/abort
+    vim.keymap.set("n", "<leader>pc", function()
+        -- TODO
+    end, { desc = "accept prediction" })
+
     -- TODO! activate on typing once fake is working!
     -- M.setup_events()
 end
