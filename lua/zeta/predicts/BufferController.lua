@@ -67,4 +67,8 @@ function BufferController0Indexed:replace_lines(start_row, end_row, lines)
         lines)
 end
 
+function BufferController0Indexed:line_count()
+    return vim.api.nvim_buf_line_count(self.buffer_number)
+end
+
 return BufferController0Indexed

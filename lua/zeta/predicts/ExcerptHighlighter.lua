@@ -1,16 +1,17 @@
 local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
+local BufferController = require("zeta.predicts.BufferController")
 
 ---@class ExcerptHighlighter
 local ExcerptHighlighter = {}
 ExcerptHighlighter.__index = ExcerptHighlighter
 
 function ExcerptHighlighter:new(buffer_number)
-    self               = setmetatable({}, ExcerptHighlighter)
-    self.buffer_number = buffer_number
+    self        = setmetatable({}, ExcerptHighlighter)
+    self.buffer = BufferController:new(buffer_number)
 
     -- TODO let extmarksset create the namespace (pass string for it)...
-    local ns_id        = vim.api.nvim_create_namespace("zeta-excerpts")
-    self.marks         = ExtmarksSet:new(self.buffer_number, ns_id)
+    local ns_id = vim.api.nvim_create_namespace("zeta-excerpts")
+    self.marks  = ExtmarksSet:new(buffer_number, ns_id)
     return self
 end
 
@@ -34,6 +35,9 @@ function ExcerptHighlighter:highlight_lines(details)
     })
     -- * highlight the context before/after
     if details.context_before_start_line < details.editable_start_line then
+        if details.context_before_start_line < 0 then
+            details.context_before_start_line = 0
+        end
         self.marks:highlight_lines({
             id = ctx_before_mark_id,
             hl_group = hl_context,
@@ -42,6 +46,9 @@ function ExcerptHighlighter:highlight_lines(details)
         })
     end
     if details.context_after_end_line > details.editable_end_line then
+        if details.context_after_end_line > self.buffer:line_count() then
+            details.context_after_end_line = self.buffer:line_count()
+        end
         self.marks:highlight_lines({
             id = ctx_after_mark_id,
             hl_group = hl_context,
