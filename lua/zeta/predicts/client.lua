@@ -219,7 +219,6 @@ function M.setup_trigger_on_editing_buffer()
             local mark = vim.api.nvim_buf_get_extmark_by_id(0, ns, mark_id, {})
             if mark ~= nil then
                 local mark_row_0b = mark[1]
-                local mark_col_0b = mark[2]
                 if mark_row_0b == row_0b then -- and mark_col_0b == col_0b then
                     return
                 end
