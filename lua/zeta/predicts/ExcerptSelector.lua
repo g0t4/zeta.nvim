@@ -1,5 +1,6 @@
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
+local Excerpt = require("zeta.predicts.Excerpt")
 
 ---@class ExcerptSelector
 ---@field buffer BufferController0Indexed
@@ -93,15 +94,14 @@ end
 
 ---@param row integer 0-indexed
 ---@param column integer 0-indexed
----@return string[], integer|nil, integer|nil
+---@return Excerpt|nil
 function ExcerptSelector:text_at_position(row, column)
     local start_line, end_line = self:line_range_at_position(row, column)
     if start_line == nil or end_line == nil then
-        -- PRN add a return type?
-        return {}, nil, nil
+        return nil
     end
     local text = self.buffer:get_lines(start_line, end_line)
-    return text, start_line, end_line
+    return Excerpt:new(text, start_line, end_line)
 end
 
 return ExcerptSelector
