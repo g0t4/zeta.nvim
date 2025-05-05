@@ -1,7 +1,7 @@
 local BufferController0Indexed = require("zeta.predicts.BufferController")
 
 ---This entire class operates on 0-indexed row and column positions
----   or if that seems wrong I'll go to all 1-based
+---   or if that seems wrong I'll go to all 1-indexed
 ---Also intended to hide away complexities in nvim_ apis
 ---  esp the need to track window ids, buffer #s, etc
 ---@class Window
@@ -27,7 +27,7 @@ end
 function WindowController0Indexed:get_cursor_position()
     -- keep in mind different windows w/ same buffer have their own cursor positions
     -- that's why this is window specific
-    -- get_cursor returns 1-based row, 0-based column
+    -- get_cursor returns 1-indexed row, 0-indexed column
     local pos = vim.api.nvim_win_get_cursor(self.window_id)
     -- ? do I prefer to use a table or two return values?
     return pos[1] - 1, pos[2]

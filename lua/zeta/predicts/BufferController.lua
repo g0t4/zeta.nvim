@@ -1,8 +1,8 @@
 ---This entire class operates on 0-indexed row and column positions
----   or if that seems wrong I'll go to all 1-based
+---   or if that seems wrong I'll go to all 1-indexed
 ---Also intended to hide away complexities in nvim_ apis
 ---  esp the need to track window ids, buffer #s, etc
----@class BufferController0Based
+---@class BufferController0Indexed
 ---@field buffer_number integer
 ---@field
 local BufferController0Indexed = {}
