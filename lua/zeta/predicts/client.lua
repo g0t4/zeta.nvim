@@ -5,11 +5,11 @@ local tags = require("zeta.helpers.tags")
 local extmarks = require("zeta.diff.extmarks")
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
-local WindowController0Based = require("zeta.predicts.WindowController")
+local WindowController0Indexed = require("zeta.predicts.WindowController")
 
 local M = {}
 function M.get_prediction_request()
-    local window = WindowController0Based:new_from_current_window()
+    local window = WindowController0Indexed:new_from_current_window()
     local buffer = window:buffer()
 
     local bufnr = buffer.buffer_number
@@ -207,7 +207,7 @@ function M.setup_trigger_on_editing_buffer()
     vim.api.nvim_create_autocmd("CursorMoved", {
         pattern = "*",
         callback = function()
-            local window = WindowController0Based:new_from_current_window()
+            local window = WindowController0Indexed:new_from_current_window()
 
             -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
 
@@ -258,7 +258,7 @@ function M.setup_trigger_on_editing_buffer()
         -- PRN also trigger on TextChangedI? => merge signals into one stream>?
         pattern = "*",
         callback = function()
-            local window = WindowController0Based:new_from_current_window()
+            local window = WindowController0Indexed:new_from_current_window()
 
             -- TODO cancel outstanding request(s)
             -- TODO start new request (might include a slight delay too,

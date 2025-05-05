@@ -1,4 +1,4 @@
-local BufferController0Based = require("zeta.predicts.BufferController")
+local BufferController0Indexed = require("zeta.predicts.BufferController")
 
 ---This entire class operates on 0-based row and column positions
 ---   or if that seems wrong I'll go to all 1-based
@@ -6,25 +6,25 @@ local BufferController0Based = require("zeta.predicts.BufferController")
 ---  esp the need to track window ids, buffer #s, etc
 ---@class Window
 ---@field window_id integer
-local WindowController0Based = {}
-WindowController0Based.__index = WindowController0Based
+local WindowController0Indexed = {}
+WindowController0Indexed.__index = WindowController0Indexed
 
 --- @param window_id integer
-function WindowController0Based:new(window_id)
-    self = setmetatable(self, WindowController0Based)
+function WindowController0Indexed:new(window_id)
+    self = setmetatable(self, WindowController0Indexed)
     self.window_id = window_id
     return self
 end
 
 --- Looks up window id for current window
 --- uses that to create a new WindowController
-function WindowController0Based:new_from_current_window()
+function WindowController0Indexed:new_from_current_window()
     -- PRN add a caching mechanism to avoid recreating the controller? if perf issues
-    return WindowController0Based:new(vim.api.nvim_get_current_win())
+    return WindowController0Indexed:new(vim.api.nvim_get_current_win())
 end
 
 ---@return integer row, integer column # both 0-based
-function WindowController0Based:get_cursor_position()
+function WindowController0Indexed:get_cursor_position()
     -- keep in mind different windows w/ same buffer have their own cursor positions
     -- that's why this is window specific
     -- get_cursor returns 1-based row, 0-based column
@@ -34,31 +34,31 @@ function WindowController0Based:get_cursor_position()
 end
 
 ---@return integer row 0-based
-function WindowController0Based:get_cursor_row()
+function WindowController0Indexed:get_cursor_row()
     local row, _ = self:get_cursor_position()
     return row
 end
 
 ---@return integer column 0-based
-function WindowController0Based:get_cursor_column()
+function WindowController0Indexed:get_cursor_column()
     local _, column = self:get_cursor_position()
     return column
 end
 
 ---@param row integer 0-based
 ---@param column integer 0-based
-function WindowController0Based:set_cursor_position(row, column)
+function WindowController0Indexed:set_cursor_position(row, column)
     vim.api.nvim_win_set_cursor(self.window_id, { row + 1, column })
 end
 
-function WindowController0Based:buffer()
+function WindowController0Indexed:buffer()
     local buffer_number = vim.api.nvim_win_get_buf(self.window_id)
-    return BufferController0Based:new(buffer_number)
+    return BufferController0Indexed:new(buffer_number)
 end
 
-function WindowController0Based:get_node_at_cursor()
+function WindowController0Indexed:get_node_at_cursor()
     local row, column = self:get_cursor_position()
     return self:buffer():get_node_at_position(row, column)
 end
 
-return WindowController0Based
+return WindowController0Indexed

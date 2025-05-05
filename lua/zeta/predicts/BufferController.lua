@@ -5,22 +5,22 @@
 ---@class BufferController0Based
 ---@field buffer_number integer
 ---@field
-local BufferController0Based = {}
-BufferController0Based.__index = BufferController0Based
+local BufferController0Indexed = {}
+BufferController0Indexed.__index = BufferController0Indexed
 
 --- @param buffer_number integer
-function BufferController0Based:new(buffer_number)
-    self = setmetatable(self, BufferController0Based)
+function BufferController0Indexed:new(buffer_number)
+    self = setmetatable(self, BufferController0Indexed)
     self.buffer_number = buffer_number
     return self
 end
 
-function BufferController0Based:new_for_current_buffer()
+function BufferController0Indexed:new_for_current_buffer()
     -- PRN add a caching mechanism to avoid recreating the controller? if perf issues
-    return BufferController0Based:new(vim.api.nvim_get_current_win())
+    return BufferController0Indexed:new(vim.api.nvim_get_current_win())
 end
 
-function BufferController0Based:get_all_lines()
+function BufferController0Indexed:get_all_lines()
     -- FYI add/reshape the line access method to new scenarios that you actually use
     -- i.e. maybe add
     --    get_lines_after()
@@ -35,7 +35,7 @@ end
 --- - tied to a specific position (row, column) - args
 ---@param row integer 0-based
 ---@param column integer 0-based
-function BufferController0Based:get_node_at_position(row, column)
+function BufferController0Indexed:get_node_at_position(row, column)
     return vim.treesitter
         .get_node({
             bufnr = self.buffer_number,
@@ -49,4 +49,4 @@ function BufferController0Based:get_node_at_position(row, column)
     --   and convenient (i.e. class tracks buffer number)
 end
 
-return BufferController0Based
+return BufferController0Indexed
