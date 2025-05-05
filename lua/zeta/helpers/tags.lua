@@ -37,14 +37,14 @@ function M.strip_user_cursor_tag(text)
 end
 
 ---@param all_lines string[]
----@param cursor_on_row integer 0-based
----@param cursor_on_column integer 0-based
-function M.mark_editable_region(all_lines, cursor_on_row, cursor_on_column)
-    local cursor_on_row_1based = cursor_on_row + 1
+---@param cursor_row integer 0-based
+---@param cursor_column integer 0-based
+function M.mark_editable_region(all_lines, cursor_row, cursor_column)
+    local cursor_on_row_1based = cursor_row + 1
 
     -- first insert cursor position tag
     local cursor_line = all_lines[cursor_on_row_1based]
-    cursor_line = cursor_line:sub(1, cursor_on_column) .. M.tag_cursor_here .. cursor_line:sub(cursor_on_column + 1)
+    cursor_line = cursor_line:sub(1, cursor_column) .. M.tag_cursor_here .. cursor_line:sub(cursor_column + 1)
     all_lines[cursor_on_row_1based] = cursor_line
 
     -- then wrap editable around all lines for now
