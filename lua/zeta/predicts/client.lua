@@ -222,6 +222,10 @@ function M.setup_trigger_on_editing_buffer()
             local row_0b = window:get_cursor_row()
 
             -- PRN for marks, profile timing to optimize caching vs get vs set always
+            -- PRN likewise for excerpt selection, find out if caching matters or if its fast enough
+            -- - IIAC if the node is the same as the last request, that at least would be a good optimization
+            --   - assuming nothing has changed in the doc? could invalidate any cache on text changed event
+
             local mark = prediction_marks:get(mark_id)
             if mark ~= nil then
                 local mark_row_0b = mark[1]
