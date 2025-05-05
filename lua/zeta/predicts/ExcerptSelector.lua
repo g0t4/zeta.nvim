@@ -49,17 +49,31 @@ local function get_enclosing_function_node(node)
     end
 end
 
+-- PRN disable by default, add user command/func to enable
+-- all my logs that I wanna keep around are useful but can really add overhead
+local verbose = true
+function trace(...)
+    if not verbose then return end
+    messages.append(...)
+end
+
 ---@param row integer 0-indexed
 ---@param column integer 0-indexed
----@return integer, integer # start_line, end_line 0-indexed (end exclusive?)
+---@return integer|nil, integer|nil # start_line, end_line 0-indexed (end exclusive?)
 function ExcerptSelector:line_range_at_position(row, column)
     local node = self.buffer:get_node_at_position(row, column)
     if node == nil then
-        error("no node found at position: " .. row .. ", " .. column)
+        -- FYI can happen when first enter a buffer (IIAC treesitter is not ready?)
+        trace("no node found at position: " .. row .. ", " .. column)
+        return nil, nil
     end
 
     -- find closest enclosing node (to start search for excerpt range)
     local enclosing = get_enclosing_function_node(node)
+    if enclosing == nil then
+        trace("no enclosing node found at position: " .. row .. ", " .. column)
+        return nil, nil
+    end
 
     -- TODO is :range() inclusive or exclusive?
     local start_row, start_column, end_row, end_column = enclosing:range()
