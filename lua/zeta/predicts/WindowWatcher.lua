@@ -1,6 +1,5 @@
 local WindowController0Indexed = require("zeta.predicts.WindowController")
 local debounce = require("zeta.predicts.debounce")
-local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
 
 --- watches events w.r.t. cursor movements, mode changes, and window changes
 --- all the autocmds to support triggering implicit actions
@@ -11,13 +10,9 @@ local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
 local WindowWatcher = {}
 WindowWatcher.__index = WindowWatcher
 
--- theoretically could make this unique per instance, for now its global
-local prediction_augroup = "zeta-prediction"
-vim.api.nvim_create_augroup(prediction_augroup, { clear = true })
-local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
-
-function WindowWatcher:new(window_id, buffer_number)
+function WindowWatcher:new(window_id, buffer_number, augroup_name)
     self = setmetatable(self, WindowWatcher)
+    self.augroup_name = augroup_name
     self.window_id = window_id
     self.buffer_number = buffer_number
     return self
@@ -25,7 +20,9 @@ end
 
 --- @param trigger_prediction function
 function WindowWatcher:watch(trigger_prediction)
-    local prediction_marks = ExtmarksSet:new(self.buffer_number, prediction_namespace)
+    vim.api.nvim_create_augroup(self.augroup_name, { clear = true })
+
+
     local window = WindowController0Indexed:new(self.window_id)
     if not window:buffer().buffer_number == self.buffer_number then
         -- sanity check, should never happen
@@ -46,14 +43,12 @@ function WindowWatcher:watch(trigger_prediction)
     -- - instead these two happen in parallel
     -- - completions backends have no trouble keeping up and canceling previous requests
     local debounced_trigger = debounce(function()
-        -- FYI only reason I am doing this here is to keep one instance of prediction_marks which is NOT AT ALL NECESSARY
-        -- this is bleeding concerns, but it's fine
-        -- TODO rename this to PredictionsWindowWatcher is fine!
-        trigger_prediction(window, prediction_marks)
+        trigger_prediction(window)
     end, 500)
 
     vim.api.nvim_create_autocmd("InsertEnter", {
-        group = prediction_augroup,
+        group = self.augroup_name,
+        -- FYI technically I don't nee the buffer filter b/c there's only ever one of these active at a time
         -- buffer = self.buffer_number,
         callback = debounced_trigger.call,
     })
@@ -63,26 +58,26 @@ function WindowWatcher:watch(trigger_prediction)
         --   then on re-entry to insert mode you trigger a new prediction
         -- one benefit to stop on exit is you can prevent the prediction by hitting escape as last key when typing
 
-        group = prediction_augroup,
+        group = self.augroup_name,
         -- buffer = self.buffer_number,
         callback = debounced_trigger.cancel,
     })
 
     vim.api.nvim_create_autocmd("CursorMovedI", {
         -- PRN also trigger on TextChangedI? => merge signals into one stream>?
-        group = prediction_augroup,
+        group = self.augroup_name,
         -- buffer = self.buffer_number,
         callback = debounced_trigger.call,
     })
 end
 
 function WindowWatcher:unwatch()
-    -- TODO this is a hot mess... it should be tied to window not the buffer
-    -- for now there's only ever one instance so w/e it works
+    -- FYI I don't need to tie event to buffer / window until I need simultaneous predictions
     vim.api.nvim_clear_autocmds({
         -- buffer = self.buffer_number,
-        group = prediction_augroup
+        group = self.augroup_name
     })
+    -- PRN delete instead of clear?
 end
 
 return WindowWatcher

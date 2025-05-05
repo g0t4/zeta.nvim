@@ -7,6 +7,7 @@ local inspect = require("devtools.inspect")
 local WindowController0Indexed = require("zeta.predicts.WindowController")
 local ExcerptSelector = require("zeta.predicts.ExcerptSelector")
 local WindowWatcher = require("zeta.predicts.WindowWatcher")
+local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
 
 local M = {}
 function M.get_prediction_request()
@@ -198,7 +199,14 @@ end
 
 local select_excerpt_mark = 11
 
-local function trigger_prediction(window, prediction_marks)
+---@param window WindowController0Indexed
+local function trigger_prediction(window)
+    local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
+    local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
+    -- FYI only reason I am doing this here is to keep one instance of prediction_marks which is NOT AT ALL NECESSARY
+    -- this is bleeding concerns, but it's fine
+    -- TODO rename this to PredictionsWindowWatcher is fine!
+
     -- FYI even the time here to query the node structures,
     -- if you run that in parallel with your debounce
     -- will never be consequential
