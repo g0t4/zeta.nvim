@@ -6,7 +6,7 @@ local WindowWatcher = require("zeta.predicts.WindowWatcher")
 local PredictionRequest = require("zeta.predicts.PredictionRequest")
 local Displayer = require("zeta.predicts.Displayer")
 local Accepter = require("zeta.predicts.Accepter")
-local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
+local ExcerptHighlighter = require("zeta.predicts.ExcerptHighlighter")
 
 
 local M = {}
@@ -66,42 +66,8 @@ local function trigger_prediction(window, select_only)
     local details = request.details
 
     if select_only then
-        local hl_editable = "zeta-excerpt-editable"
-        local hl_context = "zeta-excerpt-context"
-        vim.api.nvim_set_hl(0, hl_editable, { bg = "green" })
-        vim.api.nvim_set_hl(0, hl_context, { bg = "blue" })
-        local zeta_excerpts_ns_id = vim.api.nvim_create_namespace("zeta-excerpts")
-        local editable_mark_id = 20
-        local ctx_before_mark_id = 21
-        local ctx_after_mark_id = 22
-        local excerpt_marks = ExtmarksSet:new(window:buffer().buffer_number, zeta_excerpts_ns_id)
-        excerpt_marks:highlight_lines({
-            id = editable_mark_id,
-            hl_group = hl_editable,
-            start_line = details.editable_start_line,
-            end_line = details.editable_end_line,
-        })
-        -- * highlight the context before/after
-        if details.context_before_start_line < details.editable_start_line then
-            excerpt_marks:highlight_lines({
-                id = ctx_before_mark_id,
-                hl_group = hl_context,
-                start_line = details.context_before_start_line,
-                end_line = details.editable_start_line,
-            })
-        end
-        if details.context_after_end_line > details.editable_end_line then
-            excerpt_marks:highlight_lines({
-                id = ctx_after_mark_id,
-                hl_group = hl_context,
-                start_line = details.editable_end_line,
-                end_line = details.context_after_end_line,
-            })
-        end
-        -- TODO what if I had a keymap that would allow me to select one off context for next predictions?
-        -- or that allowed setting to go one more level past current func ... to somehoww conditionally expand or contract the selected func/block?
-        -- can I have a keycombo that enables showing the context as I type! (not selecting cuz that would mess up the context)
-        --   but toggle context on/off! and then controls to alter the selection with live feedback!
+        local highlighter = ExcerptHighlighter:new(window:buffer().buffer_number)
+        highlighter:highlight_lines(details)
         return
     end
 
