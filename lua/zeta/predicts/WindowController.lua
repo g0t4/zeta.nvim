@@ -64,7 +64,7 @@ end
 
 function WindowController0Indexed:get_excerpt_at_cursor()
     local selector = ExcerptSelector:new(self:buffer())
-    return selector:select_at_position(self:get_cursor_position())
+    return selector:at_position(self:get_cursor_position())
 end
 
 return WindowController0Indexed
