@@ -63,6 +63,7 @@ local function trigger_prediction(window, select_only)
 
     -- PRN... a displayer is tied to a request... hrm...
     local request = PredictionRequest:new(window)
+    local details = request.details
 
     if select_only then
         local hl_editable = "zeta-excerpt-editable"
@@ -77,24 +78,24 @@ local function trigger_prediction(window, select_only)
         excerpt_marks:highlight_lines({
             id = editable_mark_id,
             hl_group = hl_editable,
-            start_line = request.details.editable_start_line,
-            end_line = request.details.editable_end_line,
+            start_line = details.editable_start_line,
+            end_line = details.editable_end_line,
         })
         -- * highlight the context before/after
-        if request.details.context_before_start_line < request.details.editable_start_line then
+        if details.context_before_start_line < details.editable_start_line then
             excerpt_marks:highlight_lines({
                 id = ctx_before_mark_id,
                 hl_group = hl_context,
-                start_line = request.details.context_before_start_line,
-                end_line = request.details.editable_start_line,
+                start_line = details.context_before_start_line,
+                end_line = details.editable_start_line,
             })
         end
-        if request.details.context_after_end_line > request.details.editable_end_line then
+        if details.context_after_end_line > details.editable_end_line then
             excerpt_marks:highlight_lines({
                 id = ctx_after_mark_id,
                 hl_group = hl_context,
-                start_line = request.details.editable_end_line,
-                end_line = request.details.context_after_end_line,
+                start_line = details.editable_end_line,
+                end_line = details.context_after_end_line,
             })
         end
         -- TODO what if I had a keymap that would allow me to select one off context for next predictions?
