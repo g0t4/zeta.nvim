@@ -15,7 +15,7 @@ local function build_request(window)
 
     local excerpt = window:get_excerpt_text_at_cursor()
     messages.header("excerpt:")
-    messages.append(inspect(excerpt))
+    messages.append(excerpt)
     if excerpt == nil then
         messages.header("excerpt not found, aborting...")
         return
