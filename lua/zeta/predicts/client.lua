@@ -253,7 +253,7 @@ function M.setup_events()
             local has_ts = pcall(vim.treesitter.get_parser, args.buf)
             if has_ts then
                 messages.append("Tree-sitter is available in buffer " .. args.buf)
-                watcher = WindowWatcher:new(window_id, args.buf)
+                watcher = WindowWatcher:new(window_id, args.buf, "zeta-prediction")
                 watcher:watch(trigger_prediction)
             else
                 messages.append("No Tree-sitter parser for buffer " .. args.buf)

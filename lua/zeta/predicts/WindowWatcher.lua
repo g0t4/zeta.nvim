@@ -11,7 +11,7 @@ local WindowWatcher = {}
 WindowWatcher.__index = WindowWatcher
 
 function WindowWatcher:new(window_id, buffer_number, augroup_name)
-    self = setmetatable(self, WindowWatcher)
+    self = setmetatable({}, WindowWatcher)
     self.augroup_name = augroup_name
     self.window_id = window_id
     self.buffer_number = buffer_number
