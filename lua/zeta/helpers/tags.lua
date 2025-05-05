@@ -40,6 +40,7 @@ end
 ---@param cursor_row integer 0-based
 ---@param cursor_column integer 0-based
 function M.mark_editable_region(all_lines, cursor_row, cursor_column)
+    -- TODO this is a temp stopgap solution to using all lines, can discard with treesitter approach coming next
     local cursor_on_row_1based = cursor_row + 1
 
     -- first insert cursor position tag
