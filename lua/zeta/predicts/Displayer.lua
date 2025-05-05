@@ -68,22 +68,22 @@ function Displayer:on_response(request, response_body_stdout)
 
     -- TODO original excerpt
     local original = request.details.body.input_excerpt
-    -- dump.header("input_excerpt:")
-    -- dump.append(original)
-    -- dump.header("output_excerpt:")
-    -- dump.append(rewritten)
+    messages.header("input_excerpt:")
+    messages.append(original)
+    messages.header("output_excerpt:")
+    messages.append(rewritten)
 
     original_editable = parser.get_editable_region(original) or ""
     -- PRN use cursor position? i.e. check if cursor has moved since prediction requested (might not need this actually)
     -- cursor_position = parser.get_position_of_user_cursor(original) or 0
-    -- dump.header("cursor_position:", cursor_position)
+    -- messages.header("cursor_position:", cursor_position)
     original_editable = parser.strip_user_cursor_tag(original_editable)
 
     rewritten_editable = parser.get_editable_region(rewritten) or ""
 
     local diff = combined.combined_diff(original_editable, rewritten_editable)
-    -- dump.header("diff:")
-    -- dump.append(inspect(diff))
+    -- messages.header("diff:")
+    -- messages.append(inspect(diff))
 
     local extmark_lines = vim.iter(diff):fold({ {} }, function(accum, chunk)
         if chunk == nil then
@@ -137,9 +137,9 @@ function Displayer:on_response(request, response_body_stdout)
         return accum
     end)
 
-    -- dump.header("extmark_lines")
+    -- messages.header("extmark_lines")
     -- for _, v in ipairs(extmark_lines) do
-    --     dump.append(vim.inspect(v))
+    --     messages.append(vim.inspect(v))
     -- end
 
     if #extmark_lines < 1 then
