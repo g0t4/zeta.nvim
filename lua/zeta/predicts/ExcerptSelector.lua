@@ -100,7 +100,10 @@ function ExcerptSelector:text_at_position(row, column)
     if start_line == nil or end_line == nil then
         return nil
     end
-    local text = self.buffer:get_lines(start_line, end_line)
+    local text_lines = self.buffer:get_lines(start_line, end_line)
+    -- TODO make sure lines are joined correctly...
+    --   that w/ serialization we get \n as appropriate (vs new lines)... not sure just check what is needed for model's template and what I have here (for fake and real requests)
+    text = table.concat(text_lines, "\n")
     return Excerpt:new(text, start_line, end_line)
 end
 

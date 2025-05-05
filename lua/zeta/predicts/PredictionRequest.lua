@@ -3,7 +3,7 @@ local inspect = require("devtools.inspect")
 
 ---@class PredictionRequest
 ---@field window WindowController0Indexed
----@field details table|nil
+---@field details { body: any, excerpt: Excerpt }|nil
 local PredictionRequest = {}
 PredictionRequest.__index = PredictionRequest
 
