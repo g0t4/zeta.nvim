@@ -5,9 +5,17 @@ local ExcerptHighlighter = {}
 ExcerptHighlighter.__index = ExcerptHighlighter
 
 function ExcerptHighlighter:new(buffer_number)
-    self = setmetatable({}, ExcerptHighlighter)
+    self               = setmetatable({}, ExcerptHighlighter)
     self.buffer_number = buffer_number
+
+    -- TODO let extmarksset create the namespace (pass string for it)...
+    local ns_id        = vim.api.nvim_create_namespace("zeta-excerpts")
+    self.marks         = ExtmarksSet:new(self.buffer_number, ns_id)
     return self
+end
+
+function ExcerptHighlighter:clear()
+    self.marks:clear_all()
 end
 
 function ExcerptHighlighter:highlight_lines(details)
@@ -15,12 +23,10 @@ function ExcerptHighlighter:highlight_lines(details)
     local hl_context = "zeta-excerpt-context"
     vim.api.nvim_set_hl(0, hl_editable, { bg = "green" })
     vim.api.nvim_set_hl(0, hl_context, { bg = "blue" })
-    local zeta_excerpts_ns_id = vim.api.nvim_create_namespace("zeta-excerpts")
     local editable_mark_id = 20
     local ctx_before_mark_id = 21
     local ctx_after_mark_id = 22
-    local excerpt_marks = ExtmarksSet:new(self.buffer_number, zeta_excerpts_ns_id)
-    excerpt_marks:highlight_lines({
+    self.marks:highlight_lines({
         id = editable_mark_id,
         hl_group = hl_editable,
         start_line = details.editable_start_line,
@@ -28,7 +34,7 @@ function ExcerptHighlighter:highlight_lines(details)
     })
     -- * highlight the context before/after
     if details.context_before_start_line < details.editable_start_line then
-        excerpt_marks:highlight_lines({
+        self.marks:highlight_lines({
             id = ctx_before_mark_id,
             hl_group = hl_context,
             start_line = details.context_before_start_line,
@@ -36,7 +42,7 @@ function ExcerptHighlighter:highlight_lines(details)
         })
     end
     if details.context_after_end_line > details.editable_end_line then
-        excerpt_marks:highlight_lines({
+        self.marks:highlight_lines({
             id = ctx_after_mark_id,
             hl_group = hl_context,
             start_line = details.editable_end_line,

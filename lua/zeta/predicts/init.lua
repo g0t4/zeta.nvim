@@ -81,14 +81,15 @@ local function trigger_prediction(window, select_only)
 end
 
 local function immediate_on_cursor_moved(window)
+    local highlighter = ExcerptHighlighter:new(window:buffer().buffer_number)
     if not toggle_highlighting then
+        highlighter:clear()
         return
     end
 
     local request = PredictionRequest:new(window)
     local details = request.details
 
-    local highlighter = ExcerptHighlighter:new(window:buffer().buffer_number)
     highlighter:highlight_lines(details)
 end
 
@@ -144,6 +145,7 @@ function M.setup()
             return
         end
         toggle_highlighting = not toggle_highlighting
+        immediate_on_cursor_moved(watcher.window)
     end)
     vim.keymap.set("n", "<leader>pf", function()
         -- "freeze" highlight
