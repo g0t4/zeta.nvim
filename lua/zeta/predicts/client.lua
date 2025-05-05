@@ -212,7 +212,6 @@ function M.setup_trigger_on_editing_buffer()
 
             -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
 
-            -- for fun, make it green
             local row_0b = window:get_cursor_row()
 
             local mark = vim.api.nvim_buf_get_extmark_by_id(0, ns, mark_id, {})
