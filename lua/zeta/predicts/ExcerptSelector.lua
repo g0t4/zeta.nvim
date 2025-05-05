@@ -39,7 +39,7 @@ end
 ---@param row integer 0-indexed
 ---@param column integer 0-indexed
 ---@return string|nil
-function ExcerptSelector:at_position(row, column)
+function ExcerptSelector:text_at_position(row, column)
     local node = self.buffer:get_node_at_position(row, column)
     if node == nil then
         return nil
