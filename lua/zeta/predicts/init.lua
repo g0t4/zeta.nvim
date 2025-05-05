@@ -9,6 +9,7 @@ local Displayer = require("zeta.predicts.Displayer")
 local M = {}
 
 local function display_fake_response()
+    -- FYI not using watcher.window b/c I want this to work even when I disabled the watcher event handlers
     local window       = WindowController0Indexed:new_from_current_window()
     local displayer    = Displayer:new(window)
 
@@ -55,13 +56,13 @@ local function trigger_prediction(window)
     end)
 end
 
-function M.setup_events()
-    -- FYI for now the code is all designed to have ONE watcher at a time
-    --   only modify this if I truly need multiple watchers (across windows)
-    --   but that's not the current design
-    --   would have to have autocmd group that is segmented by window id too
-    local watcher = nil
+-- FYI for now the code is all designed to have ONE watcher at a time
+--   only modify this if I truly need multiple watchers (across windows)
+--   but that's not the current design
+--   would have to have autocmd group that is segmented by window id too
+local watcher = nil
 
+function M.setup_events()
     -- PRN use WinEnter (change window event), plus when first loading should trigger for current window (since that's not a change window event)
     vim.api.nvim_create_autocmd({ "BufEnter" }, {
         callback = function(args)
@@ -89,24 +90,31 @@ end
 
 function M.setup()
     vim.keymap.set("n", "<leader>p", function()
-        local window = WindowController0Indexed:new_from_current_window()
-        trigger_prediction(window)
+        if not watcher then
+            return
+        end
+        trigger_prediction(watcher.window)
     end, { desc = "show prediction" })
 
-    vim.keymap.set("n", "<leader>pf", display_fake_response, { desc = "bypass request to test prediction response handling" })
+    vim.keymap.set("n", "<leader>pf", function()
+        display_fake_response()
+    end, { desc = "bypass request to test prediction response handling" })
 
-    -- accept:
     vim.keymap.set("n", "<leader>pa", function()
+        if not watcher then
+            return
+        end
         -- TODO
     end, { desc = "accept prediction" })
 
-    -- reject/abort
     vim.keymap.set("n", "<leader>pc", function()
-        -- TODO
-    end, { desc = "accept prediction" })
+        if not watcher then
+            return
+        end
+        cancel_current_request(watcher.window)
+    end, { desc = "reject prediction" })
 
-    -- TODO! activate on typing once fake is working!
-    -- M.setup_events()
+    M.setup_events()
 end
 
 return M
