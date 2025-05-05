@@ -79,16 +79,15 @@ end
 
 ---@param row integer 0-indexed
 ---@param column integer 0-indexed
----@return string|nil
+---@return string[], integer|nil, integer|nil
 function ExcerptSelector:text_at_position(row, column)
     local start_line, end_line = self:line_range_at_position(row, column)
     if start_line == nil or end_line == nil then
-        return nil
+        -- TODO add a return type?
+        return {}, nil, nil
     end
-    -- TODO get line range
     local text = self.buffer:get_lines(start_line, end_line)
-    messages.header("text:")
-    return text
+    return text, start_line, end_line
 end
 
 return ExcerptSelector

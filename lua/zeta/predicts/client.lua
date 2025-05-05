@@ -20,7 +20,7 @@ function M.get_prediction_request()
     -- local all_lines = buffer:get_all_lines()
 
 
-    local excerpt = window:get_excerpt_at_cursor()
+    local excerpt = window:get_excerpt_text_at_cursor()
     messages.header("excerpt:")
     messages.append(inspect(excerpt))
 
@@ -227,7 +227,7 @@ function M.setup_trigger_on_editing_buffer()
             -- - IIAC if the node is the same as the last request, that at least would be a good optimization
             --   - assuming nothing has changed in the doc? could invalidate any cache on text changed event
 
-            local excerpt = window:get_excerpt_at_cursor()
+            local excerpt = window:get_excerpt_text_at_cursor()
 
 
 
