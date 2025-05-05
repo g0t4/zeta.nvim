@@ -290,9 +290,10 @@ function M.setup_trigger_on_editing_buffer(buffer_number)
 end
 
 function M.setup_events()
+    vim.api.nvim_create_augroup(prediction_augroup, { clear = true })
+
     vim.api.nvim_create_autocmd({ "BufEnter" }, {
         callback = function(args)
-            vim.api.nvim_create_augroup(prediction_augroup, { clear = true })
             -- only attach events if the buffer has a treesitter parser
             local has_ts = pcall(vim.treesitter.get_parser, args.buf)
             if has_ts then
