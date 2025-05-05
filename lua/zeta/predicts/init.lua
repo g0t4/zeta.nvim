@@ -15,6 +15,9 @@ local function display_fake_response()
     local fake_stdout  = files.read_example("01_response.json")
     local fake_request = {
         body = files.read_example_json("01_request.json"),
+        -- make up a position for now
+        start_line = 2,
+        start_column = 0
         -- PRN params?
     }
     displayer:on_response(fake_request, fake_stdout)
