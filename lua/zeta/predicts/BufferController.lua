@@ -30,6 +30,17 @@ function BufferController0Indexed:get_all_lines()
     return vim.api.nvim_buf_get_lines(self.buffer_number, 0, -1, true)
 end
 
+--- does not include the end line #
+--- @param start_row integer 0-indexed
+--- @param end_row_exclusive integer 0-indexed
+function BufferController0Indexed:get_lines(start_row, end_row_exclusive)
+    -- TODO should I decide on end-inclusive or end-exclusive for ALL operations on BufferController?
+    --   if so which is more common in nvim APIs?
+    --   * end-exclusive used by nvim_buf_get_lines
+    -- PRN turn off strict indexing (allow clamp to start/end?)
+    return vim.api.nvim_buf_get_lines(self.buffer_number, start_row, end_row_exclusive, true)
+end
+
 --- instead of leaving it ambiguous as to what node, lets by clear:
 --- - tied to a specific buffer (buffer_number)
 --- - tied to a specific position (row, column) - args
