@@ -13,7 +13,7 @@ WindowWatcher.__index = WindowWatcher
 function WindowWatcher:new(window_id, buffer_number, augroup_name)
     self = setmetatable({}, WindowWatcher)
     self.augroup_name = augroup_name
-    self.window_id = window_id
+    self.window = WindowController0Indexed:new(window_id)
     self.buffer_number = buffer_number
     return self
 end
@@ -22,8 +22,7 @@ end
 function WindowWatcher:watch(trigger_prediction, cancel_current_request)
     vim.api.nvim_create_augroup(self.augroup_name, { clear = true })
 
-
-    local window = WindowController0Indexed:new(self.window_id)
+    local window = self.window
     if not window:buffer().buffer_number == self.buffer_number then
         -- sanity check, should never happen
         -- the event BufEnter fires for a buffer which can be in multiple windows
