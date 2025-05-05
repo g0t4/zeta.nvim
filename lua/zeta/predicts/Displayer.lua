@@ -65,9 +65,7 @@ function Displayer:on_response(prediction_request, response_body_stdout)
     -- dump.header("diff:")
     -- dump.append(inspect(diff))
 
-    local bufnr, _window_id = messages.get_ids()
-    -- TODO use self:marks here
-    extmarks.extmarks_for(diff, bufnr, _window_id)
+    self:_extmarks_for(diff)
 end
 
 function Displayer:clear()
@@ -78,7 +76,10 @@ local hl_same = "zeta-same"
 local hl_added = "zeta-added"
 local hl_deleted = "zeta-deleted"
 
-function Displayer._extmarks_for(diff, bufnr, _window_id)
+function Displayer:_extmarks_for(diff)
+    local bufnr = self.window:buffer().buffer_number
+    local _window_id = self.window:window_id()
+
     -- FYI leaving POC intact and separate of this new impl, so rewrite its extmarks here:
     -- * highlight groups
     -- 0 == global namespace (otherwise have to activate them if not global ns on hlgroup)
