@@ -1,4 +1,4 @@
----This entire class operates on 0-based row and column positions
+---This entire class operates on 0-indexed row and column positions
 ---   or if that seems wrong I'll go to all 1-based
 ---Also intended to hide away complexities in nvim_ apis
 ---  esp the need to track window ids, buffer #s, etc
@@ -33,8 +33,8 @@ end
 --- instead of leaving it ambiguous as to what node, lets by clear:
 --- - tied to a specific buffer (buffer_number)
 --- - tied to a specific position (row, column) - args
----@param row integer 0-based
----@param column integer 0-based
+---@param row integer 0-indexed
+---@param column integer 0-indexed
 function BufferController0Indexed:get_node_at_position(row, column)
     return vim.treesitter
         .get_node({

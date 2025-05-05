@@ -37,8 +37,8 @@ function M.strip_user_cursor_tag(text)
 end
 
 ---@param all_lines string[]
----@param cursor_row integer 0-based
----@param cursor_column integer 0-based
+---@param cursor_row integer 0-indexed
+---@param cursor_column integer 0-indexed
 function M.mark_editable_region(all_lines, cursor_row, cursor_column)
     -- TODO this is a temp stopgap solution to using all lines, can discard with treesitter approach coming next
     local cursor_on_row_1based = cursor_row + 1
