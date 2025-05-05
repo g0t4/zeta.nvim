@@ -41,6 +41,9 @@ local displayer = nil
 ---@type PredictionRequest|nil
 local current_request = nil
 
+-- TODO set false by default and toggle on with keymap
+local toggle_highlighting = true
+
 ---@param window WindowController0Indexed
 local function cancel_current_request(window)
     messages.append("cancelling...")
@@ -121,8 +124,16 @@ function M.setup()
         displayer    = Displayer:new(window)
         display_fake_response(window, displayer)
     end, { desc = "demo fake request/response" })
-    vim.keymap.set("n", "<leader>ps", function()
-        -- visually display the current excerpt
+    vim.keymap.set("n", "<leader>ph", function()
+        -- toggle highlighting as I move around
+        if not watcher then
+            messages.append("No watcher for current window")
+            return
+        end
+        toggle_highlighting = not toggle_highlighting
+    end)
+    vim.keymap.set("n", "<leader>pf", function()
+        -- "freeze" highlight
         if not watcher then
             messages.append("No watcher for current window")
             return
