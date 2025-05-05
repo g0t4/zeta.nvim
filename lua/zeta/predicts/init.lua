@@ -93,12 +93,14 @@ function M.setup()
         if not watcher then
             return
         end
+        -- FYI requires tree-sitter even when manually triggered, so use the watcher.window
         trigger_prediction(watcher.window)
     end, { desc = "show prediction" })
 
     vim.keymap.set("n", "<leader>pf", function()
+        -- this should always work, using the current window/buffer (regardless of type) b/c its a fake request/response
         display_fake_response()
-    end, { desc = "bypass request to test prediction response handling" })
+    end, { desc = "demo fake request/response" })
 
     vim.keymap.set("n", "<leader>pa", function()
         if not watcher then
