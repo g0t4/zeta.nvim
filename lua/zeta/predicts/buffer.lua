@@ -30,4 +30,23 @@ function BufferController0Based:get_all_lines()
     return vim.api.nvim_buf_get_lines(self.buffer_number, 0, -1, true)
 end
 
+--- instead of leaving it ambiguous as to what node, lets by clear:
+--- - tied to a specific buffer (buffer_number)
+--- - tied to a specific position (row, column) - args
+---@param row integer 0-based
+---@param column integer 0-based
+function BufferController0Based:get_node_at_position(row, column)
+    return vim.treesitter
+        .get_node({
+            bufnr = self.buffer_number,
+            pos = { row, column },
+        })
+    -- FTR get_node requires both bufnr and pos
+    --   however it will use current buffer
+    --   and current window if no bufnr specified
+    -- Part of the reason to wrap this interaction is to
+    --   make the parameters explicit
+    --   and convenient (i.e. class tracks buffer number)
+end
+
 return BufferController0Based
