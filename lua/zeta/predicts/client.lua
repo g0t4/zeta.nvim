@@ -203,13 +203,25 @@ local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
 local select_excerpt_mark = 11
 
 ---@param buffer_number integer
-function M.register_prediction_autocmds(buffer_number)
-    local function trigger_prediction()
-        messages.append("fuck")
+function M.register_prediction_autocmds(buffer_number, window_id)
+    local window = WindowController0Indexed:new(window_id)
+    if not window:buffer().buffer_number == buffer_number then
+        -- sanity check, should never happen
+        -- the event BufEnter fires for a buffer which can be in multiple windows
+        -- so, get current window right away (happens in event handler)
+        -- and then here I make sure that matches
+        -- FYI could use WinEnter too to get around this
+        error("unexpected buffer number on current window, expected bufnr: " .. buffer_number
+            .. " but got bufnr: " .. window:buffer().buffer_number
+            .. " (window: " .. window.window_id .. ")")
+        return
+    end
 
-        -- -- PRN cache these object instances per window? and on buffer change update them?
-        -- local window = WindowController0Indexed:new_from_current_window()
-        -- local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
+    local prediction_marks = ExtmarksSet:new(buffer_number, prediction_namespace)
+
+    local function trigger_prediction()
+        messages.append("requesting...")
+
         --
         -- local row_0b = window:get_cursor_row()
         --
@@ -270,13 +282,15 @@ end
 function M.setup_events()
     vim.api.nvim_create_augroup(prediction_augroup, { clear = true })
 
+    -- PRN use WinEnter (change window event), plus when first loading should trigger for current window (since that's not a change window event)
     vim.api.nvim_create_autocmd({ "BufEnter" }, {
         callback = function(args)
+            local window_id = vim.api.nvim_get_current_win()
             -- only attach events if the buffer has a treesitter parser
             local has_ts = pcall(vim.treesitter.get_parser, args.buf)
             if has_ts then
                 messages.append("Tree-sitter is available in buffer " .. args.buf)
-                M.register_prediction_autocmds(args.buf)
+                M.register_prediction_autocmds(args.buf, window_id)
             else
                 messages.append("No Tree-sitter parser for buffer " .. args.buf)
             end

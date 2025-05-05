@@ -20,7 +20,6 @@ end
 --- Looks up window id for current window
 --- uses that to create a new WindowController
 function WindowController0Indexed:new_from_current_window()
-    -- PRN add a caching mechanism to avoid recreating the controller? if perf issues
     return WindowController0Indexed:new(vim.api.nvim_get_current_win())
 end
 
