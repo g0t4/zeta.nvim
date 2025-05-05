@@ -5,6 +5,7 @@ local tags = require("zeta.helpers.tags")
 local extmarks = require("zeta.diff.extmarks")
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
+local WindowController0Based = require("zeta.predicts.window")
 
 local M = {}
 function M.get_prediction_request()
@@ -204,6 +205,20 @@ function M.setup_trigger_on_editing_buffer()
     vim.api.nvim_create_autocmd("CursorMoved", {
         pattern = "*",
         callback = function()
+            local window = WindowController0Based:new_from_current_window()
+            messages.header("moved")
+            local row_0b, col_0b = window:get_cursor_position()
+            messages.append("row_0b:", row_0b)
+            messages.append("col_0b:", col_0b)
+            local row = window:get_cursor_row()
+            messages.append("row:", row)
+            local col = window:get_cursor_column()
+            messages.append("col:", col)
+            --
+
+
+
+
             -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
 
             -- for fun, make it green
@@ -282,7 +297,7 @@ function M.setup()
     vim.keymap.set("n", "<leader>p", M.show_prediction, { desc = "show prediction" })
     vim.keymap.set("n", "<leader>pf", fake_response, { desc = "bypass request to test prediction response handling" })
 
-    -- M.setup_trigger_on_editing_buffer()
+    M.setup_trigger_on_editing_buffer()
 end
 
 return M
