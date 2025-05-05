@@ -221,6 +221,7 @@ function M.setup_trigger_on_editing_buffer()
 
             local row_0b = window:get_cursor_row()
 
+            -- PRN for marks, profile timing to optimize caching vs get vs set always
             local mark = prediction_marks:get(mark_id)
             if mark ~= nil then
                 local mark_row_0b = mark[1]
@@ -230,12 +231,7 @@ function M.setup_trigger_on_editing_buffer()
             end
 
             which = not which
-            -- PRN find a way to test how much lag is added by clear/add every time, vs not
-            --   when line no change (left/right movement)
-            --   OR, when line is changing
-            --   TODO also, cache the last position so you don't have to lookup the mark (that's extra overhead)
-            --     doubles the operations to change it and I think I can feel some of the difference when typing
-            -- add if not there, or if cursor moved to a new line
+
             prediction_marks:set(mark_id, {
                 start_line = row_0b,
                 start_col = 0,
