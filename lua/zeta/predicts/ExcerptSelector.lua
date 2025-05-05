@@ -83,7 +83,7 @@ end
 function ExcerptSelector:text_at_position(row, column)
     local start_line, end_line = self:line_range_at_position(row, column)
     if start_line == nil or end_line == nil then
-        -- TODO add a return type?
+        -- PRN add a return type?
         return {}, nil, nil
     end
     local text = self.buffer:get_lines(start_line, end_line)

@@ -197,24 +197,25 @@ function M.show_prediction()
     end
 end
 
-function M.setup_trigger_on_editing_buffer()
+local prediction_augroup = "zeta-prediction"
+
+---@param buffer_number integer
+function M.setup_trigger_on_editing_buffer(buffer_number)
     local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
     local gutter_mark_id = 10
     local select_excerpt_mark = 11
     local which = false
 
     vim.api.nvim_create_autocmd("InsertLeave", {
-        pattern = "*",
+        group = prediction_augroup,
+        buffer = buffer_number,
         callback = function()
             -- vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
         end,
     })
-
-    -- TODO detect if not treesitter capable buffer and stop trying?
-    --   attach/detach event handlers on buffer file type change?
-
     vim.api.nvim_create_autocmd("CursorMoved", {
-        pattern = "*",
+        group = prediction_augroup,
+        buffer = buffer_number,
         callback = function()
             -- PRN cache these object instances per window? and on buffer change update them?
             local window = WindowController0Indexed:new_from_current_window()
@@ -257,7 +258,8 @@ function M.setup_trigger_on_editing_buffer()
 
     vim.api.nvim_create_autocmd("CursorMovedI", {
         -- PRN also trigger on TextChangedI? => merge signals into one stream>?
-        pattern = "*",
+        group = prediction_augroup,
+        buffer = buffer_number,
         callback = function()
             local window = WindowController0Indexed:new_from_current_window()
             local prediction_marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
@@ -287,11 +289,35 @@ function M.setup_trigger_on_editing_buffer()
     })
 end
 
+function M.setup_events()
+    vim.api.nvim_create_autocmd({ "BufEnter" }, {
+        callback = function(args)
+            vim.api.nvim_create_augroup(prediction_augroup, { clear = true })
+            -- only attach events if the buffer has a treesitter parser
+            local has_ts = pcall(vim.treesitter.get_parser, args.buf)
+            if has_ts then
+                -- print("Tree-sitter is available in buffer " .. args.buf)
+                M.setup_trigger_on_editing_buffer(args.buf)
+            else
+                print("No Tree-sitter parser for buffer " .. args.buf)
+            end
+        end,
+    })
+
+    vim.api.nvim_create_autocmd({ "BufLeave" }, {
+        callback = function(args)
+            -- detach, clear autocommands
+            -- vim.api.nvim_del_augroup_by_name(augroup_name)
+            vim.api.nvim_clear_autocmds({ buffer = args.buf, group = prediction_augroup })
+        end,
+    })
+end
+
 function M.setup()
     vim.keymap.set("n", "<leader>p", M.show_prediction, { desc = "show prediction" })
     vim.keymap.set("n", "<leader>pf", fake_response, { desc = "bypass request to test prediction response handling" })
 
-    M.setup_trigger_on_editing_buffer()
+    M.setup_events()
 end
 
 return M
