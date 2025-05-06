@@ -16,9 +16,7 @@ end
 ---@param displayer Displayer
 function Accepter:accept(displayer)
     local request = displayer.current_request
-    local response_body_stdout = displayer.current_response_body_stdout
-    -- TODO get rewritten lines w/o tags
-    local lines = vim.fn.split(response_body_stdout, "\n")
+    local lines = vim.fn.split(displayer.rewritten_editable, "\n")
 
     self.window:buffer():replace_lines(
         request.details.editable_start_line,

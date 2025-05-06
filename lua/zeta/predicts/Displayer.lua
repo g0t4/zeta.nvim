@@ -5,6 +5,11 @@ local inspect = require("devtools.inspect")
 local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
 
 ---@class Displayer
+---@field window WindowController0Indexed
+---@field marks ExtmarksSet
+---@field rewritten_editable string
+---@field current_request PredictionRequest
+---@field current_response_body_stdout string
 local Displayer = {}
 Displayer.__index = Displayer
 
@@ -14,6 +19,7 @@ function Displayer:new(window)
     self = setmetatable({}, Displayer)
     self.window = window
     self.marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
+    self.rewritten_editable = nil
     return self
 end
 
@@ -79,9 +85,9 @@ function Displayer:on_response(request, response_body_stdout)
     -- messages.header("cursor_position:", cursor_position)
     original_editable = parser.strip_user_cursor_tag(original_editable)
 
-    rewritten_editable = parser.get_editable_region(rewritten) or ""
+    self.rewritten_editable = parser.get_editable_region(rewritten) or ""
 
-    local diff = combined.combined_diff(original_editable, rewritten_editable)
+    local diff = combined.combined_diff(original_editable, self.rewritten_editable)
     -- messages.header("diff:")
     -- messages.append(inspect(diff))
 
