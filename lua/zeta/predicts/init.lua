@@ -141,7 +141,8 @@ function M.setup_events()
     vim.api.nvim_create_autocmd({ "BufLeave" }, {
         group = augroup_name,
         callback = M.ensure_watcher_stopped,
-    })end
+    })
+end
 
 function M.setup()
     -- * real prediction, on-demand
