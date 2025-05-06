@@ -65,9 +65,9 @@ local function trigger_prediction(window)
     -- messages.append("requesting...")
 
     -- PRN... a displayer is tied to a request... hrm...
-    local request = PredictionRequest:new(window, has_treesitter)
+    current_request = PredictionRequest:new(window, has_treesitter)
 
-    request:send(function(_request, stdout)
+    current_request:send(function(_request, stdout)
         displayer:on_response(_request, stdout)
         -- clear request once it's done:
         current_request = nil
@@ -81,6 +81,7 @@ local function immediate_on_cursor_moved(window)
         return
     end
 
+    -- FYI this is not for real predictions so do not set it as prediction request
     local request = PredictionRequest:new(window, has_treesitter)
     local details = request.details
 
@@ -207,7 +208,7 @@ function M.setup()
 
     -- require("zeta.predicts.miscTsGotoMaps").setup()
 
-    -- M.setup_events()
+    M.setup_events()
 end
 
 return M

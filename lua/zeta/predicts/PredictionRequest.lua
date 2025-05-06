@@ -88,6 +88,7 @@ function PredictionRequest:cancel()
         return
     end
 
+    messages.append("sigterm'ing task...")
     -- PRN could use task:is_closing() to check if it's already closing?
     self.task:kill("sigterm")
     self.task = nil
