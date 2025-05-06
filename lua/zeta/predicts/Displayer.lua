@@ -161,6 +161,14 @@ function Displayer:on_response(request, response_body_stdout)
     --   I kinda like how that approach pushes the original down for easy reference too
     --   OR, popup window w/ diff?
 
+
+    -- insert extra new line for extmarks at start line
+    vim.api.nvim_buf_set_lines(
+        self.window:buffer().buffer_number,
+        request.details.editable_start_line,
+        request.details.editable_start_line,
+        false, { "", "" })
+
     self.marks:set(select_excerpt_mark_id, {
         start_line = request.details.editable_start_line,
         start_col = 0,
@@ -169,6 +177,13 @@ function Displayer:on_response(request, response_body_stdout)
         virt_lines = extmark_lines,
         virt_text_pos = "overlay",
     })
+
+    -- delete original lines (undo on cancel)
+    vim.api.nvim_buf_set_lines(
+        self.window:buffer().buffer_number,
+        request.details.editable_start_line + 1,
+        request.details.editable_end_line + 1,
+        false, {})
 end
 
 return Displayer
