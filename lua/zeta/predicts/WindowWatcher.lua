@@ -1,5 +1,6 @@
 local WindowController0Indexed = require("zeta.predicts.WindowController")
 local debounce = require("zeta.predicts.debounce")
+local messages = require("devtools.messages")
 
 --- watches events w.r.t. cursor movements, mode changes, and window changes
 --- all the autocmds to support triggering implicit actions
@@ -16,6 +17,23 @@ function WindowWatcher:new(window_id, buffer_number, augroup_name)
     self.window = WindowController0Indexed:new(window_id)
     self.buffer_number = buffer_number
     return self
+end
+
+function WindowWatcher.not_supported_buffer(buffer_number)
+    local filetype = vim.bo[buffer_number].filetype
+
+    -- FYI "" is treated as NOT supported
+    --  that way when a file first opens, it won't start predictions until its filetype is set
+    --  sometimes filetype is set before first BufEnter
+    --  othertimes, not until after first BufEnter
+    --  so we want for a filetype to register watcher
+    if filetype == ""
+        or filetype == "TelescopePrompt"
+        or filetype == "help"
+    then
+        return true -- NOT supported
+    end
+    return false -- supported
 end
 
 --- @param trigger_prediction function(window: WindowController0Indexed)

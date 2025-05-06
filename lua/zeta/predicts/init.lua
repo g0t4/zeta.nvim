@@ -86,28 +86,53 @@ local function immediate_on_cursor_moved(window)
     highlighter:highlight_lines(details)
 end
 
+function M.ensure_watcher_stopped()
+    if watcher then
+        watcher:unwatch()
+        watcher = nil
+    end
+end
+
+function M.start_watcher(buffer_number)
+    if WindowWatcher.not_supported_buffer(buffer_number) then
+        M.ensure_watcher_stopped()
+        return
+    end
+    if watcher ~= nil then
+        -- don't re-register, could cause dropped events
+        messages.append("already watching")
+        return
+    end
+
+    local window_id = vim.api.nvim_get_current_win()
+    -- detect treesitter upfront (once)
+    has_treesitter = pcall(vim.treesitter.get_parser, buffer_number)
+    watcher = WindowWatcher:new(window_id, buffer_number, "zeta-prediction")
+    messages.append("starting watcher: " .. tostring(watcher.window:buffer():file_name()))
+    watcher:watch(
+        trigger_prediction,
+        cancel_current_request,
+        immediate_on_cursor_moved
+    )
+    displayer = Displayer:new(watcher.window)
+end
+
 function M.setup_events()
-    -- PRN use WinEnter (change window event), plus when first loading should trigger for current window (since that's not a change window event)
-    vim.api.nvim_create_autocmd({ "BufEnter" }, {
+    vim.api.nvim_create_autocmd("FileType", {
         callback = function(args)
-            local window_id = vim.api.nvim_get_current_win()
-            -- detect treesitter once time, upfront, when first switch to window/buffer
-            has_treesitter = pcall(vim.treesitter.get_parser, args.buf)
-            watcher = WindowWatcher:new(window_id, args.buf, "zeta-prediction")
-            watcher:watch(trigger_prediction,
-                cancel_current_request,
-                immediate_on_cursor_moved)
-            displayer = Displayer:new(watcher.window)
+            M.start_watcher(args.buf)
         end,
     })
 
-    vim.api.nvim_create_autocmd({ "BufLeave" }, {
+    -- PRN use WinEnter (change window event), plus when first loading should trigger for current window (since that's not a change window event)
+    vim.api.nvim_create_autocmd({ "BufEnter" }, {
         callback = function(args)
-            if watcher then
-                watcher:unwatch()
-                watcher = nil
-            end
-        end,
+            M.start_watcher(args.buf)
+        end
+    })
+
+    vim.api.nvim_create_autocmd({ "BufLeave" }, {
+        callback = M.ensure_watcher_stopped,
     })
 end
 
