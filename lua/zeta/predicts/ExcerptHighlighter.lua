@@ -10,7 +10,6 @@ function ExcerptHighlighter:new(buffer_number)
     self        = setmetatable({}, ExcerptHighlighter)
     self.buffer = BufferController:new(buffer_number)
 
-    -- TODO let extmarksset create the namespace (pass string for it)...
     local ns_id = vim.api.nvim_create_namespace("zeta-excerpts")
     self.marks  = ExtmarksSet:new(buffer_number, ns_id)
     return self
@@ -48,6 +47,7 @@ function ExcerptHighlighter:highlight_lines(details)
     local ctx_before_mark_id = 21
     local ctx_after_mark_id = 22
     local headsup_mark_id = 23
+
     -- * highlight the editable
     self.marks:highlight_lines({
         id = editable_mark_id,
@@ -55,6 +55,7 @@ function ExcerptHighlighter:highlight_lines(details)
         start_line = details.editable_start_line,
         end_line = details.editable_end_line,
     })
+
     -- * headsup extmark shows # chars and tokens
     local chars_excerpt = details.body.input_excerpt:len()
     local estimated_tokens_per_char = 4
