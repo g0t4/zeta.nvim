@@ -162,6 +162,8 @@ function Displayer:on_response(request, response_body_stdout)
     --   OR, popup window w/ diff?
 
 
+    -- TODO set disable predictions triggers  here
+
     -- TODO disable predictions on changes... while displaying
     -- FYI modifying buffer triggers new predictions! need to disable that while displaying anyways and after accept be careful with when to predict again? or does that not matter
     -- -- insert extra new line for extmarks at start line
@@ -186,6 +188,8 @@ function Displayer:on_response(request, response_body_stdout)
     --     request.details.editable_start_line + 1,
     --     request.details.editable_end_line + 1,
     --     false, {})
+
+    -- TODO unset disable predictions triggers
 end
 
 return Displayer
