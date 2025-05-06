@@ -21,6 +21,7 @@ end
 
 function WindowWatcher.not_supported_buffer(buffer_number)
     local filetype = vim.bo[buffer_number].filetype
+    messages.append("filetype: " .. tostring(filetype))
 
     -- FYI "" is treated as NOT supported
     --  that way when a file first opens, it won't start predictions until its filetype is set
@@ -29,7 +30,12 @@ function WindowWatcher.not_supported_buffer(buffer_number)
     --  so we want for a filetype to register watcher
     if filetype == ""
         or filetype == "TelescopePrompt"
+        or filetype == "TelescopeResults"
+        or filetype == "NvimTree"
+        or filetype == "DressingInput"
         or filetype == "help"
+        -- or filetype == "qf"
+        -- or filetype == "lspinfo"
     then
         return true -- NOT supported
     end

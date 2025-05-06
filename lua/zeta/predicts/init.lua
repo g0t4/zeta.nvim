@@ -124,6 +124,7 @@ function M.setup_events()
     vim.api.nvim_create_autocmd("FileType", {
         group = augroup_name,
         callback = function(args)
+            messages.append("file type changed: " .. vim.inspect(args))
             M.start_watcher(args.buf)
         end,
     })
@@ -132,6 +133,7 @@ function M.setup_events()
     vim.api.nvim_create_autocmd({ "BufEnter" }, {
         group = "zeta-buffer-monitors",
         callback = function(args)
+            messages.append("buffer enter: " .. args.buf)
             M.start_watcher(args.buf)
         end
     })
