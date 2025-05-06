@@ -91,16 +91,17 @@ function M.setup_events()
     vim.api.nvim_create_autocmd({ "BufEnter" }, {
         callback = function(args)
             local window_id = vim.api.nvim_get_current_win()
+            -- detect treesitter once time, upfront, when first switch to window/buffer
             has_treesitter = pcall(vim.treesitter.get_parser, args.buf)
-            if has_treesitter then
-                watcher = WindowWatcher:new(window_id, args.buf, "zeta-prediction")
-                watcher:watch(trigger_prediction,
-                    cancel_current_request,
-                    immediate_on_cursor_moved)
-                displayer = Displayer:new(watcher.window)
-            else
-                messages.append("TODO implement line range based predictions")
+            if not has_treesitter then
+                messages.append("FYI still need a few fixes for non-treesitter to work, aborting")
+                return
             end
+            watcher = WindowWatcher:new(window_id, args.buf, "zeta-prediction")
+            watcher:watch(trigger_prediction,
+                cancel_current_request,
+                immediate_on_cursor_moved)
+            displayer = Displayer:new(watcher.window)
         end,
     })
 

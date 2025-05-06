@@ -24,21 +24,29 @@ PredictionRequest.__index = PredictionRequest
 ---@field outline string
 -- TODO more fields
 
----@param window WindowController0Indexed
+---@param request PredictionRequest
 ---@return PredictionDetails
-local function build_request(window)
-    -- TODO if no treesitter, use a line range "selector"
-    -- local all_lines = buffer:get_all_lines()
+local function build_request(request)
+    local window = request.window
+    local buffer = window:buffer()
 
-    local selector = ExcerptSelector:new(window:buffer())
-    local row, col = window:get_cursor_position()
-    local excerpt = selector:excerpt_at_position(row, col)
-    if excerpt == nil then
-        messages.header("excerpt not found, aborting...")
+    if not request.has_treesitter then
+        -- use a line range "selector"
+        -- local all_lines = buffer:get_all_lines()
+        -- TODO take up to X lines initially... later measure chars as you expand out
+        messages.append("TODO finish selecting lines w/o treesitter, using line range")
         return nil
     end
 
-    local num_lines         = window:buffer():num_lines()
+    local selector = ExcerptSelector:new(buffer)
+    local row, col = window:get_cursor_position()
+    local excerpt = selector:excerpt_at_position(row, col)
+    if excerpt == nil then
+        messages.append("excerpt not found, aborting...")
+        return nil
+    end
+
+    local num_lines         = buffer:num_lines()
     local end_after_line    = math.min(row + 3, num_lines)
     local start_before_line = math.max(excerpt.editable_start_line - 3, 0)
 
@@ -86,11 +94,11 @@ end
 ---@param window WindowController0Indexed
 function PredictionRequest:new(window, has_treesitter)
     self = setmetatable({}, PredictionRequest)
+    self.has_treesitter = has_treesitter
     -- TODO rename details and/or re-org it
     self.window = window
-    self.details = build_request(window)
+    self.details = build_request(self)
     self.task = nil
-    self.has_treesitter = has_treesitter
     -- PRN if need be, track what is status:
     -- self.done = false
     -- self.canceled = false
