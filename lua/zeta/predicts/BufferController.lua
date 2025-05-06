@@ -20,6 +20,14 @@ function BufferController0Indexed:new_for_current_buffer()
     return BufferController0Indexed:new(vim.api.nvim_get_current_win())
 end
 
+function BufferController0Indexed:buftype()
+    return vim.bo[self.buffer_number].buftype
+end
+
+function BufferController0Indexed:filetype()
+    return vim.bo[self.buffer_number].filetype
+end
+
 function BufferController0Indexed:get_all_lines()
     -- FYI add/reshape the line access method to new scenarios that you actually use
     -- i.e. maybe add
