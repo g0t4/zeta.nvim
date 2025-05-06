@@ -13,7 +13,7 @@ local inspect = require("devtools.inspect")
 
 ---@class PredictionRequest
 ---@field window WindowController0Indexed
----@field details PredictionDetails | nil
+---@field details PredictionDetails
 local PredictionRequest = {}
 PredictionRequest.__index = PredictionRequest
 
@@ -24,7 +24,7 @@ PredictionRequest.__index = PredictionRequest
 -- TODO more fields
 
 ---@param window WindowController0Indexed
----@return PredictionDetails|nil
+---@return PredictionDetails
 local function build_request(window)
     -- FYI can use to do simple testing
     -- local all_lines = buffer:get_all_lines()
