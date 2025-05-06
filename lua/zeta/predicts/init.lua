@@ -178,23 +178,31 @@ function M.setup()
     end)
 
     -- * accept prediction
-    vim.keymap.set("n", "<leader>pa", function()
+    function accept()
         if not displayer or not watcher or not watcher.window then
             messages.append("No predictions to accept... no displayer, watcher.window")
             return
         end
         local accepter = Accepter:new(watcher.window)
         accepter:accept(displayer)
-    end, { desc = "accept prediction" })
+    end
+
+    -- in insert mode - alt+tab to accept, or <C-o><leader>pa
+    vim.keymap.set("n", "<leader>pa", accept, { desc = "accept prediction" })
+    vim.keymap.set({ "i", "n" }, "<M-Tab>", accept, { desc = "accept prediction" })
 
     -- * cancel prediction
-    vim.keymap.set("n", "<leader>pc", function()
+    function reject()
         if not watcher or not watcher.window then
             messages.append("No predictions to cancel, no watcher.window")
             return
         end
         cancel_current_request(watcher.window)
-    end, { desc = "reject prediction" })
+    end
+
+    -- in insert mode - alt+esc to cancel, or <C-o><leader>pc
+    vim.keymap.set("n", "<leader>pc", reject, { desc = "reject prediction" })
+    vim.keymap.set({ "i", "n" }, "<M-Esc>", reject, { desc = "reject prediction" })
 
     -- require("zeta.predicts.miscTsGotoMaps").setup()
 
