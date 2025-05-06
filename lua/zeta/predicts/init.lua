@@ -61,7 +61,7 @@ end
 
 ---@param window WindowController0Indexed
 local function trigger_prediction(window)
-    messages.append("requesting...")
+    -- messages.append("requesting...")
 
     -- PRN... a displayer is tied to a request... hrm...
     local request = PredictionRequest:new(window, has_treesitter)
@@ -100,7 +100,7 @@ function M.start_watcher(buffer_number)
     end
     if watcher ~= nil then
         -- don't re-register, could cause dropped events
-        messages.append("already watching")
+        -- messages.append("already watching")
         return
     end
 
@@ -108,7 +108,7 @@ function M.start_watcher(buffer_number)
     -- detect treesitter upfront (once)
     has_treesitter = pcall(vim.treesitter.get_parser, buffer_number)
     watcher = WindowWatcher:new(window_id, buffer_number, "zeta-prediction")
-    messages.append("starting watcher: " .. tostring(watcher.window:buffer():file_name()))
+    -- messages.append("starting watcher: " .. tostring(watcher.window:buffer():file_name()))
     watcher:watch(
         trigger_prediction,
         cancel_current_request,
@@ -124,7 +124,7 @@ function M.setup_events()
     vim.api.nvim_create_autocmd("FileType", {
         group = augroup_name,
         callback = function(args)
-            messages.append("file type changed: " .. vim.inspect(args))
+            -- messages.append("file type changed: " .. vim.inspect(args))
             M.start_watcher(args.buf)
         end,
     })
@@ -133,7 +133,7 @@ function M.setup_events()
     vim.api.nvim_create_autocmd({ "BufEnter" }, {
         group = "zeta-buffer-monitors",
         callback = function(args)
-            messages.append("buffer enter: " .. args.buf)
+            -- messages.append("buffer enter: " .. args.buf)
             M.start_watcher(args.buf)
         end
     })
@@ -177,7 +177,7 @@ function M.setup()
     -- * accept prediction
     vim.keymap.set("n", "<leader>pa", function()
         if not displayer then
-            messages.append("No displayer for current window")
+            messages.append("No predictions to accept, no displayer")
             return
         end
         local accepter = Accepter:new(watcher.window)
@@ -187,7 +187,7 @@ function M.setup()
     -- * cancel prediction
     vim.keymap.set("n", "<leader>pc", function()
         if not watcher then
-            messages.append("No watcher for current window")
+            messages.append("No predictions to cancel, no watcher")
             return
         end
         cancel_current_request(watcher.window)
