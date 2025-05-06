@@ -16,8 +16,28 @@ function ExcerptSelector:new(buffer)
 end
 
 ---@param node TSNode
+---@param filetype string
+local function is_section_node(node, filetype)
+    local node_type = node:type()
+    if node_type == "function_declaration"
+        or node_type == "function_definition"
+        or node_type == "arrow_function" -- js
+        or node_type == "lambda" -- python?
+        or node_type == "function_expression" --js
+    then
+        return true
+    end
+
+    if filetype == "markdown" then
+        return node_type == "section"
+    end
+    return false
+end
+
+---@param node TSNode
+---@param filetype string
 ---@return TSNode|nil
-local function get_enclosing_function_node(node)
+local function get_enclosing_function_node(node, filetype)
     -- FYI right now I am desinging this for lua:
     --  function_definition - named function
     --  function_declaration - anonymous function
@@ -29,13 +49,7 @@ local function get_enclosing_function_node(node)
     -- messages.append(inspect(root))
 
     while true do
-        local node_type = node:type()
-        if node_type == "function_declaration"
-            or node_type == "function_definition"
-            or node_type == "arrow_function"
-            or node_type == "lambda"
-            or node_type == "function_expression"
-        then
+        if is_section_node(node, filetype) then
             return node
         end
 
@@ -70,7 +84,7 @@ function ExcerptSelector:line_range_at_position(row, column)
     end
 
     -- find closest enclosing node (to start search for excerpt range)
-    local enclosing = get_enclosing_function_node(node)
+    local enclosing = get_enclosing_function_node(node, self.buffer:filetype())
     if enclosing == nil then
         trace("no enclosing node found at position: " .. row .. ", " .. column)
         return nil, nil
