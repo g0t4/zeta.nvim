@@ -87,7 +87,7 @@ end
 ---@param row integer 0-indexed
 ---@param column integer 0-indexed
 ---@return Excerpt|nil
-function ExcerptSelector:text_at_position(row, column)
+function ExcerptSelector:excerpt_at_position(row, column)
     local editable_start_line, editable_end_line = self:line_range_at_position(row, column)
     if editable_start_line == nil or editable_end_line == nil then
         return nil

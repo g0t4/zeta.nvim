@@ -61,9 +61,4 @@ function WindowController0Indexed:get_node_at_cursor()
     return self:buffer():get_node_at_position(row, column)
 end
 
-function WindowController0Indexed:get_excerpt_text_at_cursor()
-    local selector = ExcerptSelector:new(self:buffer())
-    return selector:text_at_position(self:get_cursor_position())
-end
-
 return WindowController0Indexed

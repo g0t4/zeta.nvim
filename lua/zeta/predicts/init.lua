@@ -98,7 +98,8 @@ function M.setup_events()
                     immediate_on_cursor_moved)
                 displayer = Displayer:new(watcher.window)
             else
-                messages.append("No Tree-sitter parser for buffer " .. args.buf)
+                -- TODO! fallback to line ranges - just use diff excerpt selector!
+                messages.append("TODO implement line range based predictions")
             end
         end,
     })

@@ -1,5 +1,6 @@
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
+local ExcerptSelector = require("zeta.predicts.ExcerptSelector")
 
 ---@alias PredictionDetails {
 ---   body: Body,
@@ -26,18 +27,22 @@ PredictionRequest.__index = PredictionRequest
 ---@param window WindowController0Indexed
 ---@return PredictionDetails
 local function build_request(window)
-    -- FYI can use to do simple testing
+    -- TODO if no treesitter, use a line range "selector"
     -- local all_lines = buffer:get_all_lines()
 
-    local excerpt = window:get_excerpt_text_at_cursor()
-    messages.header("excerpt:")
-    messages.append(excerpt)
+    local selector = ExcerptSelector:new(window:buffer())
+    local row, col = window:get_cursor_position()
+    local excerpt = selector:excerpt_at_position(row, col)
     if excerpt == nil then
         messages.header("excerpt not found, aborting...")
         return nil
     end
 
-    --
+    local num_lines         = window:buffer():num_lines()
+    local end_after_line    = math.min(row + 3, num_lines)
+    local start_before_line = math.max(excerpt.editable_start_line - 3, 0)
+
+    -- TODO! TAGS now
     -- -- insert cursor position tag
     -- local editable = tags.mark_editable_region(excerpt, row, col)
     -- -- TODO
@@ -48,18 +53,9 @@ local function build_request(window)
     -- messages.header("editable_text:")
     -- messages.append(editable_text)
     --
-    -- TODO get real file content, and the rest is ready to go!
-    -- TODO later, get editable vs surrounding context
+    -- TODO prune large, initial editable region (func)
+    -- TODO get surrounding context
     -- TODO handle start of file tag
-    -- TODO track position of start of region so you can align it when the response comes back
-    --   put into the request object (not the body) so you can use it in response handler
-    --
-    -- use treesitter (if available), otherwise fallback to line ranges
-
-    local row, col          = window:get_cursor_position()
-    local num_lines         = window:buffer():num_lines()
-    local end_after_line    = math.min(row + 3, num_lines)
-    local start_before_line = math.max(excerpt.editable_start_line - 3, 0)
 
     local body              = {
         input_excerpt = excerpt.text,
