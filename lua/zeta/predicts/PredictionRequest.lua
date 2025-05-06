@@ -84,12 +84,13 @@ function PredictionRequest:cancel()
 end
 
 ---@param window WindowController0Indexed
-function PredictionRequest:new(window)
+function PredictionRequest:new(window, has_treesitter)
     self = setmetatable({}, PredictionRequest)
     -- TODO rename details and/or re-org it
     self.window = window
     self.details = build_request(window)
     self.task = nil
+    self.has_treesitter = has_treesitter
     -- PRN if need be, track what is status:
     -- self.done = false
     -- self.canceled = false

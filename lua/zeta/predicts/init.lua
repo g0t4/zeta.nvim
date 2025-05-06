@@ -40,6 +40,7 @@ local watcher = nil
 local displayer = nil
 ---@type PredictionRequest|nil
 local current_request = nil
+local has_treesitter = false
 
 local toggle_highlighting = false
 
@@ -63,7 +64,7 @@ local function trigger_prediction(window)
     messages.append("requesting...")
 
     -- PRN... a displayer is tied to a request... hrm...
-    local request = PredictionRequest:new(window)
+    local request = PredictionRequest:new(window, has_treesitter)
 
     request:send(function(_request, stdout)
         displayer:on_response(_request, stdout)
@@ -79,7 +80,7 @@ local function immediate_on_cursor_moved(window)
         return
     end
 
-    local request = PredictionRequest:new(window)
+    local request = PredictionRequest:new(window, has_treesitter)
     local details = request.details
 
     highlighter:highlight_lines(details)
@@ -90,15 +91,14 @@ function M.setup_events()
     vim.api.nvim_create_autocmd({ "BufEnter" }, {
         callback = function(args)
             local window_id = vim.api.nvim_get_current_win()
-            local has_ts = pcall(vim.treesitter.get_parser, args.buf)
-            if has_ts then
+            has_treesitter = pcall(vim.treesitter.get_parser, args.buf)
+            if has_treesitter then
                 watcher = WindowWatcher:new(window_id, args.buf, "zeta-prediction")
                 watcher:watch(trigger_prediction,
                     cancel_current_request,
                     immediate_on_cursor_moved)
                 displayer = Displayer:new(watcher.window)
             else
-                -- TODO! fallback to line ranges - just use diff excerpt selector!
                 messages.append("TODO implement line range based predictions")
             end
         end,
