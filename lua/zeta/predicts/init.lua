@@ -93,10 +93,6 @@ function M.setup_events()
             local window_id = vim.api.nvim_get_current_win()
             -- detect treesitter once time, upfront, when first switch to window/buffer
             has_treesitter = pcall(vim.treesitter.get_parser, args.buf)
-            if not has_treesitter then
-                messages.append("FYI still need a few fixes for non-treesitter to work, aborting")
-                return
-            end
             watcher = WindowWatcher:new(window_id, args.buf, "zeta-prediction")
             watcher:watch(trigger_prediction,
                 cancel_current_request,
@@ -166,8 +162,7 @@ function M.setup()
 
     -- require("zeta.predicts.miscTsGotoMaps").setup()
 
-    -- TODO uncomment to enable again
-    -- M.setup_events()
+    M.setup_events()
 end
 
 return M

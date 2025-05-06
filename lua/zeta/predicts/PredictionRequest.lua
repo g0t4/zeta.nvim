@@ -34,8 +34,7 @@ local function build_request(request)
         -- use a line range "selector"
         -- local all_lines = buffer:get_all_lines()
         -- TODO take up to X lines initially... later measure chars as you expand out
-        messages.append("TODO finish selecting lines w/o treesitter, using line range")
-        return nil
+        error("TODO finish selecting lines w/o treesitter, using line range")
     end
 
     local selector = ExcerptSelector:new(buffer)
