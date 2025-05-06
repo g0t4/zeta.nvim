@@ -19,11 +19,21 @@ function ExcerptHighlighter:clear()
     self.marks:clear_all()
 end
 
+local hl_editable = "zeta-excerpt-editable"
+-- Active excerpt (primary highlight)
+vim.api.nvim_set_hl(0, hl_editable, {
+    bg = "#3c4452", -- dark desaturated bluish tone
+    fg = "NONE"
+})
+
+local hl_context = "zeta-excerpt-context"
+-- Context lines (lighter, less saturated)
+vim.api.nvim_set_hl(0, hl_context, {
+    bg = "#2f3640", -- subtle contrast from base bg
+    fg = "#888888" -- optional if you want to dim text slightly
+})
+
 function ExcerptHighlighter:highlight_lines(details)
-    local hl_editable = "zeta-excerpt-editable"
-    local hl_context = "zeta-excerpt-context"
-    vim.api.nvim_set_hl(0, hl_editable, { bg = "green" })
-    vim.api.nvim_set_hl(0, hl_context, { bg = "blue" })
     local editable_mark_id = 20
     local ctx_before_mark_id = 21
     local ctx_after_mark_id = 22
