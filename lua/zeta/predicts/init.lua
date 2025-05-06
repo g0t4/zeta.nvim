@@ -118,7 +118,11 @@ function M.start_watcher(buffer_number)
 end
 
 function M.setup_events()
+    local augroup_name = "zeta-buffer-monitors"
+    vim.api.nvim_create_augroup(augroup_name, { clear = true })
+
     vim.api.nvim_create_autocmd("FileType", {
+        group = augroup_name,
         callback = function(args)
             M.start_watcher(args.buf)
         end,
@@ -126,12 +130,14 @@ function M.setup_events()
 
     -- PRN use WinEnter (change window event), plus when first loading should trigger for current window (since that's not a change window event)
     vim.api.nvim_create_autocmd({ "BufEnter" }, {
+        group = "zeta-buffer-monitors",
         callback = function(args)
             M.start_watcher(args.buf)
         end
     })
 
     vim.api.nvim_create_autocmd({ "BufLeave" }, {
+        group = "zeta-buffer-monitors",
         callback = M.ensure_watcher_stopped,
     })
 end
