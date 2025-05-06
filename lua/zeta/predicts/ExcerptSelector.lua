@@ -76,16 +76,7 @@ function ExcerptSelector:line_range_at_position(row, column)
     end
 
     -- TODO is :range() inclusive or exclusive?
-    -- TODO! capture editable start/end lines... beyond that doesn't matter (just context)
-    local editable_start_line, start_column, editable_end_line, end_column = enclosing:range()
-    messages.header("enclosing: " .. tostring(enclosing:type()))
-
-    messages.append({
-        _start_row = editable_start_line,
-        _start_column = start_column,
-        end_row = editable_end_line,
-        end_column = end_column,
-    })
+    local editable_start_line, _, editable_end_line, _ = enclosing:range()
 
     -- TODO look at size of it to expand or contract it:
     -- local text = vim.treesitter.get_node_text(node, self.buffer.buffer_number)
