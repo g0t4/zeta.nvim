@@ -147,27 +147,30 @@ end
 function M.setup()
     -- * real prediction, on-demand
     vim.keymap.set("n", "<leader>p", function()
-        if not watcher then
+        if not watcher or not watcher.window then
             messages.append("No watcher for current window")
             return
         end
-        -- FYI requires tree-sitter even when manually triggered, so use the watcher.window
+        -- FYI this is real deal so you have to have full watcher
         trigger_prediction(watcher.window)
     end, { desc = "show prediction" })
 
     -- * fake prediction
     vim.keymap.set("n", "<leader>pf", function()
         -- this should always work, using the current window/buffer (regardless of type) b/c its a fake request/response
-        local window = WindowController0Indexed:new_from_current_window()
+        -- FYI once this is activated, I can use other keymaps to accept/cancel/highlight/etc
+        watcher   = {
+            window = WindowController0Indexed:new_from_current_window()
+        }
         -- set here so we can use with accepter
-        displayer    = Displayer:new(window)
-        display_fake_response(window, displayer)
+        displayer = Displayer:new(watcher.window)
+        display_fake_response(watcher.window, displayer)
     end, { desc = "demo fake request/response" })
 
     -- * toggle [h]ighlighting excerpt as cursor moves
     vim.keymap.set("n", "<leader>ph", function()
-        if not watcher then
-            messages.append("No watcher for current window")
+        if not watcher or not watcher.window then
+            messages.append("Cannot toggle highlighting, no watcher.window")
             return
         end
         toggle_highlighting = not toggle_highlighting
@@ -176,8 +179,8 @@ function M.setup()
 
     -- * accept prediction
     vim.keymap.set("n", "<leader>pa", function()
-        if not displayer then
-            messages.append("No predictions to accept, no displayer")
+        if not displayer or not watcher or not watcher.window then
+            messages.append("No predictions to accept... no displayer, watcher.window")
             return
         end
         local accepter = Accepter:new(watcher.window)
@@ -186,8 +189,8 @@ function M.setup()
 
     -- * cancel prediction
     vim.keymap.set("n", "<leader>pc", function()
-        if not watcher then
-            messages.append("No predictions to cancel, no watcher")
+        if not watcher or not watcher.window then
+            messages.append("No predictions to cancel, no watcher.window")
             return
         end
         cancel_current_request(watcher.window)
@@ -195,7 +198,7 @@ function M.setup()
 
     -- require("zeta.predicts.miscTsGotoMaps").setup()
 
-    M.setup_events()
+    -- M.setup_events()
 end
 
 return M
