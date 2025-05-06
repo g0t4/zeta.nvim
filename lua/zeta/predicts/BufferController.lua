@@ -28,6 +28,10 @@ function BufferController0Indexed:filetype()
     return vim.bo[self.buffer_number].filetype
 end
 
+function BufferController0Indexed:file_name()
+    return vim.api.nvim_buf_get_name(self.buffer_number)
+end
+
 function BufferController0Indexed:get_all_lines()
     -- FYI add/reshape the line access method to new scenarios that you actually use
     -- i.e. maybe add
