@@ -162,12 +162,14 @@ function Displayer:on_response(request, response_body_stdout)
     --   OR, popup window w/ diff?
 
 
-    -- insert extra new line for extmarks at start line
-    vim.api.nvim_buf_set_lines(
-        self.window:buffer().buffer_number,
-        request.details.editable_start_line,
-        request.details.editable_start_line,
-        false, { "", "" })
+    -- TODO disable predictions on changes... while displaying
+    -- FYI modifying buffer triggers new predictions! need to disable that while displaying anyways and after accept be careful with when to predict again? or does that not matter
+    -- -- insert extra new line for extmarks at start line
+    -- vim.api.nvim_buf_set_lines(
+    --     self.window:buffer().buffer_number,
+    --     request.details.editable_start_line,
+    --     request.details.editable_start_line,
+    --     false, { "", "" })
 
     self.marks:set(select_excerpt_mark_id, {
         start_line = request.details.editable_start_line,
@@ -178,12 +180,12 @@ function Displayer:on_response(request, response_body_stdout)
         virt_text_pos = "overlay",
     })
 
-    -- delete original lines (undo on cancel)
-    vim.api.nvim_buf_set_lines(
-        self.window:buffer().buffer_number,
-        request.details.editable_start_line + 1,
-        request.details.editable_end_line + 1,
-        false, {})
+    -- -- delete original lines (undo on cancel)
+    -- vim.api.nvim_buf_set_lines(
+    --     self.window:buffer().buffer_number,
+    --     request.details.editable_start_line + 1,
+    --     request.details.editable_end_line + 1,
+    --     false, {})
 end
 
 return Displayer
