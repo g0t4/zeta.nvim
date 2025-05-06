@@ -50,6 +50,7 @@ local function cancel_current_request(window)
 
     if displayer ~= nil then
         displayer:clear()
+        displayer = nil
     end
 
     if current_request == nil then
