@@ -11,6 +11,19 @@ local ExcerptHighlighter = require("zeta.predicts.ExcerptHighlighter")
 
 local M = {}
 
+-- FYI for now the code is all designed to have ONE watcher at a time
+--   only modify this if I truly need multiple watchers (across windows)
+--   but that's not the current design
+--   would have to have autocmd group that is segmented by window id too
+---@type WindowWatcher|nil
+local watcher = nil
+---@type Displayer|nil
+local displayer = nil
+---@type PredictionRequest|nil
+local current_request = nil
+local has_treesitter = false
+local toggle_highlighting = false
+
 ---@param window WindowController0Indexed
 ---@param displayer Displayer
 local function display_fake_response(window, displayer)
@@ -27,22 +40,8 @@ local function display_fake_response(window, displayer)
         editable_end_line = row + 10, -- right now this is not used
     }
     local fake_request = PredictionRequest:new_fake_request(window, fake_details)
-    displayer:on_response(fake_request, fake_stdout)
+    displayer:on_response(fake_request, fake_stdout, watcher)
 end
-
--- FYI for now the code is all designed to have ONE watcher at a time
---   only modify this if I truly need multiple watchers (across windows)
---   but that's not the current design
---   would have to have autocmd group that is segmented by window id too
----@type WindowWatcher|nil
-local watcher = nil
----@type Displayer|nil
-local displayer = nil
----@type PredictionRequest|nil
-local current_request = nil
-local has_treesitter = false
-
-local toggle_highlighting = false
 
 ---@param window WindowController0Indexed
 local function cancel_current_request(window)
@@ -68,7 +67,7 @@ local function trigger_prediction(window)
     current_request = PredictionRequest:new(window, has_treesitter)
 
     current_request:send(function(_request, stdout)
-        displayer:on_response(_request, stdout)
+        displayer:on_response(_request, stdout, watcher)
         -- clear request once it's done:
         current_request = nil
     end)
@@ -162,6 +161,7 @@ function M.setup()
         -- this should always work, using the current window/buffer (regardless of type) b/c its a fake request/response
         -- FYI once this is activated, I can use other keymaps to accept/cancel/highlight/etc
         watcher   = {
+            paused = false,
             window = WindowController0Indexed:new_from_current_window()
         }
         -- set here so we can use with accepter

@@ -8,6 +8,8 @@ local messages = require("devtools.messages")
 --- and really this is a PredictionsWindowWatcher so its fine to let that bleed into this abstraction
 --- ... though ideally this doesn't contain predictions logic and instead a func is passed in
 ---@class WindowWatcher
+---@field window WindowController0Indexed
+---@field paused boolean
 local WindowWatcher = {}
 WindowWatcher.__index = WindowWatcher
 
@@ -16,6 +18,7 @@ function WindowWatcher:new(window_id, buffer_number, augroup_name)
     self.augroup_name = augroup_name
     self.window = WindowController0Indexed:new(window_id)
     self.buffer_number = buffer_number
+    self.paused = false
     return self
 end
 
@@ -100,6 +103,10 @@ function WindowWatcher:watch(trigger_prediction,
         group = self.augroup_name,
         -- buffer = self.buffer_number,
         callback = function()
+            if self.paused then
+                return
+            end
+
             cancel_current_request(window)
             -- PRN differentiate between sending request and when can show prediction
             --   arguably, only latter (show prediction) needs debounced
@@ -115,6 +122,10 @@ function WindowWatcher:watch(trigger_prediction,
         group = self.augroup_name,
         -- buffer = self.buffer_number,
         callback = function()
+            if self.paused then
+                return
+            end
+
             -- PRN
             immediate_on_cursor_moved(window)
         end
