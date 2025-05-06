@@ -130,7 +130,7 @@ function M.setup_events()
     })
 
     -- PRN use WinEnter (change window event), plus when first loading should trigger for current window (since that's not a change window event)
-    vim.api.nvim_create_autocmd({ "WinEnter" }, {
+    vim.api.nvim_create_autocmd({ "BufEnter" }, {
         group = augroup_name,
         callback = function(args)
             -- messages.append("buffer enter: " .. args.buf)
