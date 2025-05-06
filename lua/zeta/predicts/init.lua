@@ -130,8 +130,8 @@ function M.setup_events()
     })
 
     -- PRN use WinEnter (change window event), plus when first loading should trigger for current window (since that's not a change window event)
-    vim.api.nvim_create_autocmd({ "BufEnter" }, {
-        group = "zeta-buffer-monitors",
+    vim.api.nvim_create_autocmd({ "WinEnter" }, {
+        group = augroup_name,
         callback = function(args)
             -- messages.append("buffer enter: " .. args.buf)
             M.start_watcher(args.buf)
@@ -139,10 +139,9 @@ function M.setup_events()
     })
 
     vim.api.nvim_create_autocmd({ "BufLeave" }, {
-        group = "zeta-buffer-monitors",
+        group = augroup_name,
         callback = M.ensure_watcher_stopped,
-    })
-end
+    })end
 
 function M.setup()
     -- * real prediction, on-demand
