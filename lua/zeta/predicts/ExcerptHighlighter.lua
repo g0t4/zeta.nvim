@@ -44,8 +44,6 @@ vim.api.nvim_set_hl(0, hl_headsup, {
 
 ---@param details PredictionDetails
 function ExcerptHighlighter:highlight_lines(details)
-    messages.append("details")
-    messages.append(details)
     local editable_mark_id = 20
     local ctx_before_mark_id = 21
     local ctx_after_mark_id = 22
@@ -62,7 +60,7 @@ function ExcerptHighlighter:highlight_lines(details)
     local estimated_tokens_per_char = 4
     local approx_tokens_excerpt = math.ceil(chars_excerpt / estimated_tokens_per_char)
     local headsup = "c: " .. chars_excerpt .. ", t: " .. approx_tokens_excerpt
-    local on_line = details.editable_end_line
+    local on_line = details.cursor_line
     -- display on last line of entire excerpt
     self.marks:highlight_lines({
         id = headsup_mark_id,
@@ -74,12 +72,8 @@ function ExcerptHighlighter:highlight_lines(details)
     })
 
 
-
     -- * highlight the context before/after
     if details.context_before_start_line < details.editable_start_line then
-        if details.context_before_start_line < 0 then
-            details.context_before_start_line = 0
-        end
         self.marks:highlight_lines({
             id = ctx_before_mark_id,
             hl_group = hl_context,
@@ -88,9 +82,6 @@ function ExcerptHighlighter:highlight_lines(details)
         })
     end
     if details.context_after_end_line > details.editable_end_line then
-        if details.context_after_end_line > self.buffer:line_count() then
-            details.context_after_end_line = self.buffer:line_count()
-        end
         self.marks:highlight_lines({
             id = ctx_after_mark_id,
             hl_group = hl_context,

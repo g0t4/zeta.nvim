@@ -7,6 +7,8 @@ local inspect = require("devtools.inspect")
 ---   editable_end_line: integer,
 ---   context_before_start_line: integer,
 ---   context_after_end_line: integer
+---   cursor_line: integer,
+---   cursor_col: integer,
 ---} | nil
 
 ---@class PredictionRequest
@@ -54,26 +56,24 @@ local function build_request(window)
     --
     -- use treesitter (if available), otherwise fallback to line ranges
 
-    -- local body = files.read_example_json("01_request.json")
-    ---@type Body
-    local body = {
+    local row, col          = window:get_cursor_position()
+    local num_lines         = window:buffer():num_lines()
+    local end_after_line    = math.min(row + 3, num_lines)
+    local start_before_line = math.max(excerpt.editable_start_line - 3, 0)
+
+    local body              = {
         input_excerpt = excerpt.text,
         input_events = "",
         outline = "",
     }
-
     return {
         body = body,
-        -- body = {
-        --     input_excerpt = "",
-        --     -- input_events
-        --     -- outline
-        -- }
-        -- TODO get expanded context too
-        context_before_start_line = excerpt.editable_start_line - 4, -- FYI just for testing highlighting
+        context_before_start_line = start_before_line,
         editable_start_line = excerpt.editable_start_line,
         editable_end_line = excerpt.editable_end_line,
-        context_after_end_line = excerpt.editable_end_line + 3, -- FYI just for testing highlighting
+        context_after_end_line = end_after_line,
+        cursor_line = row,
+        cursor_col = col,
     }
 end
 
