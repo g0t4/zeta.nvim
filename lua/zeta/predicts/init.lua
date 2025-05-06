@@ -166,7 +166,8 @@ function M.setup()
 
     -- require("zeta.predicts.miscTsGotoMaps").setup()
 
-    M.setup_events()
+    -- TODO uncomment to enable again
+    -- M.setup_events()
 end
 
 return M
