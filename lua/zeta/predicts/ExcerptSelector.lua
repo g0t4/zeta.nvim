@@ -1,6 +1,7 @@
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
 local Excerpt = require("zeta.predicts.Excerpt")
+local tags = require("zeta.helpers.tags")
 
 ---@class ExcerptSelector
 ---@field buffer BufferController0Indexed
@@ -84,15 +85,39 @@ function ExcerptSelector:line_range_at_position(row, column)
     return editable_start_line, editable_end_line
 end
 
----@param row integer 0-indexed
----@param column integer 0-indexed
+--- the row/col are interpeted as cursor position though they obviously don't have to be
+---   this is where the cursor tag is inserted
+---@param cursor_row integer 0-indexed
+---@param cursor_column integer 0-indexed
 ---@return Excerpt|nil
-function ExcerptSelector:excerpt_at_position(row, column)
-    local editable_start_line, editable_end_line = self:line_range_at_position(row, column)
+function ExcerptSelector:excerpt_at_position(cursor_row, cursor_column)
+    local editable_start_line, editable_end_line = self:line_range_at_position(cursor_row, cursor_column)
     if editable_start_line == nil or editable_end_line == nil then
         return nil
     end
+
     local text_lines = self.buffer:get_lines(editable_start_line, editable_end_line)
+
+    -- * mark cursor position
+    local cursor_offset_row = cursor_row - editable_start_line
+    local cursor_offset_row_1indexed = cursor_offset_row + 1
+    local original_cursor_line = text_lines[cursor_offset_row_1indexed] -- 1-indexed arrays
+    -- cursor is literally between cursor_column and cursor_column + 1 => visually it sits on cursor_column + 1
+    --   cursor_column is left of cursor position
+    --   cursor_column + 1 is right of cursor position
+    --   physically, the cursor shows on top of the cursor_column + 1 char
+
+    -- FYI string:sub() is 1-indexed and END-INCLUSIVE
+    local tagged_cursor_line = original_cursor_line:sub(1, cursor_column)
+        .. tags.tag_cursor_here
+        .. original_cursor_line:sub(cursor_column + 1) -- cursor_column is in the prefix before cursor tag, wouldn't want it to repeat here!
+    -- tag doesn't replace any content in the line, effectively sits between chars
+    text_lines[cursor_offset_row_1indexed] = tagged_cursor_line
+
+    -- TODO confirm if supposed to insert on separate line or right at start of the editable region
+    table.insert(text_lines, 1, tags.tag_edit_start)
+    table.insert(text_lines, tags.tag_edit_end)
+
     -- TODO make sure lines are joined correctly...
     --   that w/ serialization we get \n as appropriate (vs new lines)... not sure just check what is needed for model's template and what I have here (for fake and real requests)
     text = table.concat(text_lines, "\n")

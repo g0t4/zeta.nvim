@@ -45,6 +45,8 @@ local function build_request(request)
         messages.append("excerpt not found, aborting...")
         return nil
     end
+    messages.append("excerpt:")
+    messages.append(excerpt)
 
     local num_lines         = buffer:num_lines()
     local end_after_line    = math.min(row + 3, num_lines)
