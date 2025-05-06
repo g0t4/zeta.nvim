@@ -84,6 +84,7 @@ end
 
 function PredictionRequest:cancel()
     if self.task == nil then
+        messages.append("no task to cancel")
         return
     end
 
