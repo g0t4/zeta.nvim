@@ -1,5 +1,6 @@
 local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
 local BufferController = require("zeta.predicts.BufferController")
+local messages = require("devtools.messages")
 
 ---@class ExcerptHighlighter
 local ExcerptHighlighter = {}
@@ -33,16 +34,47 @@ vim.api.nvim_set_hl(0, hl_context, {
     fg = "#888888" -- optional if you want to dim text slightly
 })
 
+local hl_headsup = "zeta-headsup"
+vim.api.nvim_set_hl(0, hl_headsup, {
+    -- fg = "#e5c07b",
+    -- bold = true
+    fg = "#1f1f1f",
+    bg = "#ffcc00"
+})
+
+---@param details PredictionDetails
 function ExcerptHighlighter:highlight_lines(details)
+    messages.append("details")
+    messages.append(details)
     local editable_mark_id = 20
     local ctx_before_mark_id = 21
     local ctx_after_mark_id = 22
+    local headsup_mark_id = 23
+    -- * highlight the editable
     self.marks:highlight_lines({
         id = editable_mark_id,
         hl_group = hl_editable,
         start_line = details.editable_start_line,
         end_line = details.editable_end_line,
     })
+    -- * headsup extmark shows # chars and tokens
+    local chars_excerpt = details.body.input_excerpt:len()
+    local estimated_tokens_per_char = 4
+    local approx_tokens_excerpt = math.ceil(chars_excerpt / estimated_tokens_per_char)
+    local headsup = "c: " .. chars_excerpt .. ", t: " .. approx_tokens_excerpt
+    local on_line = details.editable_end_line
+    -- display on last line of entire excerpt
+    self.marks:highlight_lines({
+        id = headsup_mark_id,
+        start_line = on_line,
+        end_line = on_line,
+        hl_group = hl_headsup,
+        virt_text_pos = "eol",
+        virt_text = { { headsup, hl_headsup } },
+    })
+
+
+
     -- * highlight the context before/after
     if details.context_before_start_line < details.editable_start_line then
         if details.context_before_start_line < 0 then

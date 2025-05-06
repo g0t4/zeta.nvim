@@ -2,7 +2,7 @@ local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
 
 ---@alias PredictionDetails {
----   body: string,
+---   body: Body,
 ---   editable_start_line: integer,
 ---   editable_end_line: integer,
 ---   context_before_start_line: integer,
@@ -15,8 +15,14 @@ local inspect = require("devtools.inspect")
 local PredictionRequest = {}
 PredictionRequest.__index = PredictionRequest
 
+---@class Body
+---@field input_excerpt string
+---@field input_events string
+---@field outline string
+-- TODO more fields
+
 ---@param window WindowController0Indexed
----@return PredictionDetails
+---@return PredictionDetails|nil
 local function build_request(window)
     -- FYI can use to do simple testing
     -- local all_lines = buffer:get_all_lines()
@@ -26,7 +32,7 @@ local function build_request(window)
     messages.append(excerpt)
     if excerpt == nil then
         messages.header("excerpt not found, aborting...")
-        return
+        return nil
     end
 
     --
@@ -49,10 +55,11 @@ local function build_request(window)
     -- use treesitter (if available), otherwise fallback to line ranges
 
     -- local body = files.read_example_json("01_request.json")
+    ---@type Body
     local body = {
         input_excerpt = excerpt.text,
-        -- input_events
-        -- outline
+        input_events = "",
+        outline = "",
     }
 
     return {
