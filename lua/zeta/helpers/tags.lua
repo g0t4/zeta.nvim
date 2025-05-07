@@ -36,23 +36,4 @@ function M.strip_user_cursor_tag(text)
     return cleaned
 end
 
----@param all_lines string[]
----@param cursor_row integer 0-indexed
----@param cursor_column integer 0-indexed
-function M.mark_editable_region(all_lines, cursor_row, cursor_column)
-    -- TODO this is a temp stopgap solution to using all lines, can discard with treesitter approach coming next
-    local cursor_on_row_1indexed = cursor_row + 1
-
-    -- first insert cursor position tag
-    local cursor_line = all_lines[cursor_on_row_1indexed]
-    cursor_line = cursor_line:sub(1, cursor_column) .. M.tag_cursor_here .. cursor_line:sub(cursor_column + 1)
-    all_lines[cursor_on_row_1indexed] = cursor_line
-
-    -- then wrap editable around all lines for now
-    table.insert(all_lines, 1, M.tag_edit_start)
-    -- table.insert(all_lines, 1, M.tag_start_of_file) -- does this help with repeating responses?
-    table.insert(all_lines, M.tag_edit_end)
-    return all_lines
-end
-
 return M
