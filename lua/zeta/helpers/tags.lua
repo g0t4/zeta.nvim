@@ -9,7 +9,8 @@ local tag_start_of_file = "<|start_of_file|>"
 
 ---@param text string
 function M.get_editable_region(text)
-    local start_index = text:find(tag_edit_start .. "\n")
+    local start_search_for = tag_edit_start .. "\n"
+    local start_index = text:find(start_search_for)
     local end_index = text:find("\n" .. tag_edit_end)
     if start_index == nil
         or end_index == nil
@@ -17,7 +18,7 @@ function M.get_editable_region(text)
         or end_index < start_index then
         return nil
     end
-    start_index = start_index + (#tag_edit_start + 1)
+    start_index = start_index + #start_search_for
     end_index = end_index - 1
     return text:sub(start_index, end_index)
 end
