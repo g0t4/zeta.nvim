@@ -37,7 +37,7 @@ end
 ---@param text string
 ---@return string
 function M.strip_user_cursor_tag(text)
-    local cleaned = text:gsub(M.tag_cursor_here, "")
+    local cleaned = text:gsub(tag_cursor_here, "")
     return cleaned
 end
 
