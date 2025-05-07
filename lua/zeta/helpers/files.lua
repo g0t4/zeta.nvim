@@ -1,4 +1,4 @@
-local parser = require("zeta.helpers.tags")
+local tags = require("zeta.helpers.tags")
 
 local M = {}
 
@@ -84,7 +84,7 @@ function M.read_example_json_excerpt(relative_path)
     --  consider json files as definitive source of truth
     local body = vim.json.decode(content)
     if body.input_excerpt then
-        local cleaned = parser.strip_user_cursor_tags(body.input_excerpt)
+        local cleaned = tags.strip_user_cursor_tags(body.input_excerpt)
         return cleaned
     elseif body.output_excerpt then
         return body.output_excerpt
@@ -97,7 +97,7 @@ end
 ---@return string
 function M.read_example_editable_only(relative_path)
     local json_excerpt = M.read_example_json_excerpt(relative_path)
-    local editable = parser.get_editable_region(json_excerpt)
+    local editable = tags.get_editable_region(json_excerpt)
     if not editable then
         error("couldn't find editable in excerpt: " .. relative_path)
     end

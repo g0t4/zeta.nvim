@@ -1,4 +1,4 @@
-local parser = require("zeta.helpers.tags")
+local tags = require("zeta.helpers.tags")
 local combined = require("zeta.diff.combined")
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
@@ -106,13 +106,13 @@ function Displayer:on_response(request, response_body_stdout)
     -- messages.header("output_excerpt:")
     -- messages.append(rewritten)
 
-    original_editable = parser.get_editable_region(original) or ""
+    original_editable = tags.get_editable_region(original) or ""
     -- PRN use cursor position? i.e. check if cursor has moved since prediction requested (might not need this actually)
     -- cursor_position = parser.get_position_of_user_cursor(original) or 0
     -- messages.header("cursor_position:", cursor_position)
-    original_editable = parser.strip_user_cursor_tag(original_editable)
+    original_editable = tags.strip_user_cursor_tag(original_editable)
 
-    self.rewritten_editable = parser.get_editable_region(rewritten) or ""
+    self.rewritten_editable = tags.get_editable_region(rewritten) or ""
     messages.header("original_editable:")
     messages.append(original_editable)
     messages.header("rewritten_editable:")
