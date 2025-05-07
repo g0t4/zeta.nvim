@@ -51,43 +51,38 @@ end
 ---@param window WindowController0Indexed
 ---@param _displayer Displayer
 function display_fake_prediction_del_5th_line_after_cursor(window, _displayer)
-    -- FYI examples for hacking together new fake scenario
-    local fake_stdout = files.read_example("01_response.json")
-    messages.header("fake_stdout")
-    messages.append(fake_stdout)
-    local fake_body = files.read_example_json("01_request.json")
-    messages.header("fake_body")
-    messages.append(fake_body)
-
     local row = window:get_cursor_row()
     -- take 10 lines after cursor
     local lines = window:buffer():get_lines(row, row + 10)
+
+    -- * setup prediction to delete 5th line
     -- skip 5th line
     local modifed_lines = vim.iter(lines):enumerate():map(function(i, line)
         return i == 5 and {} or line
     end):flatten():totable()
-    messages.append("modifed_lines: ")
-    messages.append(inspect.inspect(modifed_lines, { pretty = true }))
+    -- messages.append("modifed_lines: ")
+    -- messages.append(inspect.inspect(modifed_lines, { pretty = true }))
 
+    -- wrap editable region in both
+    -- FYI not inserting cursor position b/c no model is involved (so its just stripped out)
     table.insert(lines, 1, tags.tag_edit_start)
     table.insert(lines, tags.tag_edit_end)
     table.insert(modifed_lines, 1, tags.tag_edit_start)
     table.insert(modifed_lines, tags.tag_edit_end)
 
 
-    -- do not parse the response body:
     local fake_response_body_raw = vim.json.encode({
         output_excerpt = table.concat(modifed_lines, "\n"),
         -- request_id = "foo",
     })
+    -- messages.header("fake_response")
+    -- messages.append(fake_response_body_raw)
 
     local fake_request_body = {
         input_excerpt = table.concat(lines, "\n"),
     }
-    messages.header("fake_response")
-    messages.append(fake_response_body_raw)
-    messages.header("fake_request")
-    messages.append(fake_request_body)
+    -- messages.header("fake_request")
+    -- messages.append(fake_request_body)
 
     display_fake_response_inner(window, _displayer, fake_request_body, fake_response_body_raw)
 end
