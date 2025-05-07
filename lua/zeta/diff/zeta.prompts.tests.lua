@@ -70,11 +70,13 @@ describe("zeta tags", function()
         should.be_equal(expected_with_tag, tagged)
     end)
 
-
     it("cursor tag should be removed without touching any other characters", function()
         local text = "function <|user_cursor_is_here|>add(a, b)\n    return a + b\nend"
         local expected = "function add(a, b)\n    return a + b\nend"
         local cleaned = tags.strip_user_cursor_tag(text)
         should.be_equal(expected, cleaned)
     end)
+
+
+    -- TODO! precise tests around start_of_file tag
 end)
