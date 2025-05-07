@@ -60,10 +60,18 @@ end
 function M.lualine()
     return {
         function()
-            return "ζeta"
+            if M.is_enabled() then
+                return "ζ"
+            else
+                return "ζ"
+            end
         end,
         color = function(section)
-            return { fg = M.is_enabled() and '#aa3355' or '#33aa88' }
+            if M.is_enabled() then
+                return "ZetaEnabled"
+            else
+                return "ZetaDisabled"
+            end
         end,
     }
 end
@@ -80,6 +88,9 @@ function M.toggle()
 end
 
 function M.setup()
+    vim.api.nvim_set_hl(0, "ZetaEnabled", { fg = '#33aa88' })
+    vim.api.nvim_set_hl(0, "ZetaDisabled", { fg = '#111111' })
+
     vim.api.nvim_create_user_command("ZetaTogglePredictions", function()
         local state = M.toggle()
         print("Predictions " .. (state and "enabled" or "disabled"))
