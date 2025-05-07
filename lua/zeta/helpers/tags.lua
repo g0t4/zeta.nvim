@@ -1,14 +1,14 @@
 local M = {}
 
-M.tag_edit_start = "<|editable_region_start|>"
-M.tag_edit_end = "<|editable_region_end|>"
+local tag_edit_start = "<|editable_region_start|>"
+local tag_edit_end = "<|editable_region_end|>"
 M.tag_cursor_here = "<|user_cursor_is_here|>"
 M.tag_start_of_file = "<|start_of_file|>"
 
 ---@param text string
 function M.get_editable_region(text)
-    local start_index = text:find(M.tag_edit_start)
-    local end_index = text:find(M.tag_edit_end)
+    local start_index = text:find(tag_edit_start)
+    local end_index = text:find(tag_edit_end)
     if start_index == nil
         or end_index == nil
         or start_index < 0
@@ -23,8 +23,8 @@ end
 ---FYI this edits the original table, IN PLACE
 ---@param lines string[]
 function M.wrap_editable_tags(lines)
-    table.insert(lines, 1, M.tag_edit_start)
-    table.insert(lines, M.tag_edit_end)
+    table.insert(lines, 1, tag_edit_start)
+    table.insert(lines, tag_edit_end)
     -- FYI took off returning the list so its clear this is an in-place edit (for now)
 end
 
