@@ -11,6 +11,7 @@
     "workspace.library": [
         "$VIMRUNTIME",
         "~/.local/share/nvim/lazy/rxlua",
-        // "~/repos/github/g0t4/dotfiles/.config/nvim/",
-    ]
+        // plugin dependencies checkouts
+        "~/repos/github/g0t4/devtools.nvim",
+    ],
 }
