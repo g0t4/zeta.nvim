@@ -200,24 +200,24 @@ function Displayer:on_response(request, response_body_stdout)
     -- TODO! come back to incremental diff presentation (not AIO)
     -- self.marks:diff_strike_lines(start_line, end_line)
 
-    local first_extmark_line = table.remove(extmark_lines, 1)
+    messages.header("extmark_lines")
+    for _, v in ipairs(extmark_lines) do
+        messages.append(vim.inspect(v))
+    end
+
 
     self.marks:set(select_excerpt_mark_id, {
-        start_line = request.details.editable_start_line,
+        start_line = start_line - 1, -- that way first virt_line is in line below == start_line
         start_col = 0,
-        virt_text = first_extmark_line,
-
+        -- virt_text = first_extmark_line, -- leave first line unchanged (its the line before the changes)
         id = select_excerpt_mark_id,
-        virt_lines = extmark_lines,
+        virt_lines = extmark_lines, -- all changes appear under the line above the diff
         virt_text_pos = "overlay",
     })
 
+    -- TODO captuer lines just to be safe
     -- delete original lines (undo on cancel)
-    vim.api.nvim_buf_set_lines(
-        self.window:buffer().buffer_number,
-        request.details.editable_start_line + 1,
-        request.details.editable_end_line + 1,
-        false, {})
+    self.window:buffer():replace_lines(start_line, end_line, {})
 
     self:resume_watcher()
 end
