@@ -63,7 +63,9 @@ function M.lualine()
             return "ζ"
         end,
         color = function(section)
-            return { fg = M.is_enabled() and '#333333' or '#33aa88' }
+            -- empty == use current component color, that's probably best
+            -- #33aa88 is a nice green if I wanna go that route again
+            return { fg = M.is_enabled() and '#333333' or '' }
         end,
     }
 end
