@@ -53,7 +53,7 @@ describe("zeta tags", function()
         should.be_equal(expected, parsed)
     end)
 
-    it("TODO cursor position should literally be between consecutive chars with nothing added, no padding", function()
+    it("cursor position should literally be between consecutive chars with nothing added, no padding", function()
         local text = "function add(a, b)\n    return a + b\nend"
         local cursor_position = 9 -- 0-indexed, 10 == 1-indexed (10th char)
         -- means 10th char has the cursor sitting on top of it (if block style cursor)
@@ -68,5 +68,13 @@ describe("zeta tags", function()
         local tagged = tags.insert_cursor_tag(text, cursor_position)
         local expected_with_tag = "function <|user_cursor_is_here|>add(a, b)\n    return a + b\nend"
         should.be_equal(expected_with_tag, tagged)
+    end)
+
+
+    it("cursor tag should be removed without touching any other characters", function()
+        local text = "function <|user_cursor_is_here|>add(a, b)\n    return a + b\nend"
+        local expected = "function add(a, b)\n    return a + b\nend"
+        local cleaned = tags.strip_user_cursor_tag(text)
+        should.be_equal(expected, cleaned)
     end)
 end)
