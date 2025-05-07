@@ -65,6 +65,7 @@ function M.lualine()
         color = function(section)
             -- empty == use current component color, that's probably best
             -- #33aa88 is a nice green if I wanna go that route again
+            -- PRN do I need to match the inverse default color for when it's disabled?
             return { fg = M.is_enabled() and '#333333' or '' }
         end,
     }
