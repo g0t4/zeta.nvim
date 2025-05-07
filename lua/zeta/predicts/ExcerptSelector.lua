@@ -141,11 +141,8 @@ function ExcerptSelector:excerpt_at_position(cursor_row, cursor_column)
     --   cursor_column + 1 is right of cursor position
     --   physically, the cursor shows on top of the cursor_column + 1 char
 
-    -- FYI string:sub() is 1-indexed and END-INCLUSIVE
-    local tagged_cursor_line = original_cursor_line:sub(1, cursor_column)
-        .. tags.tag_cursor_here
-        .. original_cursor_line:sub(cursor_column + 1) -- cursor_column is in the prefix before cursor tag, wouldn't want it to repeat here!
-    -- tag doesn't replace any content in the line, effectively sits between chars
+    local tagged_cursor_line = tags.insert_cursor_tag(original_cursor_line, cursor_column)
+
     text_lines[cursor_offset_row_1indexed] = tagged_cursor_line
 
     tags.wrap_editable_tags(text_lines)

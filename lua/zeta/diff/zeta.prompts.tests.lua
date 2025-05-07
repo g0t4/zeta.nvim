@@ -54,6 +54,19 @@ describe("zeta tags", function()
     end)
 
     it("TODO cursor position should literally be between consecutive chars with nothing added, no padding", function()
+        local text = "function add(a, b)\n    return a + b\nend"
+        local cursor_position = 9 -- 0-indexed, 10 == 1-indexed (10th char)
+        -- means 10th char has the cursor sitting on top of it (if block style cursor)
+        -- when you use thin line, the cursor is on the let side of the block
+        -- so when using block just remember the insertion point is to your left
+        -- in vim:
+        --   i = insert mode (first char is right under the cursor block)
+        --   a = append mode (first char is right after the cursor block)
+        -- TODO double check how zed does this
+        -- TODO AND double check I didn't screw up the offsets! in 0/1 indexing (MADNESS)
 
+        local tagged = tags.insert_cursor_tag(text, cursor_position)
+        local expected_with_tag = "function <|user_cursor_is_here|>add(a, b)\n    return a + b\nend"
+        should.be_equal(expected_with_tag, tagged)
     end)
 end)
