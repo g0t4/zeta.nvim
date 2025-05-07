@@ -4,19 +4,20 @@ local tag_edit_start = "<|editable_region_start|>"
 local tag_edit_end = "<|editable_region_end|>"
 -- TODO move code here to add/strip cursor position:
 M.tag_cursor_here = "<|user_cursor_is_here|>"
+-- TODO use start of file tag!
 local tag_start_of_file = "<|start_of_file|>"
 
 ---@param text string
 function M.get_editable_region(text)
-    local start_index = text:find(tag_edit_start)
-    local end_index = text:find(tag_edit_end)
+    local start_index = text:find(tag_edit_start .. "\n")
+    local end_index = text:find("\n" .. tag_edit_end)
     if start_index == nil
         or end_index == nil
         or start_index < 0
         or end_index < start_index then
         return nil
     end
-    start_index = start_index + #M.tag_edit_start
+    start_index = start_index + (#tag_edit_start + 1)
     end_index = end_index - 1
     return text:sub(start_index, end_index)
 end
