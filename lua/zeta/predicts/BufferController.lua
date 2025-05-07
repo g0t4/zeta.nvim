@@ -73,7 +73,10 @@ function BufferController0Indexed:get_node_at_position(row, column)
     --   and convenient (i.e. class tracks buffer number)
 end
 
-function BufferController0Indexed:replace_lines(start_row, end_row, lines)
+---@param start_row integer 0-indexed, set start=end to insert new_lines
+---@param end_row integer 0-indexed, end-EXCLUSIV
+---@param new_lines string[]
+function BufferController0Indexed:replace_lines(start_row, end_row, new_lines)
     if end_row >= self:num_lines() then
         -- FYI this happens when testing fake prediction if you trigger it near the end of the buffer
         --   and the fake prediction is longer than the rest of the buffer
@@ -83,7 +86,7 @@ function BufferController0Indexed:replace_lines(start_row, end_row, lines)
     vim.api.nvim_buf_set_text(self.buffer_number,
         start_row, 0,
         end_row, 0,
-        lines)
+        new_lines)
 end
 
 function BufferController0Indexed:num_lines()
