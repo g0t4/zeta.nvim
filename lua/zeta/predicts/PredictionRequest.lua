@@ -44,27 +44,15 @@ local function build_request(request)
         messages.append("excerpt not found, aborting...")
         return nil
     end
-    messages.append("excerpt:")
-    messages.append(excerpt)
 
     local num_lines         = buffer:num_lines()
     local end_after_line    = math.min(row + 3, num_lines)
     local start_before_line = math.max(excerpt.editable_start_line - 3, 0)
 
-    -- TODO! TAGS now
-    -- -- insert cursor position tag
-    -- local editable = tags.mark_editable_region(excerpt, row, col)
-    -- -- TODO
-    -- messages.header("editable:")
-    -- messages.append(inspect(editable))
-    --
-    -- local editable_text = table.concat(editable, "\n")
-    -- messages.header("editable_text:")
-    -- messages.append(editable_text)
-    --
-    -- TODO prune large, initial editable region (func)
-    -- TODO get surrounding context
+    -- TODO add expanded content to the excerpt for the model to have more context
+    --  right now I only send the editable region (into excerpt.text)
     -- TODO handle start of file tag
+    -- TODO prune large, initial editable region (func)
 
     local body              = {
         input_excerpt = excerpt.text,
