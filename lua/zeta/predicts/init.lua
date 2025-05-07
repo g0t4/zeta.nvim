@@ -70,6 +70,22 @@ function display_fake_prediction_del_5th_line_after_cursor(window, _displayer)
     table.insert(modifed_lines, 1, tags.tag_edit_start)
     table.insert(modifed_lines, tags.tag_edit_end)
 
+    -- FYI practice here
+    -- 1
+    -- 2
+    -- 3
+    -- 4
+    -- 5
+    -- 6
+    -- 7
+    -- 8
+    -- 9
+    -- 10
+    -- 11
+    -- 12
+    -- 13
+    -- 14
+    -- 15
 
     local fake_response_body_raw = vim.json.encode({
         output_excerpt = table.concat(modifed_lines, "\n"),
