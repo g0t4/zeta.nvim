@@ -201,15 +201,18 @@ function Displayer:on_response(request, response_body_stdout)
     -- self.marks:diff_strike_lines(start_line, end_line)
 
     -- insert extra new line for extmarks at start line
-    vim.api.nvim_buf_set_lines(
-        self.window:buffer().buffer_number,
-        request.details.editable_start_line,
-        request.details.editable_start_line,
-        false, { "", "" })
+    -- vim.api.nvim_buf_set_lines(
+    --     self.window:buffer().buffer_number,
+    --     request.details.editable_start_line,
+    --     request.details.editable_start_line,
+    --     false, { "" })
+
+    local first_extmark_line = table.remove(extmark_lines, 1)
 
     self.marks:set(select_excerpt_mark_id, {
         start_line = request.details.editable_start_line,
         start_col = 0,
+        virt_text = first_extmark_line,
 
         id = select_excerpt_mark_id,
         virt_lines = extmark_lines,
