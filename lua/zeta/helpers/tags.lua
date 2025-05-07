@@ -2,8 +2,9 @@ local M = {}
 
 local tag_edit_start = "<|editable_region_start|>"
 local tag_edit_end = "<|editable_region_end|>"
+-- TODO move code here to add/strip cursor position:
 M.tag_cursor_here = "<|user_cursor_is_here|>"
-M.tag_start_of_file = "<|start_of_file|>"
+local tag_start_of_file = "<|start_of_file|>"
 
 ---@param text string
 function M.get_editable_region(text)
