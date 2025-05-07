@@ -193,30 +193,31 @@ function Displayer:on_response(request, response_body_stdout)
 
     self:pause_watcher()
 
-    self.marks:diff_strike_lines(start_line, end_line)
+    -- TODO! come back to incremental diff presentation (not AIO)
+    -- self.marks:diff_strike_lines(start_line, end_line)
 
-    -- -- insert extra new line for extmarks at start line
-    -- vim.api.nvim_buf_set_lines(
-    --     self.window:buffer().buffer_number,
-    --     request.details.editable_start_line,
-    --     request.details.editable_start_line,
-    --     false, { "", "" })
+    -- insert extra new line for extmarks at start line
+    vim.api.nvim_buf_set_lines(
+        self.window:buffer().buffer_number,
+        request.details.editable_start_line,
+        request.details.editable_start_line,
+        false, { "", "" })
 
-    -- self.marks:set(select_excerpt_mark_id, {
-    --     start_line = request.details.editable_start_line,
-    --     start_col = 0,
-    --
-    --     id = select_excerpt_mark_id,
-    --     virt_lines = extmark_lines,
-    --     virt_text_pos = "overlay",
-    -- })
+    self.marks:set(select_excerpt_mark_id, {
+        start_line = request.details.editable_start_line,
+        start_col = 0,
 
-    -- -- delete original lines (undo on cancel)
-    -- vim.api.nvim_buf_set_lines(
-    --     self.window:buffer().buffer_number,
-    --     request.details.editable_start_line + 1,
-    --     request.details.editable_end_line + 1,
-    --     false, {})
+        id = select_excerpt_mark_id,
+        virt_lines = extmark_lines,
+        virt_text_pos = "overlay",
+    })
+
+    -- delete original lines (undo on cancel)
+    vim.api.nvim_buf_set_lines(
+        self.window:buffer().buffer_number,
+        request.details.editable_start_line + 1,
+        request.details.editable_end_line + 1,
+        false, {})
 
     self:resume_watcher()
 end
