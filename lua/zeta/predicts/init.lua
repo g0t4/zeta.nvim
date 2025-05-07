@@ -65,10 +65,8 @@ function display_fake_prediction_del_5th_line_after_cursor(window, _displayer)
 
     -- wrap editable region in both
     -- FYI not inserting cursor position b/c no model is involved (so its just stripped out)
-    table.insert(lines, 1, tags.tag_edit_start)
-    table.insert(lines, tags.tag_edit_end)
-    table.insert(modifed_lines, 1, tags.tag_edit_start)
-    table.insert(modifed_lines, tags.tag_edit_end)
+    lines = tags.wrap_editable_tags(lines)
+    modifed_lines = tags.wrap_editable_tags(modifed_lines)
 
     -- FYI practice here
     -- 1

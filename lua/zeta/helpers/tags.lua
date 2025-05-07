@@ -20,6 +20,14 @@ function M.get_editable_region(text)
     return text:sub(start_index, end_index)
 end
 
+---@param lines string[]
+---@return string[]
+function M.wrap_editable_tags(lines)
+    table.insert(lines, 1, M.tag_edit_start)
+    table.insert(lines, M.tag_edit_end)
+    return lines
+end
+
 -- function M.get_position_of_user_cursor(text)
 --     -- TODO what format do I need this to be in?
 --     local start_index = text:find(M.tag_cursor_here)
