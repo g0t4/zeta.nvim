@@ -101,10 +101,10 @@ function Displayer:on_response(request, response_body_stdout)
     end
 
     local original = request.details.body.input_excerpt or ""
-    -- messages.header("input_excerpt:")
-    -- messages.append(original)
-    -- messages.header("output_excerpt:")
-    -- messages.append(rewritten)
+    messages.header("input_excerpt:")
+    messages.append(original)
+    messages.header("output_excerpt:")
+    messages.append(rewritten)
 
     original_editable = tags.get_editable_region(original) or ""
     -- PRN use cursor position? i.e. check if cursor has moved since prediction requested (might not need this actually)
@@ -155,6 +155,8 @@ function Displayer:on_response(request, response_body_stdout)
                 end
             else
                 local splits = vim.split(text, "\n")
+                messages.header("splits:")
+                messages.append(inspect(splits))
                 for i, piece in ipairs(splits) do
                     -- FYI often v will be empty (i.e. a series of newlines)... do not exclude these empty lines!
                     local len_text = #piece
@@ -173,6 +175,17 @@ function Displayer:on_response(request, response_body_stdout)
         end
         return accum
     end)
+
+    -- TODO! double check logic that this is ok to do,
+    -- this fixes extra line issue... and it seems right to remove this
+    -- review fold logic above, meticulously
+    -- TODO even better, write a unit test for this:
+    --
+    -- check if last group is empty, remove if so
+    local last_line = extmark_lines[#extmark_lines]
+    if #last_line < 1 then
+        table.remove(extmark_lines, #extmark_lines)
+    end
 
     -- messages.header("extmark_lines")
     -- for _, v in ipairs(extmark_lines) do

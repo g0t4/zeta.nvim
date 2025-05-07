@@ -23,6 +23,7 @@ function M.get_editable_region(text)
 
     start_index = start_index + #start_search_for
     end_index = end_index - 1
+    -- FYI string:sub() is 1-indexed and END-INCLUSIVE
     return text:sub(start_index, end_index)
 end
 
