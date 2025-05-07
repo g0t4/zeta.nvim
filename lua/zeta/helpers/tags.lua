@@ -20,12 +20,12 @@ function M.get_editable_region(text)
     return text:sub(start_index, end_index)
 end
 
+---FYI this edits the original table, IN PLACE
 ---@param lines string[]
----@return string[]
 function M.wrap_editable_tags(lines)
     table.insert(lines, 1, M.tag_edit_start)
     table.insert(lines, M.tag_edit_end)
-    return lines
+    -- FYI took off returning the list so its clear this is an in-place edit (for now)
 end
 
 -- function M.get_position_of_user_cursor(text)

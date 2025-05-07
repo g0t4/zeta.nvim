@@ -148,9 +148,7 @@ function ExcerptSelector:excerpt_at_position(cursor_row, cursor_column)
     -- tag doesn't replace any content in the line, effectively sits between chars
     text_lines[cursor_offset_row_1indexed] = tagged_cursor_line
 
-    -- TODO confirm if supposed to insert on separate line or right at start of the editable region
-    table.insert(text_lines, 1, tags.tag_edit_start)
-    table.insert(text_lines, tags.tag_edit_end)
+    tags.wrap_editable_tags(text_lines)
 
     -- TODO make sure lines are joined correctly...
     --   that w/ serialization we get \n as appropriate (vs new lines)... not sure just check what is needed for model's template and what I have here (for fake and real requests)

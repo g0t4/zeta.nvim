@@ -32,7 +32,7 @@ describe("zeta tags", function()
             "end",
         }
 
-        local wrapped = tags.wrap_editable_tags(lines)
+        tags.wrap_editable_tags(lines)
         local expected = {
             "<|editable_region_start|>",
             "function add(a, b)",
@@ -40,7 +40,7 @@ describe("zeta tags", function()
             "end",
             "<|editable_region_end|>",
         }
-        should.be_same(expected, wrapped)
+        should.be_same(expected, lines)
     end)
 
     it("editable end tag goes on line below excerpt text", function()
