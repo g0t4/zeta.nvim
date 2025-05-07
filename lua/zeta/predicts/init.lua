@@ -162,7 +162,8 @@ function M.setup()
         -- FYI once this is activated, I can use other keymaps to accept/cancel/highlight/etc
         watcher   = {
             paused = false,
-            window = WindowController0Indexed:new_from_current_window()
+            window = WindowController0Indexed:new_from_current_window(),
+            unwatch = function() end
         }
         -- set here so we can use with accepter
         displayer = Displayer:new(watcher)

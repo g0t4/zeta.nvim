@@ -86,4 +86,27 @@ function ExtmarksSet:highlight_lines(opts)
         opts)
 end
 
+-- ok I am headed in direction of breaking the diff out into a series of changes to accept/reject
+-- I might even try to color over the existing text (that was preserved and strike out removed/insert green for now.. text)
+-- I doubt I will go so far as to hide all but the current "chunk" of the diff... but I might do that too... I suppose that might make it easier to show the diff chunk by chunk?
+
+local hl_strike = "zeta-strike"
+vim.api.nvim_set_hl(0, hl_strike, {
+    strikethrough = true,
+})
+
+--- this strikes an entire line range, as if removed in a diff
+--- @param start_line integer
+--- @param end_line integer # end-exclusive
+function ExtmarksSet:strike_lines(start_line, end_line)
+    return vim.api.nvim_buf_set_extmark(
+        self.buffer_number, self.namespace_id,
+        start_line, 0,
+        {
+            hl_group = { "DiffDelete", hl_strike },
+            end_line = end_line,
+            end_col = 0,
+        })
+end
+
 return ExtmarksSet
