@@ -193,7 +193,7 @@ function Displayer:on_response(request, response_body_stdout)
 
     self:pause_watcher()
 
-    self.marks:strike_lines(start_line, end_line)
+    self.marks:diff_strike_lines(start_line, end_line)
 
     -- -- insert extra new line for extmarks at start line
     -- vim.api.nvim_buf_set_lines(

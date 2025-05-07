@@ -98,7 +98,7 @@ vim.api.nvim_set_hl(0, hl_strike, {
 --- this strikes an entire line range, as if removed in a diff
 --- @param start_line integer
 --- @param end_line integer # end-exclusive
-function ExtmarksSet:strike_lines(start_line, end_line)
+function ExtmarksSet:diff_strike_lines(start_line, end_line)
     return vim.api.nvim_buf_set_extmark(
         self.buffer_number, self.namespace_id,
         start_line, 0,
