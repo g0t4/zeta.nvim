@@ -26,7 +26,7 @@ local toggle_highlighting = false
 
 ---@param window WindowController0Indexed
 ---@param displayer Displayer
-local function display_fake_response(window, displayer)
+local function display_fake_response(window, _displayer)
     -- FYI not using watcher.window b/c I want this to work even when I disabled the watcher event handlers
 
     local fake_stdout  = files.read_example("01_response.json")
@@ -40,7 +40,7 @@ local function display_fake_response(window, displayer)
         editable_end_line = row + 10, -- right now this is not used
     }
     local fake_request = PredictionRequest:new_fake_request(window, fake_details)
-    displayer:on_response(fake_request, fake_stdout, watcher)
+    _displayer:on_response(fake_request, fake_stdout)
 end
 
 ---@param window WindowController0Indexed
@@ -67,7 +67,7 @@ local function trigger_prediction(window)
     current_request = PredictionRequest:new(window, has_treesitter)
 
     current_request:send(function(_request, stdout)
-        displayer:on_response(_request, stdout, watcher)
+        displayer:on_response(_request, stdout)
         -- clear request once it's done:
         current_request = nil
     end)
@@ -115,7 +115,7 @@ function M.start_watcher(buffer_number)
         cancel_current_request,
         immediate_on_cursor_moved
     )
-    displayer = Displayer:new(watcher.window)
+    displayer = Displayer:new(watcher)
 end
 
 function M.setup_events()
@@ -165,7 +165,7 @@ function M.setup()
             window = WindowController0Indexed:new_from_current_window()
         }
         -- set here so we can use with accepter
-        displayer = Displayer:new(watcher.window)
+        displayer = Displayer:new(watcher)
         display_fake_response(watcher.window, displayer)
     end, { desc = "demo fake request/response" })
 

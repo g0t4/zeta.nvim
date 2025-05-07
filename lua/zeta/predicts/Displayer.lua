@@ -14,11 +14,12 @@ local Displayer = {}
 Displayer.__index = Displayer
 
 local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
----@param window WindowController0Indexed
-function Displayer:new(window)
+---@param watcher WindowWatcher
+function Displayer:new(watcher)
     self = setmetatable({}, Displayer)
-    self.window = window
-    self.marks = ExtmarksSet:new(window:buffer().buffer_number, prediction_namespace)
+    self.window = watcher.window
+    self.watcher = watcher
+    self.marks = ExtmarksSet:new(self.window:buffer().buffer_number, prediction_namespace)
     self.rewritten_editable = nil
     return self
 end
@@ -41,7 +42,33 @@ end
 local select_excerpt_mark_id = 11
 
 function Displayer:clear()
+    self:pause_watcher()
+
+    -- reverse physical changes to buffer
+    --   put back lines removed
+    -- remove extmarks
     self.marks:clear_all()
+
+    self:resume_watcher()
+end
+
+function Displayer:pause_watcher()
+    self.watcher.paused = true
+end
+
+function Displayer:resume_watcher()
+    -- is a delay really necessary here? I noticed a new request fire when I synchronously reset paused here
+    --   TODO confirm the firing was b/c of unpausing too early
+    --   I suspect modifying the lines had a slight lag and so I unpaused before the CursorMovement event fired
+    --   ideally I could do something more precise to disable the CursorMoved event
+    --     IIRC ask-openai had this same issue and I had to suppress the next event instance in that case!
+    --     and that actually worked well
+    --     I could compare buffer state after my changes to show the diff vs any incoming change events to see if its just my changes triggering the event?
+    --
+    -- TODO dial in the appropriate delay, can I just use schedule w/o delay amount?
+    vim.defer_fn(function()
+        self.watcher.paused = false
+    end, 1000)
 end
 
 -- * highlight groups (for now use builtin styles)
@@ -59,8 +86,7 @@ end
 
 ---@param request PredictionRequest
 ---@param response_body_stdout string
----@param watcher WindowWatcher
-function Displayer:on_response(request, response_body_stdout, watcher)
+function Displayer:on_response(request, response_body_stdout)
     self.current_request = request
     self.current_response_body_stdout = response_body_stdout
 
@@ -163,7 +189,7 @@ function Displayer:on_response(request, response_body_stdout, watcher)
     --   OR, popup window w/ diff?
 
 
-    watcher.paused = true
+    self:pause_watcher()
 
     -- insert extra new line for extmarks at start line
     vim.api.nvim_buf_set_lines(
@@ -188,7 +214,7 @@ function Displayer:on_response(request, response_body_stdout, watcher)
         request.details.editable_end_line + 1,
         false, {})
 
-    watcher.paused = false
+    self:resume_watcher()
 end
 
 return Displayer
