@@ -267,7 +267,11 @@ function M.setup()
 
     -- require("zeta.predicts.miscTsGotoMaps").setup()
 
-    -- M.setup_events()
+    local config = require("zeta.config")
+    if config.is_enabled() then
+        messages.append("predictions enabled")
+        M.setup_events()
+    end
 end
 
 return M
