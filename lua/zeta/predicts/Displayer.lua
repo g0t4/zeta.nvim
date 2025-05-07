@@ -210,7 +210,7 @@ function Displayer:on_response(request, response_body_stdout)
 
     self:pause_watcher()
 
-    -- TODO! come back to incremental diff presentation (not AIO)
+    -- ?? switch to incremental diff presentation (not AIO), and with it partial accept/reject?!
     -- self.marks:diff_strike_lines(start_line, end_line)
 
     messages.header("extmark_lines")
@@ -228,7 +228,9 @@ function Displayer:on_response(request, response_body_stdout)
         virt_text_pos = "overlay",
     })
 
-    -- TODO captuer lines just to be safe
+    -- TODO capture lines just to be safe
+    -- TODO! on accept accept the new lines (pause before/after too)
+    -- TODO on reject put them back
     -- delete original lines (undo on cancel)
     self.window:buffer():replace_lines(start_line, end_line, {})
 
