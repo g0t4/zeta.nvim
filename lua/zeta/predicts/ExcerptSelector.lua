@@ -12,8 +12,16 @@ ExcerptSelector.__index = ExcerptSelector
 function ExcerptSelector:new(buffer)
     self = setmetatable(self, ExcerptSelector)
     self.buffer = buffer
+    self.has_treesitter = has_treesitter(buffer.buffer_number)
     return self
 end
+
+function has_treesitter(buffer_number)
+    return pcall(vim.treesitter.get_parser, buffer_number)
+end
+
+-- local all_lines = buffer:get_all_lines()
+-- error("TODO finish selecting lines w/o treesitter, using line range")
 
 ---@param node TSNode
 ---@param filetype string
@@ -75,7 +83,7 @@ end
 ---@param row integer 0-indexed
 ---@param column integer 0-indexed
 ---@return integer|nil, integer|nil # start_line, end_line 0-indexed (end exclusive?)
-function ExcerptSelector:line_range_at_position(row, column)
+function ExcerptSelector:line_range_with_treesitter(row, column)
     local node = self.buffer:get_node_at_position(row, column)
     if node == nil then
         -- FYI can happen when first enter a buffer (IIAC treesitter is not ready?)
@@ -105,7 +113,13 @@ end
 ---@param cursor_column integer 0-indexed
 ---@return Excerpt|nil
 function ExcerptSelector:excerpt_at_position(cursor_row, cursor_column)
-    local editable_start_line, editable_end_line = self:line_range_at_position(cursor_row, cursor_column)
+    local editable_start_line, editable_end_line
+    if self.has_treesitter then
+        editable_start_line, editable_end_line = self:line_range_with_treesitter(cursor_row, cursor_column)
+    else
+        -- TODO not treesitter
+    end
+
     if editable_start_line == nil or editable_end_line == nil then
         return nil
     end

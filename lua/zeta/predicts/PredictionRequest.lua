@@ -30,13 +30,6 @@ local function build_request(request)
     local window = request.window
     local buffer = window:buffer()
 
-    if not request.has_treesitter then
-        -- use a line range "selector"
-        -- local all_lines = buffer:get_all_lines()
-        -- TODO take up to X lines initially... later measure chars as you expand out
-        error("TODO finish selecting lines w/o treesitter, using line range")
-    end
-
     local selector = ExcerptSelector:new(buffer)
     local row, col = window:get_cursor_position()
     local excerpt = selector:excerpt_at_position(row, col)
@@ -83,9 +76,8 @@ function PredictionRequest:cancel()
 end
 
 ---@param window WindowController0Indexed
-function PredictionRequest:new(window, has_treesitter)
+function PredictionRequest:new(window)
     self = setmetatable({}, PredictionRequest)
-    self.has_treesitter = has_treesitter
     -- TODO rename details and/or re-org it
     self.window = window
     self.details = build_request(self)

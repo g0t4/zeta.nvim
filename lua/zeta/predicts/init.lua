@@ -21,7 +21,6 @@ local watcher = nil
 local displayer = nil
 ---@type PredictionRequest|nil
 local current_request = nil
-local has_treesitter = false
 local toggle_highlighting = false
 
 ---@param window WindowController0Indexed
@@ -64,7 +63,7 @@ local function trigger_prediction(window)
     -- messages.append("requesting...")
 
     -- PRN... a displayer is tied to a request... hrm...
-    current_request = PredictionRequest:new(window, has_treesitter)
+    current_request = PredictionRequest:new(window)
 
     current_request:send(function(_request, stdout)
         displayer:on_response(_request, stdout)
@@ -81,7 +80,7 @@ local function immediate_on_cursor_moved(window)
     end
 
     -- FYI this is not for real predictions so do not set it as prediction request
-    local request = PredictionRequest:new(window, has_treesitter)
+    local request = PredictionRequest:new(window)
     local details = request.details
 
     highlighter:highlight_lines(details)
@@ -107,7 +106,6 @@ function M.start_watcher(buffer_number)
 
     local window_id = vim.api.nvim_get_current_win()
     -- detect treesitter upfront (once)
-    has_treesitter = pcall(vim.treesitter.get_parser, buffer_number)
     watcher = WindowWatcher:new(window_id, buffer_number, "zeta-prediction")
     -- messages.append("starting watcher: " .. tostring(watcher.window:buffer():file_name()))
     watcher:watch(
