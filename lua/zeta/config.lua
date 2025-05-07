@@ -60,10 +60,10 @@ end
 function M.lualine()
     return {
         function()
-            return "ζeta"
+            return "ζ"
         end,
         color = function(section)
-            return { fg = M.is_enabled() and '#aa3355' or '#33aa88' }
+            return { fg = M.is_enabled() and '#333333' or '#33aa88' }
         end,
     }
 end
