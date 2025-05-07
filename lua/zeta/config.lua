@@ -62,7 +62,8 @@ function M.lualine()
         function()
             return "ζ"
         end,
-        color = function(section)
+        color = function()
+            -- FYI can take section param to know which section this is in
             -- empty == use current component color, that's probably best
             -- #33aa88 is a nice green if I wanna go that route again
             -- PRN do I need to match the inverse default color for when it's disabled?
