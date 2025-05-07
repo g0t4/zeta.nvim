@@ -7,7 +7,7 @@ local should = require("zeta.helpers.should")
 --   - prompt parsing
 
 describe("zeta tags", function()
-    it("editable start and end tags are put on their own lines", function()
+    it("adding editable start and end tags are put on their own lines", function()
         -- * start tag:
         -- https://github.com/zed-industries/zed/blob/5872276511/crates/zeta/src/input_excerpt.rs#L86
         --   writeln!(prompt, "{EDITABLE_REGION_START_MARKER}").unwrap();
@@ -43,7 +43,14 @@ describe("zeta tags", function()
         should.be_same(expected, lines)
     end)
 
-    it("editable end tag goes on line below excerpt text", function()
+    it("parsing editable region removes the newline associated with edit tags", function()
+        local text =
+        "<|editable_region_start|>\nfunction add(a, b)\n    return a + b\nend\n<|editable_region_end|>"
+
+        local expected = "function add(a, b)\n    return a + b\nend"
+
+        local parsed = tags.get_editable_region(text)
+        should.be_equal(expected, parsed)
     end)
 
     it("TODO cursor position should literally be between consecutive chars with nothing added, no padding", function()
