@@ -44,9 +44,9 @@ local select_excerpt_mark_id = 11
 function Displayer:clear()
     self:pause_watcher()
 
-    -- reverse physical changes to buffer
-    --   put back lines removed
-    -- remove extmarks
+    -- TODO! reverse physical changes to buffer
+    -- TODO! put back lines removed
+
     self.marks:clear_all()
 
     self:resume_watcher()
