@@ -7,7 +7,7 @@ local PredictionRequest = require("zeta.predicts.PredictionRequest")
 local Displayer = require("zeta.predicts.Displayer")
 local Accepter = require("zeta.predicts.Accepter")
 local ExcerptHighlighter = require("zeta.predicts.ExcerptHighlighter")
-
+local tags = require("zeta.helpers.tags")
 
 local M = {}
 
@@ -24,22 +24,72 @@ local current_request = nil
 local toggle_highlighting = false
 
 ---@param window WindowController0Indexed
----@param displayer Displayer
-local function display_fake_response(window, _displayer)
+---@param _displayer Displayer
+function display_fake_response(window, _displayer)
     -- FYI not using watcher.window b/c I want this to work even when I disabled the watcher event handlers
 
-    local fake_stdout  = files.read_example("01_response.json")
-    local fake_body    = files.read_example_json("01_request.json")
+    local fake_stdout = files.read_example("01_response.json")
+    local fake_body   = files.read_example_json("01_request.json")
+    display_fake_response_inner(window, _displayer, fake_body, fake_stdout)
+end
+
+---@param window WindowController0Indexed
+---@param _displayer Displayer
+function display_fake_response_inner(window, _displayer, fake_request_body, fake_response_body)
     local row          = window:get_cursor_row()
     local fake_details = {
-        body = fake_body,
+        body = fake_request_body,
 
         -- make up a position for now using cursor in current file, doesn't matter what that file has in it
         editable_start_line = row,
         editable_end_line = row + 10, -- right now this is not used
     }
     local fake_request = PredictionRequest:new_fake_request(window, fake_details)
-    _displayer:on_response(fake_request, fake_stdout)
+    _displayer:on_response(fake_request, fake_response_body)
+end
+
+---@param window WindowController0Indexed
+---@param _displayer Displayer
+function display_fake_prediction_del_5th_line_after_cursor(window, _displayer)
+    -- FYI examples for hacking together new fake scenario
+    local fake_stdout = files.read_example("01_response.json")
+    messages.header("fake_stdout")
+    messages.append(fake_stdout)
+    local fake_body = files.read_example_json("01_request.json")
+    messages.header("fake_body")
+    messages.append(fake_body)
+
+    local row = window:get_cursor_row()
+    -- take 10 lines after cursor
+    local lines = window:buffer():get_lines(row, row + 10)
+    -- skip 5th line
+    local modifed_lines = vim.iter(lines):enumerate():map(function(i, line)
+        return i == 5 and {} or line
+    end):flatten():totable()
+    messages.append("modifed_lines: ")
+    messages.append(inspect.inspect(modifed_lines, { pretty = true }))
+
+    table.insert(lines, 1, tags.tag_edit_start)
+    table.insert(lines, tags.tag_edit_end)
+    table.insert(modifed_lines, 1, tags.tag_edit_start)
+    table.insert(modifed_lines, tags.tag_edit_end)
+
+
+    -- do not parse the response body:
+    local fake_response_body_raw = vim.json.encode({
+        output_excerpt = table.concat(modifed_lines, "\n"),
+        -- request_id = "foo",
+    })
+
+    local fake_request_body = {
+        input_excerpt = table.concat(lines, "\n"),
+    }
+    messages.header("fake_response")
+    messages.append(fake_response_body_raw)
+    messages.header("fake_request")
+    messages.append(fake_request_body)
+
+    display_fake_response_inner(window, _displayer, fake_request_body, fake_response_body_raw)
 end
 
 ---@param window WindowController0Indexed
@@ -165,7 +215,8 @@ function M.setup()
         }
         -- set here so we can use with accepter
         displayer = Displayer:new(watcher)
-        display_fake_response(watcher.window, displayer)
+        -- display_fake_response(watcher.window, displayer)
+        display_fake_prediction_del_5th_line_after_cursor(watcher.window, displayer)
     end, { desc = "demo fake request/response" })
 
     -- * toggle [h]ighlighting excerpt as cursor moves
@@ -207,7 +258,7 @@ function M.setup()
 
     -- require("zeta.predicts.miscTsGotoMaps").setup()
 
-    M.setup_events()
+    -- M.setup_events()
 end
 
 return M

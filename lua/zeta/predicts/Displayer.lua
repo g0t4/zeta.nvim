@@ -113,6 +113,10 @@ function Displayer:on_response(request, response_body_stdout)
     original_editable = parser.strip_user_cursor_tag(original_editable)
 
     self.rewritten_editable = parser.get_editable_region(rewritten) or ""
+    messages.header("original_editable:")
+    messages.append(original_editable)
+    messages.header("rewritten_editable:")
+    messages.append(self.rewritten_editable)
 
     local diff = combined.combined_diff(original_editable, self.rewritten_editable)
     -- messages.header("diff:")
