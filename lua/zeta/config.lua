@@ -57,6 +57,17 @@ function M.save()
     if config then save_config(config) end
 end
 
+function M.lualine()
+    return {
+        function()
+            return "ζeta"
+        end,
+        color = function(section)
+            return { fg = M.is_enabled() and '#aa3355' or '#33aa88' }
+        end,
+    }
+end
+
 function M.is_enabled()
     return M.get().predictions_enabled
 end
