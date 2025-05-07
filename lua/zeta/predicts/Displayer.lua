@@ -3,6 +3,7 @@ local combined = require("zeta.diff.combined")
 local messages = require("devtools.messages")
 local inspect = require("devtools.inspect")
 local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
+local Accepter = require("zeta.predicts.Accepter")
 
 ---@class Displayer
 ---@field window WindowController0Indexed
@@ -237,4 +238,49 @@ function Displayer:on_response(request, response_body_stdout)
     self:resume_watcher()
 end
 
+
+-- TODO revisit one-off keymaps for duration of prediction display
+--
+-- local function find_existing_mapping(mode, lhs)
+--     return vim.iter(vim.keymap.get_keys({ mode = mode }))
+--         :filter(function(map)
+--             return map.lhs == lhs
+--         end)
+--         :totable()
+-- end
+--
+-- function Displayer:set_keymaps()
+--     self.orig_i_tab = find_existing_mapping("i", "<Tab>")
+--     self.orig_n_tab = find_existing_mapping("n", "<Tab>")
+--     self.orig_i_esc = find_existing_mapping("i", "<Esc>")
+--     self.orig_n_esc = find_existing_mapping("n", "<Esc>")
+--
+--     vim.keymap.set({ 'i', 'n' }, '<Tab>', function()
+--         vim.schedule(function()
+--             messages.append("Accepting")
+--             Accepter:new(self.watcher.window):accept(self)
+--         end)
+--     end, { expr = true, buffer = true })
+--
+--     vim.keymap.set({ 'i', 'n' }, '<Esc>', function()
+--         vim.schedule(function()
+--             messages.append("Rejecting")
+--             Accepter:new(self.watcher.window):reject(self)
+--         end)
+--     end, { expr = true, buffer = true })
+--
+-- end
+--
+-- function Displayer:remove_keymaps()
+--
+-- end
+--
+--  TODO restore original keymaps when done
+-- for _, map in ipairs(original_maps) do
+--   vim.keymap.set('n', map.lhs, map.rhs, map)
+--   -- TODO do for all origs... not sure this is wise, deal with it later
+--   -- TODO look at how llama.vim handles this
+--   -- better yet, just map tab to accept always...?
+-- end
+--
 return Displayer
