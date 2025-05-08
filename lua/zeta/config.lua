@@ -1,5 +1,5 @@
--- lua/zeta/config.lua
 local M = {}
+
 local config = nil
 
 local json = vim.fn.json_encode and vim.fn.json_decode and {
@@ -10,9 +10,9 @@ local json = vim.fn.json_encode and vim.fn.json_decode and {
 local config_path = vim.fn.stdpath("data") .. "/zeta/config.json"
 
 local function file_exists(path)
-    local f = io.open(path, "r")
-    if f then
-        f:close()
+    local file = io.open(path, "r")
+    if file then
+        file:close()
         return true
     end
     return false
@@ -39,10 +39,10 @@ local function load_config()
 end
 
 local function save_config(data)
-    local f = io.open(config_path, "w")
-    if f then
-        f:write(json.encode(data))
-        f:close()
+    local file = io.open(config_path, "w")
+    if file then
+        file:write(json.encode(data))
+        file:close()
     end
 end
 
@@ -54,7 +54,9 @@ function M.get()
 end
 
 function M.save()
-    if config then save_config(config) end
+    if config then
+        save_config(config)
+    end
 end
 
 function M.lualine()
@@ -87,6 +89,14 @@ function M.setup()
     vim.api.nvim_create_user_command("ZetaTogglePredictions", function()
         local state = M.toggle()
         print("Predictions " .. (state and "enabled" or "disabled"))
+    end, {})
+
+    vim.api.nvim_create_user_command("ZetaStatus", function()
+        if M.is_enabled() then
+            print("Zeta predictions enabled")
+        else
+            print("Zeta predictions disabled")
+        end
     end, {})
 end
 
