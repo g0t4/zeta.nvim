@@ -5,10 +5,11 @@ local M = {}
 
 function M.setup()
     config.setup()
-    if config.is_enabled() then
-        poc.setup()
-        predictions.setup()
-    end
+    -- FYI config is a hot mess, fix later
+    -- if config.is_enabled() then
+    --     poc.setup()
+    --     predictions.setup()
+    -- end
 end
 
 return M

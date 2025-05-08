@@ -50,6 +50,7 @@ function M.get()
     if not config then
         config = load_config()
     end
+    -- print("config", vim.inspect(config))
     return config
 end
 
