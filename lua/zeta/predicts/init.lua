@@ -203,6 +203,13 @@ function M.setup_events()
 end
 
 function M.setup()
+    -- FYI right now will have to restart nvim after enabling to get it working
+    local config = require("zeta.config")
+    if not config.is_enabled() then
+        return
+    end
+    -- TODO adjust below to add/remove keymaps on toggle (when that matters to do)
+
     -- * real prediction, on-demand
     vim.keymap.set("n", "<leader>p", function()
         if not watcher or not watcher.window then
@@ -267,11 +274,7 @@ function M.setup()
 
     -- require("zeta.predicts.miscTsGotoMaps").setup()
 
-    local config = require("zeta.config")
-    if config.is_enabled() then
-        messages.append("predictions enabled")
-        M.setup_events()
-    end
+    M.setup_events()
 end
 
 return M

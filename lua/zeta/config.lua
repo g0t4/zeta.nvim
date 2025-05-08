@@ -93,9 +93,9 @@ function M.setup()
 
     vim.api.nvim_create_user_command("ZetaStatus", function()
         if M.is_enabled() then
-            print("Zeta predictions enabled")
+            print("Zeta predictions enabled, restart nvim")
         else
-            print("Zeta predictions disabled")
+            print("Zeta predictions disabled, restart nvim")
         end
     end, {})
 end
