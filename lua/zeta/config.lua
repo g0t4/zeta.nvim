@@ -88,14 +88,14 @@ end
 function M.setup()
     vim.api.nvim_create_user_command("ZetaTogglePredictions", function()
         local state = M.toggle()
-        print("Predictions " .. (state and "enabled" or "disabled"))
+        print("Predictions " .. (state and "enabled" or "disabled") .. ", please restart nvim to take effect")
     end, {})
 
     vim.api.nvim_create_user_command("ZetaStatus", function()
         if M.is_enabled() then
-            print("Zeta predictions enabled, restart nvim")
+            print("Zeta predictions enabled")
         else
-            print("Zeta predictions disabled, restart nvim")
+            print("Zeta predictions disabled")
         end
     end, {})
 end
