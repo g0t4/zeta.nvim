@@ -42,11 +42,19 @@ end
 
 local select_excerpt_mark_id = 11
 
-function Displayer:clear()
+function Displayer:reject()
     self:pause_watcher()
 
-    -- TODO! reverse physical changes to buffer
-    -- TODO! put back lines removed
+    -- undo works for now! lets try this
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>u", true, false, true), "n", false)
+    -- undo works for now! lets try this
+    -- vim.api.nvim_feedkeys("u", "n", false)
+
+    -- -- put back original lines (somehow off by one on the last line, see below when I capture original lines, if I need to take this approach to undo)
+    -- self.window:buffer():replace_lines(
+    --     self.current_request.details.editable_start_line,
+    --     self.current_request.details.editable_start_line,
+    --     self.original_lines)
 
     self.marks:clear_all()
 
@@ -229,15 +237,66 @@ function Displayer:on_response(request, response_body_stdout)
         virt_text_pos = "overlay",
     })
 
-    -- TODO capture lines just to be safe
-    -- TODO! on accept accept the new lines (pause before/after too)
-    -- TODO on reject put them back
-    -- delete original lines (undo on cancel)
+    -- delete original lines (that way only diff shows in extmarks)
+    self.original_lines = self.window:buffer():get_lines(start_line, end_line)
+    table.insert(self.original_lines, "") -- add empty line (why?)
     self.window:buffer():replace_lines(start_line, end_line, {})
+
+    -- PRN... register event handler that fires once ... on user typing, to undo and put stuff back
+    --    this works-ish... feels wrong direction but...
+    --    revisit how zed does the diff display/interaction...
+    --    does it feel right to show it and then type to say no? it probably does
+    --       as long as its not constantly lagging the typing for you
+    vim.api.nvim_create_autocmd({ "InsertCharPre" }, {
+        buffer = self.window:buffer().buffer_number,
+        callback = function(args)
+            local char = vim.v.char
+            vim.schedule(function()
+                -- Btw to trigger this if you are  in normal moded for fake prediction:
+                --   type i to go into insert mode
+                --   then type a new char to trigger this
+                --   TODO better yet setup a trigger in insert mode again for fake testing so not wait on real deal
+                messages.header("InsertCharPre")
+                messages.append(args)
+                messages.append(char)
+
+                -- * inlined reject so I can control timing better
+                -- self:reject()
+                self:pause_watcher()
+
+                -- * undo or put lines back:
+                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>u", true, false, true), "n", false)
+                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>u", true, false, true), "n", false)
+                -- why am I needing two undos? that part is confusing me... used to work with just one?
+                -- -- put back manually (have to add back below capturing this and fix off by one line issue):
+                -- self.window:buffer():replace_lines(
+                --     self.current_request.details.editable_start_line,
+                --     self.current_request.details.editable_start_line,
+                --     self.original_lines)
+
+                -- * clear marks
+                self.marks:clear_all()
+
+                -- * back to insert mode
+                -- vim.api.nvim_feedkeys("i", 'n', true) -- back to insert standalone
+                -- WORKS!!!
+                vim.api.nvim_feedkeys("i" .. char, 'n', true) -- back to insert mode and type key.. not working
+                -- STILL VERY ROUGH AROUND THE EDGES BUT THIS IS WORKING!
+
+
+                -- TODO RESUME LATER... test w/ insert mode real predictions!
+                -- FYI disable other copilots (llama.vim) seems to cause some sort of fighting here
+
+                -- * put back cursor (so far seems like it goes back to where it was)
+
+                self:resume_watcher() -- FYI the delay here just means user has to maybe type a few more chars to trigger next prediction, that's fine for now
+            end)
+        end,
+        once = true
+    })
 
     self:resume_watcher()
 end
-
 
 -- TODO revisit one-off keymaps for duration of prediction display
 --

@@ -106,7 +106,7 @@ local function cancel_current_request(window)
     messages.append("cancelling...")
 
     if displayer ~= nil then
-        displayer:clear()
+        displayer:reject()
         displayer = nil
     end
 

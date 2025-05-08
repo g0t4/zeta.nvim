@@ -15,6 +15,8 @@ end
 
 ---@param displayer Displayer
 function Accepter:accept(displayer)
+    displayer:pause_watcher()
+
     local request = displayer.current_request
     local lines = vim.fn.split(displayer.rewritten_editable, "\n")
 
@@ -23,7 +25,9 @@ function Accepter:accept(displayer)
         request.details.editable_end_line,
         lines)
 
-    displayer:clear()
+    displayer.marks:clear_all()
+
+    displayer:resume_watcher()
 end
 
 return Accepter
