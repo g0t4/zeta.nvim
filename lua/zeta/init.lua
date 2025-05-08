@@ -4,9 +4,11 @@ local config = require("zeta.config")
 local M = {}
 
 function M.setup()
-    poc.setup()
-    predictions.setup()
     config.setup()
+    if config.is_enabled() then
+        poc.setup()
+        predictions.setup()
+    end
 end
 
 return M
