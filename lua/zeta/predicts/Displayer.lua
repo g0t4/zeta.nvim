@@ -62,6 +62,23 @@ function Displayer:reject()
     self:resume_watcher()
 end
 
+function Displayer:accept()
+    self:pause_watcher()
+
+    local request = self.current_request
+    local lines = vim.fn.split(self.rewritten_editable, '\n')
+
+    self.window:buffer():replace_lines(
+        request.details.editable_start_line,
+        request.details.editable_end_line,
+        lines)
+
+    self.marks:clear_all()
+
+    self.watcher.displayer = nil
+    self:resume_watcher()
+end
+
 function Displayer:pause_watcher()
     self.watcher.paused = true
 end
@@ -299,23 +316,6 @@ function Displayer:on_response(request, response_body_stdout)
     self:resume_watcher()
 
     self:set_keymaps()
-end
-
-function Displayer:accept()
-    self:pause_watcher()
-
-    local request = self.current_request
-    local lines = vim.fn.split(self.rewritten_editable, '\n')
-
-    self.window:buffer():replace_lines(
-        request.details.editable_start_line,
-        request.details.editable_end_line,
-        lines)
-
-    self.marks:clear_all()
-
-    self.watcher.displayer = nil
-    self:resume_watcher()
 end
 
 function Displayer:set_keymaps()
