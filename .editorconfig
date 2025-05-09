@@ -9,5 +9,35 @@ trim_trailing_whitespace = true
 
 [*.lua]
 indent_size = 4
-max_line_length = 200
+max_line_length = 400
 align_continuous_inline_comment = false
+#
+# default is none (aka keep as is)... but:
+#   single/double are largely the same (i.e. unlike other languages there's no interpolation diff)
+#   only diff is if using '/" inside the string, have to escape if same outer delimiter
+#   ' does look cleaner
+#   but, gah... I don't care enough to have it change everything yet
+# quote_style = double
+#
+# *** blank lines (called line_space)
+#   keep, fixed(n), min(n), max(n)
+#   fixed(n) == n-1 blank lines
+#
+#
+# line_space_after_if_statement = keep
+# line_space_after_do_statement = keep
+# line_space_after_while_statement = keep
+# line_space_after_repeat_statement = keep
+# line_space_after_for_statement = keep
+# line_space_after_local_or_assign_statement = keep
+#
+# * affects blank lines after function's end keyword (default is fixed(2) == 1 blank line)
+line_space_after_function_statement = keep
+#
+# line_space_after_expression_statement = keep
+# line_space_after_comment = keep
+#
+# * this affects first and last line inside function body:
+# line_space_around_block = fixed(1)
+#    I am kinda used to compressed function bodies, so lets leave it as is
+
