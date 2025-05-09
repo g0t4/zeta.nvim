@@ -1,5 +1,5 @@
 -- PRN! port to use plenary test:
-local should = require("zeta.helpers.should")
+local should = require('zeta.helpers.should')
 -- describe("foo scenario", function()
 --  it("should do bar", function()
 --
@@ -11,15 +11,15 @@ local should = require("zeta.helpers.should")
 --   only use iron.nvim if you're working on generic lua libraries or otherwise
 --   paths will be an issue for all requires (can fix by modifying RTP but lets just use plenary for consistency and it works fine)
 
-require("devtools.inspect")
+require('devtools.inspect')
 t = { x = 1 }
 setmetatable(t, {
     __newindex = function(table, key, value)
-        print("setting", key, "to", value)
+        print('setting', key, 'to', value)
         rawset(table, key, value)
     end,
     __index = function(table, key)
-        print("getting", key)
+        print('getting', key)
         return rawget(table, key)
     end
 })
@@ -62,7 +62,7 @@ lazy_zeros_metatable = {
         --      instead of extra boundary checks, in code
         --      that said, magic is not free... YMMV
         --      can easily be more confusing, i.e. if you gravitate toward single letter variable names
-        print("setting key " .. key .. " to zero")
+        print('setting key ' .. key .. ' to zero')
         table[key] = 0
         -- return table[key]
         return 0
@@ -73,7 +73,7 @@ lazy_zeros_matrix_metatable = {
     __index = function(table, row_index)
         -- yes, I am naming this in accordance with using only 2D in mind
         -- FYI, again, this is only called on first use of table[row_index] (or if table[row_index] was set to nil previously)
-        print("setting default row", row_index)
+        print('setting default row', row_index)
         local new_row = setmetatable({}, lazy_zeros_metatable)
         table[row_index] = new_row
         return new_row
@@ -85,8 +85,8 @@ lazy_zeros_matrix_metatable = {
 test_matrix = setmetatable({}, lazy_zeros_matrix_metatable)
 print(inspect(test_matrix[1]))
 test_matrix[2] -- setting
-test_matrix[2][1] = "foo" -- no print
-test_matrix[3][1] = "bar" -- setting
+test_matrix[2][1] = 'foo' -- no print
+test_matrix[3][1] = 'bar' -- setting
 
 print(test_matrix[3][1]) -- no print
 print(test_matrix[3][2]) -- setting key 2 to zero (b/c this is a getter)
