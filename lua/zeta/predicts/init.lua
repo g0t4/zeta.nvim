@@ -241,6 +241,7 @@ function M.register_keymaps()
     end
     vim.keymap.set('n', '<leader>ph', keymap_toggle_highlight_excerpt_under_cursor, { buffer = true })
 
+    -- TODO move accept/reject to add/remove when show/accept/reject prediction only
     function keymap_accept_prediction()
         if not displayer or not watcher or not watcher.window then
             messages.append('No predictions to accept... no displayer, watcher.window')
@@ -250,6 +251,7 @@ function M.register_keymaps()
         accepter:accept(displayer)
     end
     -- in insert mode - alt+tab to accept, or <C-o><leader>pa
+    -- by the way n mode only has pa/pc for testing the fake prediction (otherwise you'd always be in insert mode, well, theoretically)
     vim.keymap.set('n', '<leader>pa', keymap_accept_prediction, { desc = 'accept prediction' })
     vim.keymap.set({ 'i', 'n' }, '<M-Tab>', keymap_accept_prediction, { buffer = true })
 
