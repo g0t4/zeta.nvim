@@ -23,16 +23,6 @@ local toggle_highlighting = false
 
 ---@param window WindowController0Indexed
 ---@param _displayer Displayer
-function display_fake_response(window, _displayer)
-    -- FYI not using watcher.window b/c I want this to work even when I disabled the watcher event handlers
-
-    local fake_stdout = files.read_example('01_response.json')
-    local fake_body   = files.read_example_json('01_request.json')
-    display_fake_response_inner(window, _displayer, fake_body, fake_stdout)
-end
-
----@param window WindowController0Indexed
----@param _displayer Displayer
 function display_fake_response_inner(window, _displayer, fake_request_body, fake_response_body)
     local row          = window:get_cursor_row()
     local fake_details = {
