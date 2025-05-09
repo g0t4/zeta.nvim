@@ -102,22 +102,6 @@ function display_fake_prediction_del_5th_line_after_cursor(window, _displayer)
 end
 
 ---@param window WindowController0Indexed
-local function cancel_current_request(window)
-    messages.append('cancelling...')
-
-    if displayer ~= nil then
-        displayer:reject()
-        displayer = nil
-    end
-
-    if current_request == nil then
-        return
-    end
-    current_request:cancel()
-    current_request = nil
-end
-
----@param window WindowController0Indexed
 local function trigger_prediction(window)
     -- messages.append("requesting...")
 
