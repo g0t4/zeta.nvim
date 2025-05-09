@@ -270,6 +270,7 @@ function Displayer:on_response(request, response_body_stdout)
     vim.api.nvim_create_autocmd({ 'InsertCharPre' }, {
         buffer = self.window:buffer().buffer_number,
         callback = function(args)
+            -- TODO! this conflicts with accepting on Tab.. or w/e keymap
             local char = vim.v.char
             vim.schedule(function()
                 -- Btw to trigger this if you are  in normal moded for fake prediction:
