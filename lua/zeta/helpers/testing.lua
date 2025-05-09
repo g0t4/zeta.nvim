@@ -1,6 +1,6 @@
 -- setup select paths for running tests
 local plugin_paths = {
-    "~/repos/github/g0t4/devtools.nvim"
+    '~/repos/github/g0t4/devtools.nvim'
 }
 for _, path in ipairs(plugin_paths) do
     vim.opt.rtp:append(path)
@@ -16,6 +16,6 @@ function _describe(name, fn)
 
     -- describe(name .. " ▶", fn) -- or whatever transformation you want
     -- describe(name .. " 🔹▫️◾️", fn) -- or whatever transformation you want end
-    describe(name .. " -", fn) -- or whatever transformation you want end
+    describe(name .. ' -', fn) -- or whatever transformation you want end
     -- for now dash seems fine actually, leaving a few other ideas behind if not
 end

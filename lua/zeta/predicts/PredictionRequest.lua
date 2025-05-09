@@ -1,6 +1,6 @@
-local messages = require("devtools.messages")
-local inspect = require("devtools.inspect")
-local ExcerptSelector = require("zeta.predicts.ExcerptSelector")
+local messages = require('devtools.messages')
+local inspect = require('devtools.inspect')
+local ExcerptSelector = require('zeta.predicts.ExcerptSelector')
 
 ---@alias PredictionDetails {
 ---   body: Body,
@@ -34,7 +34,7 @@ local function build_request(request)
     local row, col = window:get_cursor_position()
     local excerpt = selector:excerpt_at_position(row, col)
     if excerpt == nil then
-        messages.append("excerpt not found, aborting...")
+        messages.append('excerpt not found, aborting...')
         return nil
     end
 
@@ -49,8 +49,8 @@ local function build_request(request)
 
     local body              = {
         input_excerpt = excerpt.text,
-        input_events = "",
-        outline = "",
+        input_events = '',
+        outline = '',
     }
     return {
         body = body,
@@ -65,13 +65,13 @@ end
 
 function PredictionRequest:cancel()
     if self.task == nil then
-        messages.append("no task to cancel")
+        messages.append('no task to cancel')
         return
     end
 
     messages.append("sigterm'ing task...")
     -- PRN could use task:is_closing() to check if it's already closing?
-    self.task:kill("sigterm")
+    self.task:kill('sigterm')
     self.task = nil
 end
 
@@ -102,19 +102,19 @@ end
 function PredictionRequest:send(on_response)
     -- PRN how can I handle errors? pcall?
     function make_request()
-        local url = "http://localhost:9000/predict_edits"
+        local url = 'http://localhost:9000/predict_edits'
         local command = {
-            "curl",
-            "-fsSL", -- -S is key to getting error messages (and not just silent failures! w/ non-zero exit code)
+            'curl',
+            '-fsSL', -- -S is key to getting error messages (and not just silent failures! w/ non-zero exit code)
             -- keep in mind, don't want verbose output normally as it will muck up receiving response body
             -- FYI if want stream response, add --no-buffer to curl else it batches output
-            "-H", "Content-Type: application/json",
-            "-X", "POST",
-            "-s", url,
-            "-d", vim.fn.json_encode(self.details.body)
+            '-H', 'Content-Type: application/json',
+            '-X', 'POST',
+            '-s', url,
+            '-d', vim.fn.json_encode(self.details.body)
         }
 
-        messages.header("curl command")
+        messages.header('curl command')
         messages.append(inspect(command, { pretty = true }))
 
         self.task = vim.system(command,
@@ -153,13 +153,13 @@ function PredictionRequest:send(on_response)
         vim.schedule(function()
             if result.code ~= 0 then
                 -- test failure with wrong URL
-                messages.header("curl on_exit:  " .. inspect(result))
+                messages.header('curl on_exit:  ' .. inspect(result))
             end
             -- if result.stderr ~= "" then
             --     dump.header("STDERR:", result.stderr)
             -- end
-            if result.stdout ~= "" then
-                messages.header("STDOUT:", result.stdout)
+            if result.stdout ~= '' then
+                messages.header('STDOUT:', result.stdout)
                 on_response(self, result.stdout)
             end
         end)
@@ -168,7 +168,7 @@ function PredictionRequest:send(on_response)
     local ok, err = pcall(make_request)
     if not ok then
         -- this happens when command (curl) is not found
-        messages.header("prediction request failed immediately:")
+        messages.header('prediction request failed immediately:')
         messages.append(inspect(err))
     end
 end

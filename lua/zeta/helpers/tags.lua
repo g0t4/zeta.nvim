@@ -1,17 +1,17 @@
 local M = {}
 
-local tag_edit_start = "<|editable_region_start|>"
-local tag_edit_end = "<|editable_region_end|>"
-local tag_cursor_here = "<|user_cursor_is_here|>"
+local tag_edit_start = '<|editable_region_start|>'
+local tag_edit_end = '<|editable_region_end|>'
+local tag_cursor_here = '<|user_cursor_is_here|>'
 -- TODO use start of file tag!
-local tag_start_of_file = "<|start_of_file|>"
+local tag_start_of_file = '<|start_of_file|>'
 
 ---@param text string
 function M.get_editable_region(text)
-    local start_search_for = tag_edit_start .. "\n"
+    local start_search_for = tag_edit_start .. '\n'
     local start_index = text:find(start_search_for)
 
-    local end_search_for = "\n" .. tag_edit_end
+    local end_search_for = '\n' .. tag_edit_end
     local end_index = text:find(end_search_for)
 
     if start_index == nil
@@ -38,7 +38,7 @@ end
 ---@param text string
 ---@return string
 function M.strip_user_cursor_tag(text)
-    local cleaned = text:gsub(tag_cursor_here, "")
+    local cleaned = text:gsub(tag_cursor_here, '')
     return cleaned
 end
 

@@ -1,6 +1,6 @@
-local WindowController0Indexed = require("zeta.predicts.WindowController")
-local debounce = require("zeta.predicts.debounce")
-local messages = require("devtools.messages")
+local WindowController0Indexed = require('zeta.predicts.WindowController')
+local debounce = require('zeta.predicts.debounce')
+local messages = require('devtools.messages')
 
 --- watches events w.r.t. cursor movements, mode changes, and window changes
 --- all the autocmds to support triggering implicit actions
@@ -30,14 +30,14 @@ function WindowWatcher.not_supported_buffer(buffer_number)
     --  sometimes filetype is set before first BufEnter
     --  othertimes, not until after first BufEnter
     --  so we want for a filetype to register watcher
-    if filetype == ""
-        or filetype == "TelescopePrompt"
-        or filetype == "TelescopeResults"
-        or filetype == "NvimTree"
-        or filetype == "DressingInput"
-        or filetype == "help"
-        -- or filetype == "qf"
-        -- or filetype == "lspinfo"
+    if filetype == ''
+        or filetype == 'TelescopePrompt'
+        or filetype == 'TelescopeResults'
+        or filetype == 'NvimTree'
+        or filetype == 'DressingInput'
+        or filetype == 'help'
+    -- or filetype == "qf"
+    -- or filetype == "lspinfo"
     then
         return true -- NOT supported
     end
@@ -59,9 +59,9 @@ function WindowWatcher:watch(trigger_prediction,
         -- so, get current window right away (happens in event handler)
         -- and then here I make sure that matches
         -- FYI could use WinEnter too to get around this
-        error("unexpected buffer number on current window, expected bufnr: " .. self.buffer_number
-            .. " but got bufnr: " .. window:buffer().buffer_number
-            .. " (window: " .. window.window_id .. ")")
+        error('unexpected buffer number on current window, expected bufnr: ' .. self.buffer_number
+            .. ' but got bufnr: ' .. window:buffer().buffer_number
+            .. ' (window: ' .. window.window_id .. ')')
         return
     end
 
@@ -75,7 +75,7 @@ function WindowWatcher:watch(trigger_prediction,
         trigger_prediction(window)
     end, 500)
 
-    vim.api.nvim_create_autocmd("InsertEnter", {
+    vim.api.nvim_create_autocmd('InsertEnter', {
         group = self.augroup_name,
         -- FYI technically I don't nee the buffer filter b/c there's only ever one of these active at a time
         -- buffer = self.buffer_number,
@@ -85,7 +85,7 @@ function WindowWatcher:watch(trigger_prediction,
         end,
     })
 
-    vim.api.nvim_create_autocmd("InsertLeave", {
+    vim.api.nvim_create_autocmd('InsertLeave', {
         -- FYI nothing says I have to cancel it on leave... the prediction can be left visible after exit to normal mode
         --   then on re-entry to insert mode you trigger a new prediction
         -- one benefit to stop on exit is you can prevent the prediction by hitting escape as last key when typing
@@ -98,7 +98,7 @@ function WindowWatcher:watch(trigger_prediction,
         end,
     })
 
-    vim.api.nvim_create_autocmd("CursorMovedI", {
+    vim.api.nvim_create_autocmd('CursorMovedI', {
         -- PRN also trigger on TextChangedI? => merge signals into one stream>?
         group = self.augroup_name,
         -- buffer = self.buffer_number,
@@ -118,7 +118,7 @@ function WindowWatcher:watch(trigger_prediction,
         end,
     })
 
-    vim.api.nvim_create_autocmd("CursorMoved", {
+    vim.api.nvim_create_autocmd('CursorMoved', {
         group = self.augroup_name,
         -- buffer = self.buffer_number,
         callback = function()
