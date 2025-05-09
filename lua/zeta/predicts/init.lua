@@ -228,18 +228,17 @@ function M.setup()
     end
     vim.keymap.set('n', '<leader>pf', keymap_fake_prediction, { desc = 'demo fake request/response' })
 
-    -- * toggle [h]ighlighting excerpt as cursor moves
-    vim.keymap.set('n', '<leader>ph', function()
+    local function keymap_toggle_highlight_excerpt_under_cursor()
         if not watcher or not watcher.window then
             messages.append('Cannot toggle highlighting, no watcher.window')
             return
         end
         toggle_highlighting = not toggle_highlighting
         immediate_on_cursor_moved(watcher.window)
-    end)
+    end
+    vim.keymap.set('n', '<leader>ph', keymap_toggle_highlight_excerpt_under_cursor)
 
-    -- * accept prediction
-    function accept()
+    function keymap_accept_prediction()
         if not displayer or not watcher or not watcher.window then
             messages.append('No predictions to accept... no displayer, watcher.window')
             return
@@ -247,23 +246,20 @@ function M.setup()
         local accepter = Accepter:new(watcher.window)
         accepter:accept(displayer)
     end
-
     -- in insert mode - alt+tab to accept, or <C-o><leader>pa
-    vim.keymap.set('n', '<leader>pa', accept, { desc = 'accept prediction' })
-    vim.keymap.set({ 'i', 'n' }, '<M-Tab>', accept, { desc = 'accept prediction' })
+    vim.keymap.set('n', '<leader>pa', keymap_accept_prediction, { desc = 'accept prediction' })
+    vim.keymap.set({ 'i', 'n' }, '<M-Tab>', keymap_accept_prediction, { desc = 'accept prediction' })
 
-    -- * cancel prediction
-    function reject()
+    function keymap_reject_prediction()
         if not watcher or not watcher.window then
             messages.append('No predictions to cancel, no watcher.window')
             return
         end
         cancel_current_request(watcher.window)
     end
-
     -- in insert mode - alt+esc to cancel, or <C-o><leader>pc
-    vim.keymap.set('n', '<leader>pc', reject, { desc = 'reject prediction' })
-    vim.keymap.set({ 'i', 'n' }, '<M-Esc>', reject, { desc = 'reject prediction' })
+    vim.keymap.set('n', '<leader>pc', keymap_reject_prediction, { desc = 'reject prediction' })
+    vim.keymap.set({ 'i', 'n' }, '<M-Esc>', keymap_reject_prediction, { desc = 'reject prediction' })
 
     -- require("zeta.predicts.miscTsGotoMaps").setup()
 
