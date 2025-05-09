@@ -203,18 +203,17 @@ function M.setup_events()
 end
 
 function M.setup()
-    -- * real prediction, on-demand
-    vim.keymap.set("n", "<leader>p", function()
+    function keymap_trigger_prediction()
         if not watcher or not watcher.window then
             messages.append("No watcher for current window")
             return
         end
         -- FYI this is real deal so you have to have full watcher
         trigger_prediction(watcher.window)
-    end, { desc = "show prediction" })
+    end
 
-    -- * fake prediction
-    vim.keymap.set("n", "<leader>pf", function()
+    vim.keymap.set("n", "<leader>p", keymap_trigger_prediction, { desc = "show prediction" })
+    function keymap_fake_prediction()
         -- this should always work, using the current window/buffer (regardless of type) b/c its a fake request/response
         -- FYI once this is activated, I can use other keymaps to accept/cancel/highlight/etc
         watcher   = {
@@ -226,7 +225,10 @@ function M.setup()
         displayer = Displayer:new(watcher)
         -- display_fake_response(watcher.window, displayer)
         display_fake_prediction_del_5th_line_after_cursor(watcher.window, displayer)
-    end, { desc = "demo fake request/response" })
+    end
+
+    -- * fake prediction
+    vim.keymap.set("n", "<leader>pf", keymap_fake_prediction, { desc = "demo fake request/response" })
 
     -- * toggle [h]ighlighting excerpt as cursor moves
     vim.keymap.set("n", "<leader>ph", function()
