@@ -173,7 +173,10 @@ function M.start_watcher(buffer_number)
         immediate_on_cursor_moved
     )
     displayer = Displayer:new(watcher)
+
+    M.register_keymaps()
 end
+
 function M.setup_events()
     local augroup_name = 'zeta-buffer-monitors'
     vim.api.nvim_create_augroup(augroup_name, { clear = true })
@@ -192,7 +195,6 @@ function M.setup_events()
         callback = function(args)
             -- messages.append("buffer enter: " .. args.buf)
             M.start_watcher(args.buf)
-            M.register_keymaps()
         end
     })
 
