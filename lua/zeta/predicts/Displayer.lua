@@ -45,6 +45,8 @@ local select_excerpt_mark_id = 11
 function Displayer:reject()
     self:pause_watcher()
 
+    -- TODO investigate if folding the original code to hide it is smoother than remove/replace it?
+
     -- undo works for now! lets try this
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>u', true, false, true), 'n', false)
     -- undo works for now! lets try this
