@@ -60,16 +60,17 @@ function M.save()
 end
 
 function M.lualine()
+    -- FYI this is an example, copy and modify it to your liking!
     return {
         function()
             return "ζ"
         end,
         color = function()
-            -- FYI can take section param to know which section this is in
-            -- empty == use current component color, that's probably best
-            -- #33aa88 is a nice green if I wanna go that route again
-            -- PRN do I need to match the inverse default color for when it's disabled?
-            return { fg = M.is_enabled() and '' or '#333333' }
+            local fg_color = ''
+            if not M.is_enabled() then
+                fg_color = '#333333'
+            end
+            return { fg = fg_color }
         end,
     }
 end
