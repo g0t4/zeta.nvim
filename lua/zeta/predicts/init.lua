@@ -288,6 +288,9 @@ function M.unregister_keymaps()
       silent! iunmap <buffer> <M-Tab>
       silent! iunmap <buffer> <M-Esc>
     ]])
+    -- by the way can test with:
+    --   =vim.fn.bufnr() -- get bufnr if wanna test when in another buffer
+    --   =vim.api.nvim_buf_get_keymap(2, "i") -- or use 0 for current buffer
 end
 
 function M.setup()
