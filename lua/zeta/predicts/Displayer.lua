@@ -59,6 +59,7 @@ function Displayer:reject()
     self.marks:clear_all()
 
     self.watcher.displayer = nil
+    self:remove_keymaps()
     self:resume_watcher()
 end
 
@@ -76,6 +77,7 @@ function Displayer:accept()
     self.marks:clear_all()
 
     self.watcher.displayer = nil
+    self:remove_keymaps()
     self:resume_watcher()
 end
 
