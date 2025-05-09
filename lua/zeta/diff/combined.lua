@@ -1,6 +1,6 @@
-local histogram = require("zeta.diff.histogram")
-local weslcs = require("zeta.diff.weslcs")
-require("devtools.inspect")
+local histogram = require('zeta.diff.histogram')
+local weslcs = require('zeta.diff.weslcs')
+require('devtools.inspect')
 
 local M = {}
 
@@ -22,31 +22,31 @@ function M.step2_lcs_diffs(histogram_line_diff)
 
     function process_group()
         -- * empty groups
-        if current_group["="] == nil
-            and current_group["-"] == nil
-            and current_group["+"] == nil then
+        if current_group['='] == nil
+            and current_group['-'] == nil
+            and current_group['+'] == nil then
             -- if current_group is truly empty (no historgram lines) then don't add it as empty group!
             -- can happen at start and end of loop, this is a nice spot to handle it
             return
         end
 
         -- * group of consecutive "=" anchor lines
-        if current_group["="] then
+        if current_group['='] then
             -- loop logic stripped the leading '=', and I want that back on individual records
             -- that way these match the structure of LCS diff output
             -- so, add back "=" as line[1] and line[2] is once again the text
             -- result:
             --   { { "=", "line1" }, { "=", "line2" } }
-            local consecutive_anchor_lines = vim.iter(current_group["="])
-                :map(function(line) return { "=", line } end):totable()
+            local consecutive_anchor_lines = vim.iter(current_group['='])
+                :map(function(line) return { '=', line } end):totable()
             table.insert(groups, consecutive_anchor_lines)
             -- NO LCS diffing, these are already the same (anchors)
             return
         end
 
         -- * run LCS diff on lines between anchor lines
-        local dels = current_group["-"] or {}
-        local adds = current_group["+"] or {}
+        local dels = current_group['-'] or {}
+        local adds = current_group['+'] or {}
 
         -- * histogram "-" (aka deletes) are lines identified as only in the old text
         -- - my LCS algorithm takes a single string, not list of lines
@@ -55,15 +55,15 @@ function M.step2_lcs_diffs(histogram_line_diff)
             :map(function(line)
                 -- super important to add back the _IMPLICIT NEWLINE_ \n suffix on histogram lines
                 -- AND, need trailing \n for every line, not just between lines
-                return line .. "\n"
+                return line .. '\n'
             end)
-            :join("")
+            :join('')
         -- * histogram "+" (aka adds) are lines identified as only in the new text
         local after_text_string = vim.iter(adds)
             :map(function(line)
-                return line .. "\n"
+                return line .. '\n'
             end)
-            :join("")
+            :join('')
         local lcs_diff = weslcs.lcs_diff_from_text(before_text_string, after_text_string)
         table.insert(groups, lcs_diff)
         -- FYI get_diff (lcs) aggregates consecutive tokens of the same type
@@ -77,8 +77,8 @@ function M.step2_lcs_diffs(histogram_line_diff)
 
         -- edge triggered on change to/from "=" (histogram's equiv of LCS's "same")
         -- edge triggered on change to/from ANCHOR lines
-        local change_to_anchor = current_group["="] and line_type ~= "="
-        local change_from_anchor = (not current_group["="]) and line_type == "="
+        local change_to_anchor = current_group['='] and line_type ~= '='
+        local change_from_anchor = (not current_group['=']) and line_type == '='
         if change_to_anchor or change_from_anchor then
             process_group()
             current_group = {}
@@ -105,28 +105,28 @@ function M.step3_final_aggregate_and_standardize(groups)
             -- FYI also flattening the groups (SelectMany)
             -- print("  text", inspect(text))
             -- add any missing implicit newlines
-            if text[1] == "=" then
-                text[2] = text[2] .. "\n"
+            if text[1] == '=' then
+                text[2] = text[2] .. '\n'
                 -- FYI could leave checks for =/+/- but I already mapped those in step 2 to include explicit newlines
             end
 
             -- * insert -/+ verbatim (they're already consolidated too)
-            if text[1] == "add" or text[1] == "+" then
-                table.insert(final_diff, { "+", text[2] })
+            if text[1] == 'add' or text[1] == '+' then
+                table.insert(final_diff, { '+', text[2] })
                 goto continue
-            elseif text[1] == "del" or text[1] == "-" then
-                table.insert(final_diff, { "-", text[2] })
+            elseif text[1] == 'del' or text[1] == '-' then
+                table.insert(final_diff, { '-', text[2] })
                 goto continue
             end
 
             -- * aggregate same/= across groups/items
             local last_text = final_diff[#final_diff]
-            if last_text ~= nil and last_text[1] == "=" then
+            if last_text ~= nil and last_text[1] == '=' then
                 -- append to preceding same text
                 last_text[2] = last_text[2] .. text[2]
             else
                 -- insert as a new same text
-                table.insert(final_diff, { "=", text[2] })
+                table.insert(final_diff, { '=', text[2] })
             end
             ::continue::
         end

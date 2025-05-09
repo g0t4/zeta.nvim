@@ -4,7 +4,7 @@
 --   even if I don't like how it works, it works and what it produces is all I care about
 --   but I would like practice with LCS so I would like to revist it
 --     probably will nag at me and make me do it tonight
-local inspect = require("devtools.inspect")
+local inspect = require('devtools.inspect')
 
 local M = {}
 
@@ -20,7 +20,7 @@ local M = {}
 -----------------------------------------------------------------------------
 function M.split(text, separator, skip_separator)
     -- copied verbatim from diff.lua (thus far)
-    separator = separator or "%s+"
+    separator = separator or '%s+'
     local parts = {}
     local start = 1
     local split_start, split_end = text:find(separator, start)
@@ -32,7 +32,7 @@ function M.split(text, separator, skip_separator)
         start = split_end + 1
         split_start, split_end = text:find(separator, start)
     end
-    if text:sub(start) ~= "" then
+    if text:sub(start) ~= '' then
         table.insert(parts, text:sub(start))
     end
     return parts
@@ -161,9 +161,9 @@ function walk_the_diff(before_tokens, after_tokens, visitor)
         -- this means there's a match token somewhere to the left that is part of a longest sequence
         -- optional assertions (mirror the check for move up case)
         if longest_sequence_left ~= current_longest_sequence_position then
-            error("UNEXPECTED... this suggests a bug in building/traversing LCS matrix... longest_to_left (" .. longest_sequence_left .. ")"
-                .. " should match logest_length (" .. current_longest_sequence_position .. ")"
-                .. ", when longest_above (" .. longest_sequence_above .. ") does not!")
+            error('UNEXPECTED... this suggests a bug in building/traversing LCS matrix... longest_to_left (' .. longest_sequence_left .. ')'
+                .. ' should match logest_length (' .. current_longest_sequence_position .. ')'
+                .. ', when longest_above (' .. longest_sequence_above .. ') does not!')
         end
         local any_after_tokens_remain = num_remaining_after_tokens > 0
         if not any_after_tokens_remain then
@@ -214,15 +214,15 @@ function M.get_token_diff(before_tokens, after_tokens)
     end
 
     function builder:on_match(token)
-        self:push("same", token)
+        self:push('same', token)
     end
 
     function builder:on_add(token)
-        self:push("add", token)
+        self:push('add', token)
     end
 
     function builder:on_delete(token)
-        self:push("del", token)
+        self:push('del', token)
     end
 
     walk_the_diff(before_tokens, after_tokens, builder)
@@ -242,7 +242,7 @@ end
 function M.lcs_diff_with_sign_types_from_text(before_text, after_text)
     local diff = M.lcs_diff_from_text(before_text, after_text)
     for _, change in pairs(diff) do
-        change[1] = change[1] == "add" and "+" or change[1] == "del" and "-" or "=" or change[1]
+        change[1] = change[1] == 'add' and '+' or change[1] == 'del' and '-' or '=' or change[1]
     end
     return diff
 end
@@ -258,30 +258,30 @@ function M.lcs_diff_from_tokens(before_tokens, after_tokens)
 
     local current_group = {}
     local merged = {}
-    if same_prefix[2] ~= "" then
+    if same_prefix[2] ~= '' then
         table.insert(merged, same_prefix)
     end
 
     function merge_current_group()
         local function merge(type)
-            if current_group[type .. "s"] then
-                table.insert(merged, { type, vim.iter(current_group[type .. "s"]):join("") })
+            if current_group[type .. 's'] then
+                table.insert(merged, { type, vim.iter(current_group[type .. 's']):join('') })
             end
         end
-        merge("same")
-        merge("del")
-        merge("add")
+        merge('same')
+        merge('del')
+        merge('add')
 
         current_group = {}
     end
 
     for _, current in pairs(token_diff) do
         -- print("current", inspect(current))
-        local current_type = current[1] .. "s"
+        local current_type = current[1] .. 's'
         local current_token = current[2]
         -- edge triggered on change to/from "same"
-        if (current_group.sames and current_type ~= "sames")
-            or ((not current_group.sames) and current_type == "sames") then
+        if (current_group.sames and current_type ~= 'sames')
+            or ((not current_group.sames) and current_type == 'sames') then
             merge_current_group()
         end
 
@@ -293,7 +293,7 @@ function M.lcs_diff_from_tokens(before_tokens, after_tokens)
     end
     merge_current_group()
 
-    if same_suffix[2] ~= "" then
+    if same_suffix[2] ~= '' then
         table.insert(merged, same_suffix)
     end
 
@@ -323,9 +323,9 @@ function M.split_common_prefix_and_suffix(before_tokens, after_tokens)
     -- TODO revisit what shape I want for output
     --  TODO what if no shared prefix/suffix... do I want { "same", "" } or nil?
     return
-        { "same", vim.iter(same_prefix):join("") },
+        { 'same', vim.iter(same_prefix):join('') },
         middle,
-        { "same", vim.iter(same_suffix):join("") }
+        { 'same', vim.iter(same_suffix):join('') }
 end
 
 function M.get_match_matrix(before_tokens, after_tokens)
@@ -335,7 +335,7 @@ function M.get_match_matrix(before_tokens, after_tokens)
             if old_token == new_token then
                 match_matrix[i][j] = old_token
             else
-                match_matrix[i][j] = " "
+                match_matrix[i][j] = ' '
             end
         end
     end

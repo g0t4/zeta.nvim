@@ -1,11 +1,11 @@
-require("zeta.helpers.testing")
-local histogram = require("zeta.diff.histogram")
-local should = require("zeta.helpers.should")
-local files = require("zeta.helpers.files")
-local inspect_ = require("devtools.inspect")
-local combined = require("zeta.diff.combined")
+require('zeta.helpers.testing')
+local histogram = require('zeta.diff.histogram')
+local should = require('zeta.helpers.should')
+local files = require('zeta.helpers.files')
+local inspect_ = require('devtools.inspect')
+local combined = require('zeta.diff.combined')
 
-_describe("simple comparison", function()
+_describe('simple comparison', function()
     local before_text = [[
 local M = {}
 function M.add(a, b )
@@ -22,28 +22,28 @@ function M.add(a, b, c, d)
 end
 return N
 ]]
-    it("validate histogram alone", function()
+    it('validate histogram alone', function()
         local diffs = histogram.split_then_diff_lines(before_text, after_text)
 
         -- pretty_print(diffs)
 
         -- FYI I wanted 2+ alternating groups of same/diff lines
         local expected = {
-            { "=", "local M = {}" },
-            { "-", "function M.add(a, b )" },
-            { "+", "function M.add(a, b, c, d)" },
-            { "=", "    return a + b" },
-            { "=", "end" },
-            { "-", "return M" },
+            { '=', 'local M = {}' },
+            { '-', 'function M.add(a, b )' },
+            { '+', 'function M.add(a, b, c, d)' },
+            { '=', '    return a + b' },
+            { '=', 'end' },
+            { '-', 'return M' },
             -- two consecutive added lines, should be diff'd with single - above
-            { "+", "return N" },
-            { "+", "" },
+            { '+', 'return N' },
+            { '+', '' },
         }
 
         should.be_same(expected, diffs)
     end)
 
-    it("follows histogram with a 2nd pass, word-level LCS", function()
+    it('follows histogram with a 2nd pass, word-level LCS', function()
         local histogram_line_diff = histogram.split_then_diff_lines(before_text, after_text)
         local diffs = combined.step2_lcs_diffs(histogram_line_diff)
 
@@ -58,7 +58,7 @@ return N
             -- STEP1/2 Histogram Anchors
             -- FYI implicit new lines
             {
-                { "=", "local M = {}" }
+                { '=', 'local M = {}' }
             }, -- implicit \n
 
             -- STEP2 LCS input:
@@ -69,20 +69,20 @@ return N
             -- STEP2 LCS output:
             -- FYI explicit new lines
             {
-                { "same", "function M.add(a, " },
-                { "del",  "b" },
-                { "add",  "b, c," },
-                { "same", " " },
-                { "del",  ")" },
-                { "add",  "d)" },
-                { "same", "\n" },
+                { 'same', 'function M.add(a, ' },
+                { 'del',  'b' },
+                { 'add',  'b, c,' },
+                { 'same', ' ' },
+                { 'del',  ')' },
+                { 'add',  'd)' },
+                { 'same', '\n' },
             },
 
             -- STEP1/2 Histogram Anchors
             -- FYI implicit new lines
             {
-                { "=", "    return a + b" }, -- implicit \n
-                { "=", "end" },
+                { '=', '    return a + b' }, -- implicit \n
+                { '=', 'end' },
             }, -- implicit \n
 
             -- STEP2 LCS input:
@@ -94,9 +94,9 @@ return N
             -- STEP2 LCS output:
             -- FYI explicit new lines
             {
-                { "same", "return " },
-                { "del",  "M\n" },
-                { "add",  "N\n\n" },
+                { 'same', 'return ' },
+                { 'del',  'M\n' },
+                { 'add',  'N\n\n' },
             },
         }
 
@@ -118,22 +118,22 @@ return N
             -- FYI made remaining "=" newlines explicit
             -- flatten across groups
             -- combine consecutive "="/"same" into single record
-            { "=", "local M = {}\nfunction M.add(a, " },
-            { "-", "b" },
-            { "+", "b, c," },
-            { "=", " " },
-            { "-", ")" },
-            { "+", "d)" },
-            { "=", "\n    return a + b\nend\nreturn " },
-            { "-", "M\n" },
-            { "+", "N\n\n" },
+            { '=', 'local M = {}\nfunction M.add(a, ' },
+            { '-', 'b' },
+            { '+', 'b, c,' },
+            { '=', ' ' },
+            { '-', ')' },
+            { '+', 'd)' },
+            { '=', '\n    return a + b\nend\nreturn ' },
+            { '-', 'M\n' },
+            { '+', 'N\n\n' },
         }
 
         should.be_same(expected_groups, combined_diff)
     end)
 end)
 
-_describe("simple comparison", function()
+_describe('simple comparison', function()
     local before_text = [[
 function M.add(a, b )
     return a + b
@@ -144,59 +144,59 @@ function M.add(a, b, c, d)
     return a + b
 end]]
 
-    it("validate histogram alone", function()
+    it('validate histogram alone', function()
         local diffs = histogram.split_then_diff_lines(before_text, after_text)
 
         -- pretty_print(diffs)
 
         local expected = {
-            { "-", "function M.add(a, b )" },
-            { "+", "function M.add(a, b, c, d)" },
-            { "=", "    return a + b" },
-            { "=", "end" },
+            { '-', 'function M.add(a, b )' },
+            { '+', 'function M.add(a, b, c, d)' },
+            { '=', '    return a + b' },
+            { '=', 'end' },
         }
 
         should.be_same(expected, diffs)
     end)
 end)
 
-_describe("test using combined_diff", function()
-    local old_text = files.read_example_editable_only("01_request.json")
-    local new_text = files.read_example_editable_only("03_response.json")
+_describe('test using combined_diff', function()
+    local old_text = files.read_example_editable_only('01_request.json')
+    local new_text = files.read_example_editable_only('03_response.json')
 
-    it("test histogram alone", function()
+    it('test histogram alone', function()
         local diffs = histogram.split_then_diff_lines(old_text, new_text)
 
         local expected = {
-            { "=", "" }, -- empty line after editable region parsed, should that be removed?
-            { "=", "local M = {}" },
-            { "=", "" },
-            { "-", "function M.add(a, b)" },
-            { "-", "    return a + b" },
-            { "+", "function M.adder(a, b, c)" },
-            { "+", "    return a + b + c" },
-            { "=", "end" },
-            { "=", "" },
-            { "+", "function M.subtract(a, b)" },
-            { "+", "    return a - b" },
-            { "+", "end" },
-            { "=", "" },
-            { "+", "function M.multiply(a, b)" },
-            { "+", "    return a * b" },
-            { "+", "end" },
-            { "=", "" },
-            { "+", "function M.divide(a, b)" },
-            { "+", "    if b == 0 then" },
-            { "+", "        error(\"Division by zero\")" },
-            { "+", "    end" },
-            { "+", "    return a / b" },
-            { "+", "end" },
-            { "=", "" },
-            { "=", "" },
-            { "+", "" },
-            { "=", "return M" },
-            { "=", "" },
-            { "=", "" },
+            { '=', '' }, -- empty line after editable region parsed, should that be removed?
+            { '=', 'local M = {}' },
+            { '=', '' },
+            { '-', 'function M.add(a, b)' },
+            { '-', '    return a + b' },
+            { '+', 'function M.adder(a, b, c)' },
+            { '+', '    return a + b + c' },
+            { '=', 'end' },
+            { '=', '' },
+            { '+', 'function M.subtract(a, b)' },
+            { '+', '    return a - b' },
+            { '+', 'end' },
+            { '=', '' },
+            { '+', 'function M.multiply(a, b)' },
+            { '+', '    return a * b' },
+            { '+', 'end' },
+            { '=', '' },
+            { '+', 'function M.divide(a, b)' },
+            { '+', '    if b == 0 then' },
+            { '+', '        error(\"Division by zero\")' },
+            { '+', '    end' },
+            { '+', '    return a / b' },
+            { '+', 'end' },
+            { '=', '' },
+            { '=', '' },
+            { '+', '' },
+            { '=', 'return M' },
+            { '=', '' },
+            { '=', '' },
         }
 
         should.be_same(expected, diffs)

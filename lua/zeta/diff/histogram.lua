@@ -28,8 +28,8 @@ end
 ---@return table<string, table<string, string>>
 function M.split_then_diff_lines(a, b)
     -- PRN add split for other token types?
-    local a_lines = vim.split(a, "\n")
-    local b_lines = vim.split(b, "\n")
+    local a_lines = vim.split(a, '\n')
+    local b_lines = vim.split(b, '\n')
     return M.diff(a_lines, b_lines)
 end
 
@@ -42,12 +42,12 @@ function M.diff(a, b, diffs)
     -- nothing to compare on at least one side
     if #a == 0 then
         for _, token in ipairs(b) do
-            table.insert(diffs, { "+", token })
+            table.insert(diffs, { '+', token })
         end
         return diffs
     elseif #b == 0 then
         for _, token in ipairs(a) do
-            table.insert(diffs, { "-", token })
+            table.insert(diffs, { '-', token })
         end
         return diffs
     end
@@ -58,8 +58,8 @@ function M.diff(a, b, diffs)
     local rarest_token = find_rarest_common_token(a, hist_a, hist_b)
     if not rarest_token then
         -- fallback: all tokens changed
-        for _, tokens in ipairs(a) do table.insert(diffs, { "-", tokens }) end
-        for _, tokens in ipairs(b) do table.insert(diffs, { "+", tokens }) end
+        for _, tokens in ipairs(a) do table.insert(diffs, { '-', tokens }) end
+        for _, tokens in ipairs(b) do table.insert(diffs, { '+', tokens }) end
         return diffs
     end
 
@@ -80,7 +80,7 @@ function M.diff(a, b, diffs)
 
     -- recursively diff before and after
     M.diff({ unpack(a, 1, index_first_match_a - 1) }, { unpack(b, 1, index_first_match_b - 1) }, diffs)
-    table.insert(diffs, { "=", rarest_token })
+    table.insert(diffs, { '=', rarest_token })
     M.diff({ unpack(a, index_first_match_a + 1) }, { unpack(b, index_first_match_b + 1) }, diffs)
     -- TODO recursive is likely a problem here
 

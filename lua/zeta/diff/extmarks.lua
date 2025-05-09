@@ -1,25 +1,25 @@
-local window = require("zeta.helpers.vimz.windows")
-local messages = require("devtools.messages")
+local window = require('zeta.helpers.vimz.windows')
+local messages = require('devtools.messages')
 
 local M = {}
 
 function M.extmarks_for(diff, bufnr, _window_id)
     -- * highlight groups
-    local hl_same = "zeta-same"
-    local hl_added = "zeta-added"
-    local hl_deleted = "zeta-deleted"
+    local hl_same = 'zeta-same'
+    local hl_added = 'zeta-added'
+    local hl_deleted = 'zeta-deleted'
     -- 0 == global namespace (otherwise have to activate them if not global ns on hlgroup)
     vim.api.nvim_set_hl(0, hl_same, {}) -- for now just keep it as is
     -- vim.api.nvim_set_hl(0, hl_added, { fg = "#a6e3a1", }) -- ctermfg = "green"
     -- vim.api.nvim_set_hl(0, hl_added, { fg = "#b5f4cb", }) -- ctermfg = "green"
-    vim.api.nvim_set_hl(0, hl_added, { fg = "#81c8be", }) -- ctermfg = "green"
+    vim.api.nvim_set_hl(0, hl_added, { fg = '#81c8be', }) -- ctermfg = "green"
     -- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#f28b82", }) -- ctermfg = "red"
-    vim.api.nvim_set_hl(0, hl_deleted, { fg = "#ff6b6b", }) -- ctermfg = "red"
+    vim.api.nvim_set_hl(0, hl_deleted, { fg = '#ff6b6b', }) -- ctermfg = "red"
     -- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#e06c75", }) -- ctermfg = "red"
 
     local extmark_lines = vim.iter(diff):fold({ {} }, function(accum, chunk)
         if chunk == nil then
-            messages.append("nil chunk: " .. tostring(chunk))
+            messages.append('nil chunk: ' .. tostring(chunk))
         else
             -- each chunk has has two strings: { "text\nfoo\nbar", "type" }
             --   type == "same", "add", "del"
@@ -30,26 +30,26 @@ function M.extmarks_for(diff, bufnr, _window_id)
             local text = chunk[2]
 
             local type_hlgroup = hl_same
-            if type == "+" then
+            if type == '+' then
                 type_hlgroup = hl_added -- mine (above)
                 -- FYI nvim and plugins have a bunch of options already registerd too (color/highlight wise)
                 -- type_hlgroup = "Added" -- light green
                 -- type_hlgroup = "diffAdded" -- darker green/cyan - *** FAVORITE
-            elseif type == "-" then
+            elseif type == '-' then
                 type_hlgroup = hl_deleted -- mine (above)
                 -- type_hlgroup = "Removed" -- very light red (almost brown/gray)
                 -- type_hlgroup = "diffRemoved" -- dark red - *** FAVORITE
                 -- return accum
                 -- actually, based on how I aggregate between sames... there should only be one delete and one add between any two sames... so, I could just show both and it would appaer like remove / add (probably often lines removed then lines added, my diff processor puts the delete first which makes sense for that to be on top)
             end
-            if not text:find("\n") then
+            if not text:find('\n') then
                 -- no new lines, so we just tack on to end of current line
                 local len_text = #text
                 if len_text > 0 then
                     table.insert(current_line, { text, type_hlgroup })
                 end
             else
-                local splits = vim.split(text, "\n")
+                local splits = vim.split(text, '\n')
                 for i, piece in ipairs(splits) do
                     -- FYI often v will be empty (i.e. a series of newlines)... do not exclude these empty lines!
                     local len_text = #piece
@@ -75,7 +75,7 @@ function M.extmarks_for(diff, bufnr, _window_id)
     -- end
 
     if #extmark_lines < 1 then
-        messages.append("no lines")
+        messages.append('no lines')
         return
     end
 
@@ -85,12 +85,12 @@ function M.extmarks_for(diff, bufnr, _window_id)
     local to_row_1indexed = num_lines
     local ext_mark_row_0indexed = to_row_1indexed - 1
     local _mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, ext_mark_row_0indexed, 0, {
-        hl_mode = "combine",
-        virt_text = { { "" } }, -- add blank line
+        hl_mode = 'combine',
+        virt_text = { { '' } }, -- add blank line
         virt_lines = extmark_lines, -- rest after first
         -- virt_text = { { "twat waffl3", hl_added } }, -- line of extmark
         -- virt_lines = virt_lines, -- lines below
-        virt_text_pos = "overlay", -- "overlay", "eol", "inline"
+        virt_text_pos = 'overlay', -- "overlay", "eol", "inline"
     })
 
     if _window_id ~= nil then

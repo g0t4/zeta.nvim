@@ -1,13 +1,13 @@
-local tags = require("zeta.helpers.tags")
-local should = require("zeta.helpers.should")
+local tags = require('zeta.helpers.tags')
+local should = require('zeta.helpers.should')
 
 --
 -- * tests specific to the zeta model:
 --   - prompt formulation
 --   - prompt parsing
 
-describe("zeta tags", function()
-    it("adding editable start and end tags are put on their own lines", function()
+describe('zeta tags', function()
+    it('adding editable start and end tags are put on their own lines', function()
         -- * start tag:
         -- https://github.com/zed-industries/zed/blob/5872276511/crates/zeta/src/input_excerpt.rs#L86
         --   writeln!(prompt, "{EDITABLE_REGION_START_MARKER}").unwrap();
@@ -27,34 +27,34 @@ describe("zeta tags", function()
         --  the better the responses will be
 
         local lines = {
-            "function add(a, b)",
-            "    return a + b",
-            "end",
+            'function add(a, b)',
+            '    return a + b',
+            'end',
         }
 
         tags.wrap_editable_tags(lines)
         local expected = {
-            "<|editable_region_start|>",
-            "function add(a, b)",
-            "    return a + b",
-            "end",
-            "<|editable_region_end|>",
+            '<|editable_region_start|>',
+            'function add(a, b)',
+            '    return a + b',
+            'end',
+            '<|editable_region_end|>',
         }
         should.be_same(expected, lines)
     end)
 
-    it("parsing editable region removes the newline associated with edit tags", function()
+    it('parsing editable region removes the newline associated with edit tags', function()
         local text =
-        "<|editable_region_start|>\nfunction add(a, b)\n    return a + b\nend\n<|editable_region_end|>"
+        '<|editable_region_start|>\nfunction add(a, b)\n    return a + b\nend\n<|editable_region_end|>'
 
-        local expected = "function add(a, b)\n    return a + b\nend"
+        local expected = 'function add(a, b)\n    return a + b\nend'
 
         local parsed = tags.get_editable_region(text)
         should.be_equal(expected, parsed)
     end)
 
-    it("cursor position should literally be between consecutive chars with nothing added, no padding", function()
-        local text = "function add(a, b)\n    return a + b\nend"
+    it('cursor position should literally be between consecutive chars with nothing added, no padding', function()
+        local text = 'function add(a, b)\n    return a + b\nend'
         local cursor_position = 9 -- 0-indexed, 10 == 1-indexed (10th char)
         -- means 10th char has the cursor sitting on top of it (if block style cursor)
         -- when you use thin line, the cursor is on the let side of the block
@@ -66,13 +66,13 @@ describe("zeta tags", function()
         -- TODO AND double check I didn't screw up the offsets! in 0/1 indexing (MADNESS)
 
         local tagged = tags.insert_cursor_tag(text, cursor_position)
-        local expected_with_tag = "function <|user_cursor_is_here|>add(a, b)\n    return a + b\nend"
+        local expected_with_tag = 'function <|user_cursor_is_here|>add(a, b)\n    return a + b\nend'
         should.be_equal(expected_with_tag, tagged)
     end)
 
-    it("cursor tag should be removed without touching any other characters", function()
-        local text = "function <|user_cursor_is_here|>add(a, b)\n    return a + b\nend"
-        local expected = "function add(a, b)\n    return a + b\nend"
+    it('cursor tag should be removed without touching any other characters', function()
+        local text = 'function <|user_cursor_is_here|>add(a, b)\n    return a + b\nend'
+        local expected = 'function add(a, b)\n    return a + b\nend'
         local cleaned = tags.strip_user_cursor_tag(text)
         should.be_equal(expected, cleaned)
     end)
