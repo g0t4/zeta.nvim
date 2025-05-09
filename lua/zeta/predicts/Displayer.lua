@@ -71,7 +71,7 @@ function Displayer:accept()
 
     self.window:buffer():replace_lines(
         request.details.editable_start_line,
-        request.details.editable_end_line,
+        request.details.editable_start_line,
         lines)
 
     self.marks:clear_all()
