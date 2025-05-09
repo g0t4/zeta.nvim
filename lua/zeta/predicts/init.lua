@@ -1,5 +1,4 @@
 local messages = require('devtools.messages')
-local inspect = require('devtools.inspect')
 local WindowController0Indexed = require('zeta.predicts.WindowController')
 local WindowWatcher = require('zeta.predicts.WindowWatcher')
 local PredictionRequest = require('zeta.predicts.PredictionRequest')
@@ -141,10 +140,6 @@ function M.start_watcher(buffer_number)
     -- messages.append("starting watcher: " .. tostring(watcher.window:buffer():file_name()))
     watcher:watch(
         trigger_prediction,
-        function()
-            -- TODO! this has to get to displayer:reject()
-            cancel_current_request()
-        end,
         immediate_on_cursor_moved
     )
 

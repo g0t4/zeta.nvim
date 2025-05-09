@@ -1,6 +1,5 @@
 local WindowController0Indexed = require('zeta.predicts.WindowController')
 local debounce = require('zeta.predicts.debounce')
-local messages = require('devtools.messages')
 
 --- watches events w.r.t. cursor movements, mode changes, and window changes
 --- all the autocmds to support triggering implicit actions
@@ -10,6 +9,7 @@ local messages = require('devtools.messages')
 ---@class WindowWatcher
 ---@field window WindowController0Indexed
 ---@field paused boolean
+---@field displayer Displayer
 local WindowWatcher = {}
 WindowWatcher.__index = WindowWatcher
 
@@ -19,6 +19,7 @@ function WindowWatcher:new(window_id, buffer_number, augroup_name)
     self.window = WindowController0Indexed:new(window_id)
     self.buffer_number = buffer_number
     self.paused = false
+    self.displayer = nil
     return self
 end
 
@@ -45,10 +46,8 @@ function WindowWatcher.not_supported_buffer(buffer_number)
 end
 
 --- @param trigger_prediction function(window: WindowController0Indexed)
---- @param cancel_current_request function(window: WindowController0Indexed)
 --- @param immediate_on_cursor_moved function(window: WindowController0Indexed)
 function WindowWatcher:watch(trigger_prediction,
-                             cancel_current_request,
                              immediate_on_cursor_moved)
     vim.api.nvim_create_augroup(self.augroup_name, { clear = true })
 
@@ -84,6 +83,11 @@ function WindowWatcher:watch(trigger_prediction,
             debounced_trigger.call()
         end,
     })
+    function cancel_current_request()
+        if self.displayer ~= nil then
+            self.displayer:reject()
+        end
+    end
 
     vim.api.nvim_create_autocmd('InsertLeave', {
         -- FYI nothing says I have to cancel it on leave... the prediction can be left visible after exit to normal mode
@@ -93,7 +97,7 @@ function WindowWatcher:watch(trigger_prediction,
         group = self.augroup_name,
         -- buffer = self.buffer_number,
         callback = function()
-            cancel_current_request(window)
+            cancel_current_request()
             debounced_trigger.cancel()
         end,
     })
@@ -107,7 +111,7 @@ function WindowWatcher:watch(trigger_prediction,
                 return
             end
 
-            cancel_current_request(window)
+            cancel_current_request()
             -- PRN differentiate between sending request and when can show prediction
             --   arguably, only latter (show prediction) needs debounced
             --     to avoid interfering iwth user typing!

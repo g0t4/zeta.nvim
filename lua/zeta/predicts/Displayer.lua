@@ -18,6 +18,7 @@ local prediction_namespace = vim.api.nvim_create_namespace('zeta-prediction')
 function Displayer:new(watcher)
     self = setmetatable({}, Displayer)
     self.window = watcher.window
+    watcher.displayer = self
     self.watcher = watcher
     self.marks = ExtmarksSet:new(self.window:buffer().buffer_number, prediction_namespace)
     self.rewritten_editable = nil
@@ -57,6 +58,7 @@ function Displayer:reject()
 
     self.marks:clear_all()
 
+    self.watcher.displayer = nil
     self:resume_watcher()
 end
 
@@ -312,6 +314,7 @@ function Displayer:accept()
 
     self.marks:clear_all()
 
+    self.watcher.displayer = nil
     self:resume_watcher()
 end
 
