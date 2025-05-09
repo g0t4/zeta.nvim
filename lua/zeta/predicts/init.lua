@@ -19,8 +19,6 @@ local M = {}
 local watcher = nil
 ---@type Displayer|nil
 local displayer = nil
----@type PredictionRequest|nil
-local current_request = nil
 local toggle_highlighting = false
 
 ---@param window WindowController0Indexed
@@ -105,13 +103,11 @@ end
 local function trigger_prediction(window)
     -- messages.append("requesting...")
 
-    -- PRN... a displayer is tied to a request... hrm...
-    current_request = PredictionRequest:new(window)
+    local current_request = PredictionRequest:new(window)
 
     current_request:send(function(_request, stdout)
         displayer:on_response(_request, stdout)
         -- clear request once it's done:
-        current_request = nil
     end)
 end
 
