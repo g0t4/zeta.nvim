@@ -5,12 +5,12 @@ local config = nil
 local json = vim.fn.json_encode and vim.fn.json_decode and {
     encode = vim.fn.json_encode,
     decode = vim.fn.json_decode,
-} or require("vim.json")
+} or require('vim.json')
 
-local config_path = vim.fn.stdpath("data") .. "/zeta/config.json"
+local config_path = vim.fn.stdpath('data') .. '/zeta/config.json'
 
 local function file_exists(path)
-    local file = io.open(path, "r")
+    local file = io.open(path, 'r')
     if file then
         file:close()
         return true
@@ -19,17 +19,17 @@ local function file_exists(path)
 end
 
 local function mkdir_p(path)
-    vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
+    vim.fn.mkdir(vim.fn.fnamemodify(path, ':h'), 'p')
 end
 
 local function load_config()
     local default = { predictions_enabled = true }
 
     if file_exists(config_path) then
-        local content = io.open(config_path, "r"):read("*a")
+        local content = io.open(config_path, 'r'):read('*a')
         local ok, parsed = pcall(json.decode, content)
-        if ok and type(parsed) == "table" then
-            return vim.tbl_deep_extend("force", default, parsed)
+        if ok and type(parsed) == 'table' then
+            return vim.tbl_deep_extend('force', default, parsed)
         end
     else
         mkdir_p(config_path)
@@ -39,7 +39,7 @@ local function load_config()
 end
 
 local function save_config(data)
-    local file = io.open(config_path, "w")
+    local file = io.open(config_path, 'w')
     if file then
         file:write(json.encode(data))
         file:close()
@@ -63,7 +63,7 @@ function M.lualine()
     -- FYI this is an example, copy and modify it to your liking!
     return {
         function()
-            return "ζ"
+            return 'ζ'
         end,
         color = function()
             local fg_color = ''
@@ -87,16 +87,16 @@ function M.toggle()
 end
 
 function M.setup()
-    vim.api.nvim_create_user_command("ZetaTogglePredictions", function()
+    vim.api.nvim_create_user_command('ZetaTogglePredictions', function()
         local state = M.toggle()
-        print("Predictions " .. (state and "enabled" or "disabled") .. ", please restart nvim to take effect")
+        print('Predictions ' .. (state and 'enabled' or 'disabled') .. ', please restart nvim to take effect')
     end, {})
 
-    vim.api.nvim_create_user_command("ZetaStatus", function()
+    vim.api.nvim_create_user_command('ZetaStatus', function()
         if M.is_enabled() then
-            print("Zeta predictions enabled")
+            print('Zeta predictions enabled')
         else
-            print("Zeta predictions disabled")
+            print('Zeta predictions disabled')
         end
     end, {})
 end

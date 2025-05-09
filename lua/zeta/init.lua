@@ -1,6 +1,6 @@
-local predictions = require("zeta.predicts.init")
-local poc = require("zeta.learn.diff.poc")
-local config = require("zeta.config")
+local predictions = require('zeta.predicts.init')
+local poc = require('zeta.learn.diff.poc')
+local config = require('zeta.config')
 local M = {}
 
 function M.setup()

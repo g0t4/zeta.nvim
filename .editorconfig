@@ -17,7 +17,7 @@ align_continuous_inline_comment = false
 #   only diff is if using '/" inside the string, have to escape if same outer delimiter
 #   ' does look cleaner
 #   but, gah... I don't care enough to have it change everything yet
-# quote_style = double
+quote_style = single
 #
 # *** blank lines (called line_space)
 #   keep, fixed(n), min(n), max(n)

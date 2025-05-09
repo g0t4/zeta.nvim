@@ -1,13 +1,13 @@
-local files = require("zeta.helpers.files")
-local messages = require("devtools.messages")
-local inspect = require("devtools.inspect")
-local WindowController0Indexed = require("zeta.predicts.WindowController")
-local WindowWatcher = require("zeta.predicts.WindowWatcher")
-local PredictionRequest = require("zeta.predicts.PredictionRequest")
-local Displayer = require("zeta.predicts.Displayer")
-local Accepter = require("zeta.predicts.Accepter")
-local ExcerptHighlighter = require("zeta.predicts.ExcerptHighlighter")
-local tags = require("zeta.helpers.tags")
+local files = require('zeta.helpers.files')
+local messages = require('devtools.messages')
+local inspect = require('devtools.inspect')
+local WindowController0Indexed = require('zeta.predicts.WindowController')
+local WindowWatcher = require('zeta.predicts.WindowWatcher')
+local PredictionRequest = require('zeta.predicts.PredictionRequest')
+local Displayer = require('zeta.predicts.Displayer')
+local Accepter = require('zeta.predicts.Accepter')
+local ExcerptHighlighter = require('zeta.predicts.ExcerptHighlighter')
+local tags = require('zeta.helpers.tags')
 
 local M = {}
 
@@ -28,8 +28,8 @@ local toggle_highlighting = false
 function display_fake_response(window, _displayer)
     -- FYI not using watcher.window b/c I want this to work even when I disabled the watcher event handlers
 
-    local fake_stdout = files.read_example("01_response.json")
-    local fake_body   = files.read_example_json("01_request.json")
+    local fake_stdout = files.read_example('01_response.json')
+    local fake_body   = files.read_example_json('01_request.json')
     display_fake_response_inner(window, _displayer, fake_body, fake_stdout)
 end
 
@@ -86,14 +86,14 @@ function display_fake_prediction_del_5th_line_after_cursor(window, _displayer)
     -- 15
 
     local fake_response_body_raw = vim.json.encode({
-        output_excerpt = table.concat(modifed_lines, "\n"),
+        output_excerpt = table.concat(modifed_lines, '\n'),
         -- request_id = "foo",
     })
     -- messages.header("fake_response")
     -- messages.append(fake_response_body_raw)
 
     local fake_request_body = {
-        input_excerpt = table.concat(lines, "\n"),
+        input_excerpt = table.concat(lines, '\n'),
     }
     -- messages.header("fake_request")
     -- messages.append(fake_request_body)
@@ -103,7 +103,7 @@ end
 
 ---@param window WindowController0Indexed
 local function cancel_current_request(window)
-    messages.append("cancelling...")
+    messages.append('cancelling...')
 
     if displayer ~= nil then
         displayer:reject()
@@ -165,7 +165,7 @@ function M.start_watcher(buffer_number)
 
     local window_id = vim.api.nvim_get_current_win()
     -- detect treesitter upfront (once)
-    watcher = WindowWatcher:new(window_id, buffer_number, "zeta-prediction")
+    watcher = WindowWatcher:new(window_id, buffer_number, 'zeta-prediction')
     -- messages.append("starting watcher: " .. tostring(watcher.window:buffer():file_name()))
     watcher:watch(
         trigger_prediction,
@@ -176,10 +176,10 @@ function M.start_watcher(buffer_number)
 end
 
 function M.setup_events()
-    local augroup_name = "zeta-buffer-monitors"
+    local augroup_name = 'zeta-buffer-monitors'
     vim.api.nvim_create_augroup(augroup_name, { clear = true })
 
-    vim.api.nvim_create_autocmd("FileType", {
+    vim.api.nvim_create_autocmd('FileType', {
         group = augroup_name,
         callback = function(args)
             -- messages.append("file type changed: " .. vim.inspect(args))
@@ -188,7 +188,7 @@ function M.setup_events()
     })
 
     -- PRN use WinEnter (change window event), plus when first loading should trigger for current window (since that's not a change window event)
-    vim.api.nvim_create_autocmd({ "BufEnter" }, {
+    vim.api.nvim_create_autocmd({ 'BufEnter' }, {
         group = augroup_name,
         callback = function(args)
             -- messages.append("buffer enter: " .. args.buf)
@@ -196,7 +196,7 @@ function M.setup_events()
         end
     })
 
-    vim.api.nvim_create_autocmd({ "BufLeave" }, {
+    vim.api.nvim_create_autocmd({ 'BufLeave' }, {
         group = augroup_name,
         callback = M.ensure_watcher_stopped,
     })
@@ -205,14 +205,14 @@ end
 function M.setup()
     function keymap_trigger_prediction()
         if not watcher or not watcher.window then
-            messages.append("No watcher for current window")
+            messages.append('No watcher for current window')
             return
         end
         -- FYI this is real deal so you have to have full watcher
         trigger_prediction(watcher.window)
     end
 
-    vim.keymap.set("n", "<leader>p", keymap_trigger_prediction, { desc = "show prediction" })
+    vim.keymap.set('n', '<leader>p', keymap_trigger_prediction, { desc = 'show prediction' })
     function keymap_fake_prediction()
         -- this should always work, using the current window/buffer (regardless of type) b/c its a fake request/response
         -- FYI once this is activated, I can use other keymaps to accept/cancel/highlight/etc
@@ -228,12 +228,12 @@ function M.setup()
     end
 
     -- * fake prediction
-    vim.keymap.set("n", "<leader>pf", keymap_fake_prediction, { desc = "demo fake request/response" })
+    vim.keymap.set('n', '<leader>pf', keymap_fake_prediction, { desc = 'demo fake request/response' })
 
     -- * toggle [h]ighlighting excerpt as cursor moves
-    vim.keymap.set("n", "<leader>ph", function()
+    vim.keymap.set('n', '<leader>ph', function()
         if not watcher or not watcher.window then
-            messages.append("Cannot toggle highlighting, no watcher.window")
+            messages.append('Cannot toggle highlighting, no watcher.window')
             return
         end
         toggle_highlighting = not toggle_highlighting
@@ -243,7 +243,7 @@ function M.setup()
     -- * accept prediction
     function accept()
         if not displayer or not watcher or not watcher.window then
-            messages.append("No predictions to accept... no displayer, watcher.window")
+            messages.append('No predictions to accept... no displayer, watcher.window')
             return
         end
         local accepter = Accepter:new(watcher.window)
@@ -251,21 +251,21 @@ function M.setup()
     end
 
     -- in insert mode - alt+tab to accept, or <C-o><leader>pa
-    vim.keymap.set("n", "<leader>pa", accept, { desc = "accept prediction" })
-    vim.keymap.set({ "i", "n" }, "<M-Tab>", accept, { desc = "accept prediction" })
+    vim.keymap.set('n', '<leader>pa', accept, { desc = 'accept prediction' })
+    vim.keymap.set({ 'i', 'n' }, '<M-Tab>', accept, { desc = 'accept prediction' })
 
     -- * cancel prediction
     function reject()
         if not watcher or not watcher.window then
-            messages.append("No predictions to cancel, no watcher.window")
+            messages.append('No predictions to cancel, no watcher.window')
             return
         end
         cancel_current_request(watcher.window)
     end
 
     -- in insert mode - alt+esc to cancel, or <C-o><leader>pc
-    vim.keymap.set("n", "<leader>pc", reject, { desc = "reject prediction" })
-    vim.keymap.set({ "i", "n" }, "<M-Esc>", reject, { desc = "reject prediction" })
+    vim.keymap.set('n', '<leader>pc', reject, { desc = 'reject prediction' })
+    vim.keymap.set({ 'i', 'n' }, '<M-Esc>', reject, { desc = 'reject prediction' })
 
     -- require("zeta.predicts.miscTsGotoMaps").setup()
 
