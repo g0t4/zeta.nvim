@@ -198,7 +198,10 @@ function M.setup_events()
 
     vim.api.nvim_create_autocmd({ 'BufLeave' }, {
         group = augroup_name,
-        callback = M.ensure_watcher_stopped,
+        callback = function()
+            M.ensure_watcher_stopped()
+            M.unregister_keymaps()
+        end,
     })
 end
 
@@ -263,13 +266,28 @@ function M.register_keymaps()
 end
 
 function M.unregister_keymaps()
-    vim.keymap.del('n', '<leader>p', { buffer = true })
-    vim.keymap.del('n', '<leader>pf', { buffer = true })
-    vim.keymap.del('n', '<leader>ph', { buffer = true })
-    vim.keymap.del('n', '<leader>pa', { buffer = true })
-    vim.keymap.del({ 'i', 'n' }, '<M-Tab>', { buffer = true })
-    vim.keymap.del('n', '<leader>pc', { buffer = true })
-    vim.keymap.del({ 'i', 'n' }, '<M-Esc>', { buffer = true })
+    -- silent! shuts up the BS about keymap not found... since there is no good way to check if it exists
+    --    no vim.keymap.get()... no arg to vim.keymap.del() that tells it to STFU if not found
+    --    vim.api.nvim_buf_get_keymap() returns leader as ' ' (not the <leader> slug).. HOT MESS
+    --    so just delete and don't care
+    --
+    -- for vimscript use silent!
+    --
+    -- OR, in lua, use pcall
+
+    -- I like the compressed nature of vimscript here...
+    vim.cmd([[
+      silent! nunmap <buffer> <leader>p
+      silent! nunmap <buffer> <leader>pf
+      silent! nunmap <buffer> <leader>ph
+      silent! nunmap <buffer> <leader>pa
+      silent! nunmap <buffer> <leader>pc
+      silent! nunmap <buffer> <M-Tab>
+      silent! nunmap <buffer> <M-Esc>
+
+      silent! iunmap <buffer> <M-Tab>
+      silent! iunmap <buffer> <M-Esc>
+    ]])
 end
 
 function M.setup()
