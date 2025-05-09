@@ -3,7 +3,6 @@ local combined = require('zeta.diff.combined')
 local messages = require('devtools.messages')
 local inspect = require('devtools.inspect')
 local ExtmarksSet = require('zeta.predicts.ExtmarksSet')
-local Accepter = require('zeta.predicts.Accepter')
 
 ---@class Displayer
 ---@field window WindowController0Indexed
@@ -300,11 +299,27 @@ function Displayer:on_response(request, response_body_stdout)
     self:set_keymaps()
 end
 
+function Displayer:accept()
+    self:pause_watcher()
+
+    local request = self.current_request
+    local lines = vim.fn.split(self.rewritten_editable, '\n')
+
+    self.window:buffer():replace_lines(
+        request.details.editable_start_line,
+        request.details.editable_end_line,
+        lines)
+
+    self.marks:clear_all()
+
+    self:resume_watcher()
+end
+
 function Displayer:set_keymaps()
     function accept()
         vim.schedule(function()
             messages.append('Accepting')
-            Accepter:new(self.watcher.window):accept(self)
+            self:accept()
         end)
     end
     vim.keymap.set({ 'i', 'n' }, '<Tab>', accept, { expr = true, buffer = true })
@@ -313,7 +328,7 @@ function Displayer:set_keymaps()
     function reject()
         vim.schedule(function()
             messages.append('Rejecting')
-            Accepter:new(self.watcher.window):reject(self)
+            self:reject()
         end)
     end
     vim.keymap.set({ 'i', 'n' }, '<Esc>', reject, { expr = true, buffer = true })
