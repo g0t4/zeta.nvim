@@ -1,5 +1,5 @@
-local inspect = require("devtools.inspect")
-local messages = require("devtools.messages")
+local inspect = require('devtools.inspect')
+local messages = require('devtools.messages')
 
 ---@class Accepter
 local Accepter = {}
@@ -18,7 +18,7 @@ function Accepter:accept(displayer)
     displayer:pause_watcher()
 
     local request = displayer.current_request
-    local lines = vim.fn.split(displayer.rewritten_editable, "\n")
+    local lines = vim.fn.split(displayer.rewritten_editable, '\n')
 
     self.window:buffer():replace_lines(
         request.details.editable_start_line,

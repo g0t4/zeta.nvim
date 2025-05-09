@@ -67,11 +67,11 @@ function ExtmarksSet:set(mark_id, opts)
 end
 
 function ExtmarksSet:highlight_lines(opts)
-    assert(opts.id, "must provide an id")
-    assert(opts.hl_group, "must provide an hl_group")
-    assert(opts.start_line, "must provide a start_line")
+    assert(opts.id, 'must provide an id')
+    assert(opts.hl_group, 'must provide an hl_group')
+    assert(opts.start_line, 'must provide a start_line')
     -- assert(opts.start_col, "must provide a start_col")
-    assert(opts.end_line, "must provide an end_line")
+    assert(opts.end_line, 'must provide an end_line')
     -- assert(opts.end_col, "must provide an end_col")
 
     local start_line = opts.start_line or 0
@@ -90,7 +90,7 @@ end
 -- I might even try to color over the existing text (that was preserved and strike out removed/insert green for now.. text)
 -- I doubt I will go so far as to hide all but the current "chunk" of the diff... but I might do that too... I suppose that might make it easier to show the diff chunk by chunk?
 
-local hl_strike = "zeta-strike"
+local hl_strike = 'zeta-strike'
 vim.api.nvim_set_hl(0, hl_strike, {
     strikethrough = true,
 })
@@ -103,7 +103,7 @@ function ExtmarksSet:diff_strike_lines(start_line, end_line)
         self.buffer_number, self.namespace_id,
         start_line, 0,
         {
-            hl_group = { "DiffDelete", hl_strike },
+            hl_group = { 'DiffDelete', hl_strike },
             end_line = end_line,
             end_col = 0,
         })

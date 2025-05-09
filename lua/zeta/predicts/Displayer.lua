@@ -1,9 +1,9 @@
-local tags = require("zeta.helpers.tags")
-local combined = require("zeta.diff.combined")
-local messages = require("devtools.messages")
-local inspect = require("devtools.inspect")
-local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
-local Accepter = require("zeta.predicts.Accepter")
+local tags = require('zeta.helpers.tags')
+local combined = require('zeta.diff.combined')
+local messages = require('devtools.messages')
+local inspect = require('devtools.inspect')
+local ExtmarksSet = require('zeta.predicts.ExtmarksSet')
+local Accepter = require('zeta.predicts.Accepter')
 
 ---@class Displayer
 ---@field window WindowController0Indexed
@@ -14,7 +14,7 @@ local Accepter = require("zeta.predicts.Accepter")
 local Displayer = {}
 Displayer.__index = Displayer
 
-local prediction_namespace = vim.api.nvim_create_namespace("zeta-prediction")
+local prediction_namespace = vim.api.nvim_create_namespace('zeta-prediction')
 ---@param watcher WindowWatcher
 function Displayer:new(watcher)
     self = setmetatable({}, Displayer)
@@ -46,7 +46,7 @@ function Displayer:reject()
     self:pause_watcher()
 
     -- undo works for now! lets try this
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>u", true, false, true), "n", false)
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>u', true, false, true), 'n', false)
     -- undo works for now! lets try this
     -- vim.api.nvim_feedkeys("u", "n", false)
 
@@ -100,31 +100,31 @@ function Displayer:on_response(request, response_body_stdout)
     self.current_response_body_stdout = response_body_stdout
 
     local decoded = vim.fn.json_decode(response_body_stdout)
-    messages.header("response_body_stdout:")
+    messages.header('response_body_stdout:')
     messages.append(inspect(decoded))
-    assert(decoded ~= nil, "decoded reponse body should not be nil")
+    assert(decoded ~= nil, 'decoded reponse body should not be nil')
     local rewritten = decoded.output_excerpt
     if rewritten == nil then
-        messages.header("output_excerpt is nil, aborting...")
+        messages.header('output_excerpt is nil, aborting...')
         return
     end
 
-    local original = request.details.body.input_excerpt or ""
-    messages.header("input_excerpt:")
+    local original = request.details.body.input_excerpt or ''
+    messages.header('input_excerpt:')
     messages.append(original)
-    messages.header("output_excerpt:")
+    messages.header('output_excerpt:')
     messages.append(rewritten)
 
-    original_editable = tags.get_editable_region(original) or ""
+    original_editable = tags.get_editable_region(original) or ''
     -- PRN use cursor position? i.e. check if cursor has moved since prediction requested (might not need this actually)
     -- cursor_position = parser.get_position_of_user_cursor(original) or 0
     -- messages.header("cursor_position:", cursor_position)
     original_editable = tags.strip_user_cursor_tag(original_editable)
 
-    self.rewritten_editable = tags.get_editable_region(rewritten) or ""
-    messages.header("original_editable:")
+    self.rewritten_editable = tags.get_editable_region(rewritten) or ''
+    messages.header('original_editable:')
     messages.append(original_editable)
-    messages.header("rewritten_editable:")
+    messages.header('rewritten_editable:')
     messages.append(self.rewritten_editable)
 
     local diff = combined.combined_diff(original_editable, self.rewritten_editable)
@@ -133,7 +133,7 @@ function Displayer:on_response(request, response_body_stdout)
 
     local extmark_lines = vim.iter(diff):fold({ {} }, function(accum, chunk)
         if chunk == nil then
-            messages.append("nil chunk: " .. tostring(chunk))
+            messages.append('nil chunk: ' .. tostring(chunk))
         else
             -- each chunk has has two strings: { "text\nfoo\nbar", "type" }
             --   type == "same", "add", "del"
@@ -144,27 +144,27 @@ function Displayer:on_response(request, response_body_stdout)
             local text = chunk[2]
 
             local type_hlgroup = nil -- nil = TODO don't change it right?
-            if type == "+" then
+            if type == '+' then
                 -- type_hlgroup = hl_added -- mine (above)
                 -- FYI nvim and plugins have a bunch of options already registerd too (color/highlight wise)
                 -- type_hlgroup = "Added" -- light green
-                type_hlgroup = "diffAdded" -- darker green/cyan - *** FAVORITE
-            elseif type == "-" then
+                type_hlgroup = 'diffAdded' -- darker green/cyan - *** FAVORITE
+            elseif type == '-' then
                 -- type_hlgroup = hl_deleted -- mine (above)
                 -- type_hlgroup = "Removed" -- very light red (almost brown/gray)
-                type_hlgroup = "diffRemoved" -- dark red - *** FAVORITE
+                type_hlgroup = 'diffRemoved' -- dark red - *** FAVORITE
                 -- return accum
                 -- actually, based on how I aggregate between sames... there should only be one delete and one add between any two sames... so, I could just show both and it would appaer like remove / add (probably often lines removed then lines added, my diff processor puts the delete first which makes sense for that to be on top)
             end
-            if not text:find("\n") then
+            if not text:find('\n') then
                 -- no new lines, so we just tack on to end of current line
                 local len_text = #text
                 if len_text > 0 then
                     table.insert(current_line, { text, type_hlgroup })
                 end
             else
-                local splits = vim.split(text, "\n")
-                messages.header("splits:")
+                local splits = vim.split(text, '\n')
+                messages.header('splits:')
                 messages.append(inspect(splits))
                 for i, piece in ipairs(splits) do
                     -- FYI often v will be empty (i.e. a series of newlines)... do not exclude these empty lines!
@@ -202,7 +202,7 @@ function Displayer:on_response(request, response_body_stdout)
     -- end
 
     if #extmark_lines < 1 then
-        messages.append("no lines")
+        messages.append('no lines')
         return
     end
 
@@ -222,7 +222,7 @@ function Displayer:on_response(request, response_body_stdout)
     -- ?? switch to incremental diff presentation (not AIO), and with it partial accept/reject?!
     -- self.marks:diff_strike_lines(start_line, end_line)
 
-    messages.header("extmark_lines")
+    messages.header('extmark_lines')
     for _, v in ipairs(extmark_lines) do
         messages.append(vim.inspect(v))
     end
@@ -234,12 +234,12 @@ function Displayer:on_response(request, response_body_stdout)
         -- virt_text = first_extmark_line, -- leave first line unchanged (its the line before the changes)
         id = select_excerpt_mark_id,
         virt_lines = extmark_lines, -- all changes appear under the line above the diff
-        virt_text_pos = "overlay",
+        virt_text_pos = 'overlay',
     })
 
     -- delete original lines (that way only diff shows in extmarks)
     self.original_lines = self.window:buffer():get_lines(start_line, end_line)
-    table.insert(self.original_lines, "") -- add empty line (why?)
+    table.insert(self.original_lines, '') -- add empty line (why?)
     self.window:buffer():replace_lines(start_line, end_line, {})
 
     -- PRN... register event handler that fires once ... on user typing, to undo and put stuff back
@@ -247,7 +247,7 @@ function Displayer:on_response(request, response_body_stdout)
     --    revisit how zed does the diff display/interaction...
     --    does it feel right to show it and then type to say no? it probably does
     --       as long as its not constantly lagging the typing for you
-    vim.api.nvim_create_autocmd({ "InsertCharPre" }, {
+    vim.api.nvim_create_autocmd({ 'InsertCharPre' }, {
         buffer = self.window:buffer().buffer_number,
         callback = function(args)
             local char = vim.v.char
@@ -256,7 +256,7 @@ function Displayer:on_response(request, response_body_stdout)
                 --   type i to go into insert mode
                 --   then type a new char to trigger this
                 --   TODO better yet setup a trigger in insert mode again for fake testing so not wait on real deal
-                messages.header("InsertCharPre")
+                messages.header('InsertCharPre')
                 messages.append(args)
                 messages.append(char)
 
@@ -265,8 +265,8 @@ function Displayer:on_response(request, response_body_stdout)
                 self:pause_watcher()
 
                 -- * undo or put lines back:
-                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>u", true, false, true), "n", false)
-                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>u", true, false, true), "n", false)
+                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>u', true, false, true), 'n', false)
+                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>u', true, false, true), 'n', false)
                 -- why am I needing two undos? that part is confusing me... used to work with just one?
                 -- -- put back manually (have to add back below capturing this and fix off by one line issue):
                 -- self.window:buffer():replace_lines(
@@ -280,7 +280,7 @@ function Displayer:on_response(request, response_body_stdout)
                 -- * back to insert mode
                 -- vim.api.nvim_feedkeys("i", 'n', true) -- back to insert standalone
                 -- WORKS!!!
-                vim.api.nvim_feedkeys("i" .. char, 'n', true) -- back to insert mode and type key.. not working
+                vim.api.nvim_feedkeys('i' .. char, 'n', true) -- back to insert mode and type key.. not working
                 -- STILL VERY ROUGH AROUND THE EDGES BUT THIS IS WORKING!
 
 

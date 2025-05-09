@@ -1,6 +1,6 @@
-local ExtmarksSet = require("zeta.predicts.ExtmarksSet")
-local BufferController = require("zeta.predicts.BufferController")
-local messages = require("devtools.messages")
+local ExtmarksSet = require('zeta.predicts.ExtmarksSet')
+local BufferController = require('zeta.predicts.BufferController')
+local messages = require('devtools.messages')
 
 ---@class ExcerptHighlighter
 local ExcerptHighlighter = {}
@@ -10,7 +10,7 @@ function ExcerptHighlighter:new(buffer_number)
     self        = setmetatable({}, ExcerptHighlighter)
     self.buffer = BufferController:new(buffer_number)
 
-    local ns_id = vim.api.nvim_create_namespace("zeta-excerpts")
+    local ns_id = vim.api.nvim_create_namespace('zeta-excerpts')
     self.marks  = ExtmarksSet:new(buffer_number, ns_id)
     return self
 end
@@ -19,26 +19,26 @@ function ExcerptHighlighter:clear()
     self.marks:clear_all()
 end
 
-local hl_editable = "zeta-excerpt-editable"
+local hl_editable = 'zeta-excerpt-editable'
 -- Active excerpt (primary highlight)
 vim.api.nvim_set_hl(0, hl_editable, {
-    bg = "#3c4452", -- dark desaturated bluish tone
-    fg = "NONE"
+    bg = '#3c4452', -- dark desaturated bluish tone
+    fg = 'NONE'
 })
 
-local hl_context = "zeta-excerpt-context"
+local hl_context = 'zeta-excerpt-context'
 -- Context lines (lighter, less saturated)
 vim.api.nvim_set_hl(0, hl_context, {
-    bg = "#2f3640", -- subtle contrast from base bg
-    fg = "#888888" -- optional if you want to dim text slightly
+    bg = '#2f3640', -- subtle contrast from base bg
+    fg = '#888888' -- optional if you want to dim text slightly
 })
 
-local hl_headsup = "zeta-headsup"
+local hl_headsup = 'zeta-headsup'
 vim.api.nvim_set_hl(0, hl_headsup, {
     -- fg = "#e5c07b",
     -- bold = true
-    fg = "#1f1f1f",
-    bg = "#ffcc00"
+    fg = '#1f1f1f',
+    bg = '#ffcc00'
 })
 
 ---@param details PredictionDetails
@@ -60,7 +60,7 @@ function ExcerptHighlighter:highlight_lines(details)
     local chars_excerpt = details.body.input_excerpt:len()
     local estimated_tokens_per_char = 4
     local approx_tokens_excerpt = math.ceil(chars_excerpt / estimated_tokens_per_char)
-    local headsup = "c: " .. chars_excerpt .. ", t: " .. approx_tokens_excerpt
+    local headsup = 'c: ' .. chars_excerpt .. ', t: ' .. approx_tokens_excerpt
     local on_line = details.cursor_line
     -- display on last line of entire excerpt
     self.marks:highlight_lines({
@@ -68,7 +68,7 @@ function ExcerptHighlighter:highlight_lines(details)
         start_line = on_line,
         end_line = on_line,
         hl_group = hl_headsup,
-        virt_text_pos = "eol",
+        virt_text_pos = 'eol',
         virt_text = { { headsup, hl_headsup } },
     })
 

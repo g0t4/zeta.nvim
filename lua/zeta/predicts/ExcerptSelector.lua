@@ -1,7 +1,7 @@
-local messages = require("devtools.messages")
-local inspect = require("devtools.inspect")
-local Excerpt = require("zeta.predicts.Excerpt")
-local tags = require("zeta.helpers.tags")
+local messages = require('devtools.messages')
+local inspect = require('devtools.inspect')
+local Excerpt = require('zeta.predicts.Excerpt')
+local tags = require('zeta.helpers.tags')
 
 ---@class ExcerptSelector
 ---@field buffer BufferController0Indexed
@@ -27,17 +27,17 @@ end
 ---@param filetype string
 local function is_section_node(node, filetype)
     local node_type = node:type()
-    if node_type == "function_declaration"
-        or node_type == "function_definition"
-        or node_type == "arrow_function" -- js
-        or node_type == "lambda" -- python?
-        or node_type == "function_expression" --js
+    if node_type == 'function_declaration'
+        or node_type == 'function_definition'
+        or node_type == 'arrow_function' -- js
+        or node_type == 'lambda' -- python?
+        or node_type == 'function_expression' --js
     then
         return true
     end
 
-    if filetype == "markdown" then
-        return node_type == "section"
+    if filetype == 'markdown' then
+        return node_type == 'section'
     end
     return false
 end
@@ -87,14 +87,14 @@ function ExcerptSelector:line_range_with_treesitter(row, column)
     local node = self.buffer:get_node_at_position(row, column)
     if node == nil then
         -- FYI can happen when first enter a buffer (IIAC treesitter is not ready?)
-        trace("no node found at position: " .. row .. ", " .. column)
+        trace('no node found at position: ' .. row .. ', ' .. column)
         return nil, nil
     end
 
     -- find closest enclosing node (to start search for excerpt range)
     local enclosing = get_enclosing_function_node(node, self.buffer:filetype())
     if enclosing == nil then
-        trace("no enclosing node found at position: " .. row .. ", " .. column)
+        trace('no enclosing node found at position: ' .. row .. ', ' .. column)
         return nil, nil
     end
 
@@ -149,7 +149,7 @@ function ExcerptSelector:excerpt_at_position(cursor_row, cursor_column)
 
     -- TODO make sure lines are joined correctly...
     --   that w/ serialization we get \n as appropriate (vs new lines)... not sure just check what is needed for model's template and what I have here (for fake and real requests)
-    text = table.concat(text_lines, "\n")
+    text = table.concat(text_lines, '\n')
     return Excerpt:new(text, editable_start_line, editable_end_line)
 end
 

@@ -1,4 +1,4 @@
-local messages = require("devtools.messages")
+local messages = require('devtools.messages')
 ---This entire class operates on 0-indexed row and column positions
 ---   or if that seems wrong I'll go to all 1-indexed
 ---Also intended to hide away complexities in nvim_ apis
@@ -80,7 +80,7 @@ function BufferController0Indexed:replace_lines(start_row, end_row, new_lines)
     if end_row >= self:num_lines() then
         -- FYI this happens when testing fake prediction if you trigger it near the end of the buffer
         --   and the fake prediction is longer than the rest of the buffer
-        messages.append("end_row is past end of buffer, clamping to end of buffer")
+        messages.append('end_row is past end of buffer, clamping to end of buffer')
         end_row = self:num_lines() - 1
     end
     vim.api.nvim_buf_set_text(self.buffer_number,
