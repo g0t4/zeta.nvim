@@ -1,11 +1,9 @@
-local files = require('zeta.helpers.files')
 local messages = require('devtools.messages')
 local inspect = require('devtools.inspect')
 local WindowController0Indexed = require('zeta.predicts.WindowController')
 local WindowWatcher = require('zeta.predicts.WindowWatcher')
 local PredictionRequest = require('zeta.predicts.PredictionRequest')
 local Displayer = require('zeta.predicts.Displayer')
-local Accepter = require('zeta.predicts.Accepter')
 local ExcerptHighlighter = require('zeta.predicts.ExcerptHighlighter')
 local tags = require('zeta.helpers.tags')
 
@@ -17,28 +15,11 @@ local M = {}
 --   would have to have autocmd group that is segmented by window id too
 ---@type WindowWatcher|nil
 local watcher = nil
----@type Displayer|nil
-local displayer = nil
 local toggle_highlighting = false
 
----@param window WindowController0Indexed
----@param _displayer Displayer
-function display_fake_response_inner(window, _displayer, fake_request_body, fake_response_body)
-    local row          = window:get_cursor_row()
-    local fake_details = {
-        body = fake_request_body,
+function keymap_fake_prediction()
+    local window = WindowController0Indexed:new_from_current_window()
 
-        -- make up a position for now using cursor in current file, doesn't matter what that file has in it
-        editable_start_line = row,
-        editable_end_line = row + 10, -- right now this is not used
-    }
-    local fake_request = PredictionRequest:new_fake_request(window, fake_details)
-    _displayer:on_response(fake_request, fake_response_body)
-end
-
----@param window WindowController0Indexed
----@param _displayer Displayer
-function display_fake_prediction_del_5th_line_after_cursor(window, _displayer)
     local row = window:get_cursor_row()
     -- take 10 lines after cursor
     local lines = window:buffer():get_lines(row, row + 10)
@@ -80,14 +61,33 @@ function display_fake_prediction_del_5th_line_after_cursor(window, _displayer)
     -- messages.header("fake_response")
     -- messages.append(fake_response_body_raw)
 
-    local fake_request_body = {
+    local fake_request_body      = {
         input_excerpt = table.concat(lines, '\n'),
     }
     -- messages.header("fake_request")
     -- messages.append(fake_request_body)
 
-    display_fake_response_inner(window, _displayer, fake_request_body, fake_response_body_raw)
+    -- FYI previuos seam for two different fake examples
+
+    local fake_details           = {
+        body = fake_request_body,
+
+        -- make up a position for now using cursor in current file, doesn't matter what that file has in it
+        editable_start_line = row,
+        editable_end_line = row + 10, -- right now this is not used
+    }
+    local fake_request           = PredictionRequest:new_fake_request(window, fake_details)
+
+    -- TODO do I need this fake watcher? if I keep reworking, I bet this falls away
+    local _watcher_fake          = {
+        paused = false,
+        window = window,
+        unwatch = function() end
+    }
+    Displayer:new(_watcher_fake)
+        :on_response(fake_request, fake_response_body_raw)
 end
+
 
 ---@param window WindowController0Indexed
 local function trigger_prediction(window)
@@ -96,8 +96,10 @@ local function trigger_prediction(window)
     local current_request = PredictionRequest:new(window)
 
     current_request:send(function(_request, stdout)
-        displayer:on_response(_request, stdout)
-        -- clear request once it's done:
+        assert(watcher ~= nil, 'watcher should not be nil')
+
+        Displayer:new(watcher)
+            :on_response(_request, stdout)
     end)
 end
 
@@ -142,7 +144,6 @@ function M.start_watcher(buffer_number)
         cancel_current_request,
         immediate_on_cursor_moved
     )
-    displayer = Displayer:new(watcher)
 
     M.register_buffer_keymaps_always_available()
 end
@@ -188,19 +189,6 @@ function M.register_buffer_keymaps_always_available()
     end
     vim.keymap.set('n', '<leader>p', keymap_trigger_prediction, { buffer = true })
 
-    local function keymap_fake_prediction()
-        -- this should always work, using the current window/buffer (regardless of type) b/c its a fake request/response
-        -- FYI once this is activated, I can use other keymaps to accept/cancel/highlight/etc
-        watcher   = {
-            paused = false,
-            window = WindowController0Indexed:new_from_current_window(),
-            unwatch = function() end
-        }
-        -- set here so we can use with accepter
-        displayer = Displayer:new(watcher)
-        -- display_fake_response(watcher.window, displayer)
-        display_fake_prediction_del_5th_line_after_cursor(watcher.window, displayer)
-    end
     vim.keymap.set('n', '<leader>pf', keymap_fake_prediction, { buffer = true })
 
     local function keymap_toggle_highlight_excerpt_under_cursor()
