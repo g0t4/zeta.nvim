@@ -68,6 +68,7 @@ function Displayer:accept()
 
     local request = self.current_request
     local lines = vim.fn.split(self.rewritten_editable, '\n')
+    table.insert(lines, '')
 
     self.window:buffer():replace_lines(
         request.details.editable_start_line,
