@@ -66,8 +66,6 @@ end
 function Displayer:accept()
     self:pause_watcher()
 
-    local request = self.current_request
-
     local lines = vim.fn.split(self.rewritten_editable, '\n')
 
     -- TODO think through why I need an empty last line here?
@@ -77,8 +75,8 @@ function Displayer:accept()
     table.insert(lines, '')
 
     self.window:buffer():replace_lines(
-        request.details.editable_start_line,
-        request.details.editable_start_line,
+        self.current_request.details.editable_start_line,
+        self.current_request.details.editable_start_line,
         lines)
 
     self.marks:clear_all()
