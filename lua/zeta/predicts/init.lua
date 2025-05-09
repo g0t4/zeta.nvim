@@ -174,7 +174,7 @@ function M.start_watcher(buffer_number)
     )
     displayer = Displayer:new(watcher)
 
-    M.register_keymaps()
+    M.register_buffer_keymaps_always_available()
 end
 
 function M.setup_events()
@@ -202,12 +202,12 @@ function M.setup_events()
         group = augroup_name,
         callback = function()
             M.ensure_watcher_stopped()
-            M.unregister_keymaps()
+            M.unregister_buffer_keymaps_always_available()
         end,
     })
 end
 
-function M.register_keymaps()
+function M.register_buffer_keymaps_always_available()
     local function keymap_trigger_prediction()
         if not watcher or not watcher.window then
             messages.append('No watcher for current window')
@@ -242,34 +242,9 @@ function M.register_keymaps()
         immediate_on_cursor_moved(watcher.window)
     end
     vim.keymap.set('n', '<leader>ph', keymap_toggle_highlight_excerpt_under_cursor, { buffer = true })
-
-    -- TODO move accept/reject to add/remove when show/accept/reject prediction only
-    function keymap_accept_prediction()
-        if not displayer or not watcher or not watcher.window then
-            messages.append('No predictions to accept... no displayer, watcher.window')
-            return
-        end
-        local accepter = Accepter:new(watcher.window)
-        accepter:accept(displayer)
-    end
-    -- in insert mode - alt+tab to accept, or <C-o><leader>pa
-    -- by the way n mode only has pa/pc for testing the fake prediction (otherwise you'd always be in insert mode, well, theoretically)
-    vim.keymap.set('n', '<leader>pa', keymap_accept_prediction, { desc = 'accept prediction' })
-    vim.keymap.set({ 'i', 'n' }, '<M-Tab>', keymap_accept_prediction, { buffer = true })
-
-    function keymap_reject_prediction()
-        if not watcher or not watcher.window then
-            messages.append('No predictions to cancel, no watcher.window')
-            return
-        end
-        cancel_current_request(watcher.window)
-    end
-    -- in insert mode - alt+esc to cancel, or <C-o><leader>pc
-    vim.keymap.set('n', '<leader>pc', keymap_reject_prediction, { desc = 'reject prediction' })
-    vim.keymap.set({ 'i', 'n' }, '<M-Esc>', keymap_reject_prediction, { buffer = true })
 end
 
-function M.unregister_keymaps()
+function M.unregister_buffer_keymaps_always_available()
     -- silent! shuts up the BS about keymap not found... since there is no good way to check if it exists
     --    no vim.keymap.get()... no arg to vim.keymap.del() that tells it to STFU if not found
     --    vim.api.nvim_buf_get_keymap() returns leader as ' ' (not the <leader> slug).. HOT MESS
@@ -279,19 +254,13 @@ function M.unregister_keymaps()
     --
     -- OR, in lua, use pcall
 
+
     -- I like the compressed nature of vimscript here...
     -- FYI if this is alot of overhead, go back to a few global keymaps (p/pf/ph), then the rest are only when prediction is displayed
     vim.cmd([[
       silent! nunmap <buffer> <leader>p
       silent! nunmap <buffer> <leader>pf
       silent! nunmap <buffer> <leader>ph
-      silent! nunmap <buffer> <leader>pa
-      silent! nunmap <buffer> <leader>pc
-      silent! nunmap <buffer> <M-Tab>
-      silent! nunmap <buffer> <M-Esc>
-
-      silent! iunmap <buffer> <M-Tab>
-      silent! iunmap <buffer> <M-Esc>
     ]])
     -- by the way can test with:
     --   =vim.fn.bufnr() -- get bufnr if wanna test when in another buffer

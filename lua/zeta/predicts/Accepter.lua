@@ -30,4 +30,8 @@ function Accepter:accept(displayer)
     displayer:resume_watcher()
 end
 
+function Accepter:reject(displayer)
+    cancel_current_request(watcher.window)
+end
+
 return Accepter
