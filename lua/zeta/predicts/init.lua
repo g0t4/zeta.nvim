@@ -280,6 +280,7 @@ function M.unregister_keymaps()
     -- OR, in lua, use pcall
 
     -- I like the compressed nature of vimscript here...
+    -- FYI if this is alot of overhead, go back to a few global keymaps (p/pf/ph), then the rest are only when prediction is displayed
     vim.cmd([[
       silent! nunmap <buffer> <leader>p
       silent! nunmap <buffer> <leader>pf
