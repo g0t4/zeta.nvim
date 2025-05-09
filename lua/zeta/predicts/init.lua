@@ -262,6 +262,16 @@ function M.register_keymaps()
     vim.keymap.set({ 'i', 'n' }, '<M-Esc>', keymap_reject_prediction, { buffer = true })
 end
 
+function M.unregister_keymaps()
+    vim.keymap.del('n', '<leader>p', { buffer = true })
+    vim.keymap.del('n', '<leader>pf', { buffer = true })
+    vim.keymap.del('n', '<leader>ph', { buffer = true })
+    vim.keymap.del('n', '<leader>pa', { buffer = true })
+    vim.keymap.del({ 'i', 'n' }, '<M-Tab>', { buffer = true })
+    vim.keymap.del('n', '<leader>pc', { buffer = true })
+    vim.keymap.del({ 'i', 'n' }, '<M-Esc>', { buffer = true })
+end
+
 function M.setup()
     M.setup_events()
 end
