@@ -174,7 +174,6 @@ function M.start_watcher(buffer_number)
     )
     displayer = Displayer:new(watcher)
 end
-
 function M.setup_events()
     local augroup_name = 'zeta-buffer-monitors'
     vim.api.nvim_create_augroup(augroup_name, { clear = true })
@@ -193,6 +192,7 @@ function M.setup_events()
         callback = function(args)
             -- messages.append("buffer enter: " .. args.buf)
             M.start_watcher(args.buf)
+            M.register_keymaps()
         end
     })
 
@@ -202,7 +202,7 @@ function M.setup_events()
     })
 end
 
-function M.setup()
+function M.register_keymaps()
     local function keymap_trigger_prediction()
         if not watcher or not watcher.window then
             messages.append('No watcher for current window')
@@ -211,7 +211,7 @@ function M.setup()
         -- FYI this is real deal so you have to have full watcher
         trigger_prediction(watcher.window)
     end
-    vim.keymap.set('n', '<leader>p', keymap_trigger_prediction, { desc = 'show prediction' })
+    vim.keymap.set('n', '<leader>p', keymap_trigger_prediction, { buffer = true })
 
     local function keymap_fake_prediction()
         -- this should always work, using the current window/buffer (regardless of type) b/c its a fake request/response
@@ -226,7 +226,7 @@ function M.setup()
         -- display_fake_response(watcher.window, displayer)
         display_fake_prediction_del_5th_line_after_cursor(watcher.window, displayer)
     end
-    vim.keymap.set('n', '<leader>pf', keymap_fake_prediction, { desc = 'demo fake request/response' })
+    vim.keymap.set('n', '<leader>pf', keymap_fake_prediction, { buffer = true })
 
     local function keymap_toggle_highlight_excerpt_under_cursor()
         if not watcher or not watcher.window then
@@ -236,7 +236,7 @@ function M.setup()
         toggle_highlighting = not toggle_highlighting
         immediate_on_cursor_moved(watcher.window)
     end
-    vim.keymap.set('n', '<leader>ph', keymap_toggle_highlight_excerpt_under_cursor)
+    vim.keymap.set('n', '<leader>ph', keymap_toggle_highlight_excerpt_under_cursor, { buffer = true })
 
     function keymap_accept_prediction()
         if not displayer or not watcher or not watcher.window then
@@ -248,7 +248,7 @@ function M.setup()
     end
     -- in insert mode - alt+tab to accept, or <C-o><leader>pa
     vim.keymap.set('n', '<leader>pa', keymap_accept_prediction, { desc = 'accept prediction' })
-    vim.keymap.set({ 'i', 'n' }, '<M-Tab>', keymap_accept_prediction, { desc = 'accept prediction' })
+    vim.keymap.set({ 'i', 'n' }, '<M-Tab>', keymap_accept_prediction, { buffer = true })
 
     function keymap_reject_prediction()
         if not watcher or not watcher.window then
@@ -259,10 +259,10 @@ function M.setup()
     end
     -- in insert mode - alt+esc to cancel, or <C-o><leader>pc
     vim.keymap.set('n', '<leader>pc', keymap_reject_prediction, { desc = 'reject prediction' })
-    vim.keymap.set({ 'i', 'n' }, '<M-Esc>', keymap_reject_prediction, { desc = 'reject prediction' })
+    vim.keymap.set({ 'i', 'n' }, '<M-Esc>', keymap_reject_prediction, { buffer = true })
+end
 
-    -- require("zeta.predicts.miscTsGotoMaps").setup()
-
+function M.setup()
     M.setup_events()
 end
 
