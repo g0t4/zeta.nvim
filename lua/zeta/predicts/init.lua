@@ -9,12 +9,11 @@ local logs = require('zeta.helpers.logs')
 
 local M = {}
 
--- FYI for now the code is all designed to have ONE watcher at a time
---   only modify this if I truly need multiple watchers (across windows)
---   but that's not the current design
---   would have to have autocmd group that is segmented by window id too
----@type WindowWatcher|nil
-local watcher = nil
+--- Manage watcher PER buffer
+--- now that all events are per buffer, it won't be a problem to have multiple watchers
+--- they won't fire except in the current buffer b/c all events are tied to a buffer local autocmd
+---@type table<number, WindowWatcher> # map buffer_number -> watcher
+local watchers_by_buffer_number = {}
 local toggle_highlighting = false
 
 function keymap_fake_prediction()
@@ -96,6 +95,7 @@ local function trigger_prediction(window)
     local current_request = PredictionRequest:new(window)
 
     current_request:send(function(_request, stdout)
+        local watcher = watchers_by_buffer_number[window:buffer().buffer_number]
         assert(watcher ~= nil, 'watcher should not be nil')
 
         Displayer:new(watcher)
@@ -117,21 +117,24 @@ local function immediate_on_cursor_moved(window)
     highlighter:highlight_lines(details)
 end
 
-function M.ensure_watcher_stopped()
+function M.ensure_watcher_stopped(buffer_number)
+    logs.trace('stopping watcher for buffer: ' .. tostring(buffer_number))
+    local watcher = watchers_by_buffer_number[buffer_number]
     if watcher then
         watcher:unwatch()
-        watcher = nil
+        watchers_by_buffer_number[buffer_number] = nil
     end
 end
 
 function M.start_watcher(buffer_number)
     if WindowWatcher.not_supported_buffer(buffer_number) then
-        M.ensure_watcher_stopped()
+        M.ensure_watcher_stopped(buffer_number)
         return
     end
     -- use this to check if any buffers are monitored that I don't want to support
     -- logs.trace('starting watcher for buffer: ' .. tostring(buffer_number) .. ' for filetype: ' .. vim.bo[buffer_number].filetype)
 
+    local watcher = watchers_by_buffer_number[buffer_number]
     if watcher ~= nil then
         -- don't re-register, could cause dropped events
         -- logs.trace("already watching")
@@ -141,13 +144,14 @@ function M.start_watcher(buffer_number)
     local window_id = vim.api.nvim_get_current_win()
     -- detect treesitter upfront (once)
     watcher = WindowWatcher:new(window_id, buffer_number, 'zeta-prediction')
+    watchers_by_buffer_number[buffer_number] = watcher
     -- messages.append("starting watcher: " .. tostring(watcher.window:buffer():file_name()))
     watcher:watch(
         trigger_prediction,
         immediate_on_cursor_moved
     )
 
-    M.register_buffer_keymaps_always_available()
+    M.register_buffer_keymaps_always_available(buffer_number)
 end
 
 function M.setup_events()
@@ -175,14 +179,16 @@ function M.setup_events()
         group = augroup_name,
         callback = function(args)
             logs.trace('buffer leave: ' .. tostring(args.buf) .. ' - filename: ' .. vim.api.nvim_buf_get_name(args.buf))
-            M.ensure_watcher_stopped()
+            M.ensure_watcher_stopped(args.buf)
             M.unregister_buffer_keymaps_always_available()
         end,
     })
 end
 
-function M.register_buffer_keymaps_always_available()
+function M.register_buffer_keymaps_always_available(buffer_number)
     local function keymap_trigger_prediction()
+        -- FYI could take args.bufnr too for buffer_number
+        local watcher = watchers_by_buffer_number[buffer_number]
         if not watcher or not watcher.window then
             logs.trace('No watcher for current window')
             return
@@ -195,6 +201,8 @@ function M.register_buffer_keymaps_always_available()
     vim.keymap.set('n', '<leader>pf', keymap_fake_prediction, { buffer = true })
 
     local function keymap_toggle_highlight_excerpt_under_cursor()
+        -- FYI could take args.bufnr too for buffer_number
+        local watcher = watchers_by_buffer_number[buffer_number]
         if not watcher or not watcher.window then
             messages.append('Cannot toggle highlighting, no watcher.window')
             return
