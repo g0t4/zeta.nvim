@@ -40,7 +40,7 @@ _describe('test using histogram diff', function()
     -- FYI run this file with:
     --    nvim --headless -c 'PlenaryBustedFile lua/zeta/diff/histogram.tests.lua'
 
-    it('realistic example', function()
+    it('diff stability - full example', function()
         local A = [[
             local function foo()
                 print('foo')
@@ -78,7 +78,7 @@ _describe('test using histogram diff', function()
         should.be_same(expected_diff, diff)
     end)
 
-    it('realistic example - line 1 only', function()
+    it('diff stability - first line only', function()
         local A = [[
             local function foo()]]
         local B = [[
@@ -98,6 +98,37 @@ _describe('test using histogram diff', function()
             { '-', 'foo()' },
             { '+', 'bar()' },
 
+        }
+        should.be_same(expected_diff, diff)
+    end)
+
+
+    it('diff stability - first two lines', function()
+        local A = [[
+            local function foo()
+                print('foo')]]
+        local B = [[
+            local function bar()
+                print('bar')]]
+        local A_words = weslcs.split(A)
+        -- inspect.pretty_print(A_words)
+        local B_words = weslcs.split(B)
+        local diff = histogram.diff(A_words, B_words)
+        local expected_diff = {
+            { '=', '' }, -- TODO why an empty chunk?
+            { '=', '            ' },
+            { '=', 'local' },
+            { '=', ' ' },
+            { '=', 'function' },
+            { '=', ' ' },
+
+            { '-', 'foo()' },
+            { '+', 'bar()' },
+
+            { '=', '\n                ' },
+
+            { '-', "print('foo')" },
+            { '+', "print('bar')" },
         }
         should.be_same(expected_diff, diff)
     end)
