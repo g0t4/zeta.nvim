@@ -128,6 +128,8 @@ function M.start_watcher(buffer_number)
         M.ensure_watcher_stopped()
         return
     end
+    -- use this to check if any buffers are monitored that I don't want to support
+    -- print('starting watcher for buffer: ' .. tostring(buffer_number) .. ' for filetype: ' .. vim.bo[buffer_number].filetype)
     if watcher ~= nil then
         -- don't re-register, could cause dropped events
         -- messages.append("already watching")
