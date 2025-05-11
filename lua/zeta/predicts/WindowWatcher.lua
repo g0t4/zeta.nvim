@@ -51,6 +51,7 @@ end
 --- @param immediate_on_cursor_moved function(window: WindowController0Indexed)
 function WindowWatcher:watch(trigger_prediction,
                              immediate_on_cursor_moved)
+    -- TODO need group per buffer?
     vim.api.nvim_create_augroup(self.augroup_name, { clear = true })
 
     local window = self.window
@@ -79,7 +80,7 @@ function WindowWatcher:watch(trigger_prediction,
     vim.api.nvim_create_autocmd('InsertEnter', {
         group = self.augroup_name,
         -- FYI technically I don't nee the buffer filter b/c there's only ever one of these active at a time
-        -- buffer = self.buffer_number,
+        buffer = self.buffer_number,
         callback = function()
             -- PRN immediately trigger and don't delay?
             debounced_trigger.call()
@@ -97,7 +98,7 @@ function WindowWatcher:watch(trigger_prediction,
         -- one benefit to stop on exit is you can prevent the prediction by hitting escape as last key when typing
 
         group = self.augroup_name,
-        -- buffer = self.buffer_number,
+        buffer = self.buffer_number,
         callback = function()
             cancel_current_request()
             debounced_trigger.cancel()
@@ -107,7 +108,7 @@ function WindowWatcher:watch(trigger_prediction,
     vim.api.nvim_create_autocmd('CursorMovedI', {
         -- PRN also trigger on TextChangedI? => merge signals into one stream>?
         group = self.augroup_name,
-        -- buffer = self.buffer_number,
+        buffer = self.buffer_number,
         callback = function()
             if self.paused then
                 return
@@ -126,7 +127,7 @@ function WindowWatcher:watch(trigger_prediction,
 
     vim.api.nvim_create_autocmd('CursorMoved', {
         group = self.augroup_name,
-        -- buffer = self.buffer_number,
+        buffer = self.buffer_number,
         callback = function()
             if self.paused then
                 return
@@ -134,7 +135,7 @@ function WindowWatcher:watch(trigger_prediction,
 
             -- PRN
             immediate_on_cursor_moved(window)
-        end
+        end,
     })
 end
 
