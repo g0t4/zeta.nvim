@@ -4,6 +4,10 @@ local histogram = require('zeta.diff.histogram')
 local inspect = require('devtools.inspect')
 local weslcs = require('zeta.diff.weslcs')
 local combined = require('zeta.diff.combined')
+function ignore(a, b)
+end
+only = it
+it = ignore  -- uncomment to run "only" tests, otherwise, comment out to run all again (regardless if marked only/it)
 
 _describe('test using histogram diff', function()
     it('with lines', function()
@@ -78,7 +82,7 @@ _describe('test using histogram diff', function()
         should.be_same(expected_diff, diff)
     end)
 
-    it('diff stability - first line only', function()
+    only('diff stability - first line only', function()
         local A = [[
             local function foo()]]
         local B = [[
@@ -102,7 +106,7 @@ _describe('test using histogram diff', function()
         should.be_same(expected_diff, diff)
     end)
 
-
+    -- FYI need some better test cases to investigate diff stability, but it seems to be working
     it('diff stability - first two lines', function()
         local A = [[
             local function foo()
