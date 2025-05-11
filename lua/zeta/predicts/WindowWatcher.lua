@@ -51,7 +51,14 @@ end
 --- @param immediate_on_cursor_moved function(window: WindowController0Indexed)
 function WindowWatcher:watch(trigger_prediction,
                              immediate_on_cursor_moved)
-    -- TODO need group per buffer?
+    -- TODO! need group per buffer?
+    --  right now, IIUC, this would mean only the event handlers for the last BufEnter would be active... I think that's fine
+    --  only issue would be if somehow a BufEnter is tripped for a diff buffer and then cursor somehow stays in previous buffer and these no longer fire
+    --  I thought I saw that happen with the global WindowWatcher (last BufEnter only)... but maybe not..
+    --  TODO anyways if issues, look into scoping each set to its own window... so they can still fire if events happen in any window at any time, i.e:
+    --      local group_name_for_buffer = augroup_name .. '_buffer_' .. self.buffer_number
+    --      vim.api.nvim_create_augroup(group_name_for_buffer, { clear = true })
+    --
     vim.api.nvim_create_augroup(self.augroup_name, { clear = true })
 
     local window = self.window
