@@ -77,4 +77,28 @@ _describe('test using histogram diff', function()
         }
         should.be_same(expected_diff, diff)
     end)
+
+    it('realistic example - line 1 only', function()
+        local A = [[
+            local function foo()]]
+        local B = [[
+            local function bar()]]
+        local A_words = weslcs.split(A)
+        -- inspect.pretty_print(A_words)
+        local B_words = weslcs.split(B)
+        local diff = histogram.diff(A_words, B_words)
+        local expected_diff = {
+            { '=', '' }, -- TODO why an empty chunk?
+            { '=', '            ' },
+            { '=', 'local' },
+            { '=', ' ' },
+            { '=', 'function' },
+            { '=', ' ' },
+
+            { '-', 'foo()' },
+            { '+', 'bar()' },
+
+        }
+        should.be_same(expected_diff, diff)
+    end)
 end)
