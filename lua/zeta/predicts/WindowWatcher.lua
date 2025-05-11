@@ -1,5 +1,6 @@
 local WindowController0Indexed = require('zeta.predicts.WindowController')
 local debounce = require('zeta.predicts.debounce')
+local logs = require('zeta.helpers.logs')
 
 --- watches events w.r.t. cursor movements, mode changes, and window changes
 --- all the autocmds to support triggering implicit actions
@@ -136,6 +137,7 @@ function WindowWatcher:watch(trigger_prediction,
         group = self.augroup_name,
         buffer = self.buffer_number,
         callback = function()
+            logs.trace('CursorMoved (buffer: ' .. self.buffer_number .. ')')
             if self.paused then
                 return
             end
