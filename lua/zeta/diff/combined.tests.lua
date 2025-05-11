@@ -168,7 +168,6 @@ _describe('test using combined_diff', function()
         local diffs = histogram.split_then_diff_lines(old_text, new_text)
 
         local expected = {
-            { '=', '' }, -- empty line after editable region parsed, should that be removed?
             { '=', 'local M = {}' },
             { '=', '' },
             { '-', 'function M.add(a, b)' },
@@ -195,7 +194,6 @@ _describe('test using combined_diff', function()
             { '=', '' },
             { '+', '' },
             { '=', 'return M' },
-            { '=', '' },
             { '=', '' },
         }
 
