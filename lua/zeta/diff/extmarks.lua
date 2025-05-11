@@ -1,22 +1,26 @@
 local window = require('zeta.helpers.vimz.windows')
 local messages = require('devtools.messages')
 
+
+-- *** SCROLL PAST END OF FILE TO SEE DIFF ***
+
 local M = {}
+-- * highlight groups
+local hl_same = 'zeta-same'
+local hl_added = 'zeta-added'
+local hl_deleted = 'zeta-deleted'
+-- 0 == global namespace (otherwise have to activate them if not global ns on hlgroup)
+vim.api.nvim_set_hl(0, hl_same, {}) -- for now just keep it as is
+-- vim.api.nvim_set_hl(0, hl_added, { fg = "#a6e3a1", }) -- ctermfg = "green"
+-- vim.api.nvim_set_hl(0, hl_added, { fg = "#b5f4cb", }) -- ctermfg = "green"
+vim.api.nvim_set_hl(0, hl_added, { fg = '#81c8be', }) -- ctermfg = "green"
+-- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#f28b82", }) -- ctermfg = "red"
+vim.api.nvim_set_hl(0, hl_deleted, { fg = '#ff6b6b', }) -- ctermfg = "red"
+-- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#e06c75", }) -- ctermfg = "red"
+
+local extmark_ns_id = vim.api.nvim_create_namespace('zeta_diff')
 
 function M.extmarks_for(diff, bufnr, _window_id)
-    -- * highlight groups
-    local hl_same = 'zeta-same'
-    local hl_added = 'zeta-added'
-    local hl_deleted = 'zeta-deleted'
-    -- 0 == global namespace (otherwise have to activate them if not global ns on hlgroup)
-    vim.api.nvim_set_hl(0, hl_same, {}) -- for now just keep it as is
-    -- vim.api.nvim_set_hl(0, hl_added, { fg = "#a6e3a1", }) -- ctermfg = "green"
-    -- vim.api.nvim_set_hl(0, hl_added, { fg = "#b5f4cb", }) -- ctermfg = "green"
-    vim.api.nvim_set_hl(0, hl_added, { fg = '#81c8be', }) -- ctermfg = "green"
-    -- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#f28b82", }) -- ctermfg = "red"
-    vim.api.nvim_set_hl(0, hl_deleted, { fg = '#ff6b6b', }) -- ctermfg = "red"
-    -- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#e06c75", }) -- ctermfg = "red"
-
     local extmark_lines = vim.iter(diff):fold({ {} }, function(accum, chunk)
         if chunk == nil then
             messages.append('nil chunk: ' .. tostring(chunk))
@@ -79,12 +83,12 @@ function M.extmarks_for(diff, bufnr, _window_id)
         return
     end
 
+
     -- * extmark
-    local ns_id = vim.api.nvim_create_namespace('zeta_diff')
     local num_lines = vim.api.nvim_buf_line_count(bufnr)
     local to_row_1indexed = num_lines
     local ext_mark_row_0indexed = to_row_1indexed - 1
-    local _mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, ext_mark_row_0indexed, 0, {
+    local _mark_id = vim.api.nvim_buf_set_extmark(bufnr, extmark_ns_id, ext_mark_row_0indexed, 0, {
         hl_mode = 'combine',
         virt_text = { { '' } }, -- add blank line
         virt_lines = extmark_lines, -- rest after first
