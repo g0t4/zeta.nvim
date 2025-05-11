@@ -1,7 +1,8 @@
 local messages = require('devtools.messages')
 
 local M = {
-    verbose = true,
+    -- verbose = true,
+    verbose = false,
 }
 
 -- PRN disable by default, add user command/func to enable
