@@ -166,7 +166,7 @@ function M.setup_events()
     vim.api.nvim_create_autocmd({ 'BufEnter' }, {
         group = augroup_name,
         callback = function(args)
-            logs.trace('buffer enter: ' .. args.buf)
+            logs.trace('buffer enter: ' .. tostring(args.buf) .. ' - filename: ' .. vim.api.nvim_buf_get_name(args.buf))
             M.start_watcher(args.buf)
         end
     })
@@ -174,7 +174,7 @@ function M.setup_events()
     vim.api.nvim_create_autocmd({ 'BufLeave' }, {
         group = augroup_name,
         callback = function(args)
-            logs.trace('buffer leave: ' .. args.buf)
+            logs.trace('buffer leave: ' .. tostring(args.buf) .. ' - filename: ' .. vim.api.nvim_buf_get_name(args.buf))
             M.ensure_watcher_stopped()
             M.unregister_buffer_keymaps_always_available()
         end,
