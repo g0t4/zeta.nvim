@@ -37,6 +37,8 @@ function WindowWatcher.not_supported_buffer(buffer_number)
         or filetype == 'NvimTree'
         or filetype == 'DressingInput'
         or filetype == 'help'
+        or filetype == 'cmp_menu'
+        or filetype == 'notify'
     -- or filetype == "qf"
     -- or filetype == "lspinfo"
     then
