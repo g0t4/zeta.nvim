@@ -80,7 +80,7 @@ function WindowWatcher:watch(trigger_prediction,
     -- - that way you don't wait both the debounce delay + service r/t
     -- - instead these two happen in parallel
     -- - completions backends have no trouble keeping up and canceling previous requests
-    local debounced_trigger = debounce(function()
+    local debounced_trigger_predictions = debounce(function()
         trigger_prediction(window)
     end, 500)
 
@@ -90,7 +90,7 @@ function WindowWatcher:watch(trigger_prediction,
         buffer = self.buffer_number,
         callback = function()
             -- PRN immediately trigger and don't delay?
-            debounced_trigger.call()
+            debounced_trigger_predictions.call()
         end,
     })
     function cancel_current_request()
@@ -108,7 +108,7 @@ function WindowWatcher:watch(trigger_prediction,
         buffer = self.buffer_number,
         callback = function()
             cancel_current_request()
-            debounced_trigger.cancel()
+            debounced_trigger_predictions.cancel()
         end,
     })
 
@@ -127,7 +127,7 @@ function WindowWatcher:watch(trigger_prediction,
             --     to avoid interfering iwth user typing!
             --   that said, the former (send request) could maybe have a shorter debounce intended
             --     to avoid overwhelming the backend with requests
-            debounced_trigger.call()
+            debounced_trigger_predictions.call()
             immediate_on_cursor_moved(window)
         end,
     })
