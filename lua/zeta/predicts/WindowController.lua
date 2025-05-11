@@ -1,5 +1,6 @@
 local BufferController0Indexed = require('zeta.predicts.BufferController')
 local ExcerptSelector = require('zeta.predicts.ExcerptSelector')
+local logs = require('zeta.helpers.logs')
 
 ---This entire class operates on 0-indexed row and column positions
 ---   or if that seems wrong I'll go to all 1-indexed
@@ -52,6 +53,7 @@ function WindowController0Indexed:set_cursor_position(row, column)
 end
 
 function WindowController0Indexed:buffer()
+    logs.trace('getting buffer for window ' .. self.window_id)
     local buffer_number = vim.api.nvim_win_get_buf(self.window_id)
     return BufferController0Indexed:new(buffer_number)
 end
