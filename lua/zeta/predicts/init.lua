@@ -143,7 +143,7 @@ function M.start_watcher(buffer_number)
 
     local window_id = vim.api.nvim_get_current_win()
     -- detect treesitter upfront (once)
-    watcher = WindowWatcher:new(window_id, buffer_number, 'zeta-prediction')
+    watcher = WindowWatcher:new(window_id, buffer_number)
     watchers_by_buffer_number[buffer_number] = watcher
     -- messages.append("starting watcher: " .. tostring(watcher.window:buffer():file_name()))
     watcher:watch(

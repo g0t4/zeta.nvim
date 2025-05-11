@@ -13,9 +13,9 @@ local debounce = require('zeta.predicts.debounce')
 local WindowWatcher = {}
 WindowWatcher.__index = WindowWatcher
 
-function WindowWatcher:new(window_id, buffer_number, augroup_name)
+function WindowWatcher:new(window_id, buffer_number)
     self = setmetatable({}, WindowWatcher)
-    self.augroup_name = augroup_name
+    self.augroup_name = 'zeta-prediction'
     self.window = WindowController0Indexed:new(window_id)
     self.buffer_number = buffer_number
     self.paused = false
