@@ -5,6 +5,7 @@ local PredictionRequest = require('zeta.predicts.PredictionRequest')
 local Displayer = require('zeta.predicts.Displayer')
 local ExcerptHighlighter = require('zeta.predicts.ExcerptHighlighter')
 local tags = require('zeta.helpers.tags')
+local logs = require('zeta.helpers.logs')
 
 local M = {}
 
@@ -129,10 +130,11 @@ function M.start_watcher(buffer_number)
         return
     end
     -- use this to check if any buffers are monitored that I don't want to support
-    -- print('starting watcher for buffer: ' .. tostring(buffer_number) .. ' for filetype: ' .. vim.bo[buffer_number].filetype)
+    -- logs.trace('starting watcher for buffer: ' .. tostring(buffer_number) .. ' for filetype: ' .. vim.bo[buffer_number].filetype)
+
     if watcher ~= nil then
         -- don't re-register, could cause dropped events
-        -- messages.append("already watching")
+        -- logs.trace("already watching")
         return
     end
 
@@ -155,7 +157,7 @@ function M.setup_events()
     vim.api.nvim_create_autocmd('FileType', {
         group = augroup_name,
         callback = function(args)
-            -- messages.append("file type changed: " .. vim.inspect(args))
+            -- logs.trace("file type changed: " .. vim.inspect(args))
             M.start_watcher(args.buf)
         end,
     })
@@ -164,14 +166,15 @@ function M.setup_events()
     vim.api.nvim_create_autocmd({ 'BufEnter' }, {
         group = augroup_name,
         callback = function(args)
-            -- messages.append("buffer enter: " .. args.buf)
+            logs.trace('buffer enter: ' .. args.buf)
             M.start_watcher(args.buf)
         end
     })
 
     vim.api.nvim_create_autocmd({ 'BufLeave' }, {
         group = augroup_name,
-        callback = function()
+        callback = function(args)
+            logs.trace('buffer leave: ' .. args.buf)
             M.ensure_watcher_stopped()
             M.unregister_buffer_keymaps_always_available()
         end,
@@ -181,7 +184,7 @@ end
 function M.register_buffer_keymaps_always_available()
     local function keymap_trigger_prediction()
         if not watcher or not watcher.window then
-            messages.append('No watcher for current window')
+            logs.trace('No watcher for current window')
             return
         end
         -- FYI this is real deal so you have to have full watcher

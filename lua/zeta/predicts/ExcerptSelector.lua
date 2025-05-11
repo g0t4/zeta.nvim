@@ -2,6 +2,7 @@ local messages = require('devtools.messages')
 local inspect = require('devtools.inspect')
 local Excerpt = require('zeta.predicts.Excerpt')
 local tags = require('zeta.helpers.tags')
+local logs = require('zeta.helpers.logs')
 
 ---@class ExcerptSelector
 ---@field buffer BufferController0Indexed
@@ -72,14 +73,6 @@ local function get_enclosing_function_node(node, filetype)
     end
 end
 
--- PRN disable by default, add user command/func to enable
--- all my logs that I wanna keep around are useful but can really add overhead
-local verbose = true
-function trace(...)
-    if not verbose then return end
-    messages.append(...)
-end
-
 ---@param row integer 0-indexed
 ---@param column integer 0-indexed
 ---@return integer|nil, integer|nil # start_line, end_line 0-indexed (end exclusive?)
@@ -87,14 +80,14 @@ function ExcerptSelector:line_range_with_treesitter(row, column)
     local node = self.buffer:get_node_at_position(row, column)
     if node == nil then
         -- FYI can happen when first enter a buffer (IIAC treesitter is not ready?)
-        trace('no node found at position: ' .. row .. ', ' .. column)
+        logs.trace('no node found at position: ' .. row .. ', ' .. column)
         return nil, nil
     end
 
     -- find closest enclosing node (to start search for excerpt range)
     local enclosing = get_enclosing_function_node(node, self.buffer:filetype())
     if enclosing == nil then
-        trace('no enclosing node found at position: ' .. row .. ', ' .. column)
+        logs.trace('no enclosing node found at position: ' .. row .. ', ' .. column)
         return nil, nil
     end
 
