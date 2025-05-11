@@ -2,8 +2,13 @@ require('zeta.helpers.testing')
 local histogram = require('zeta.diff.histogram')
 local should = require('zeta.helpers.should')
 local files = require('zeta.helpers.files')
-local inspect_ = require('devtools.inspect')
+local inspect = require('devtools.inspect')
 local combined = require('zeta.diff.combined')
+-- FYI some logic to limit which tests run w/o changing it on all of them:
+function ignore(a, b)
+end
+only = it
+-- it = ignore  -- uncomment to run "only" tests, otherwise, comment out to run all again (regardless if marked only/it)
 
 _describe('simple comparison', function()
     local before_text = [[
@@ -22,7 +27,7 @@ function M.add(a, b, c, d)
 end
 return N
 ]]
-    it('validate histogram alone', function()
+    only('validate histogram alone', function()
         local diffs = histogram.split_then_diff_lines(before_text, after_text)
 
         -- pretty_print(diffs)
