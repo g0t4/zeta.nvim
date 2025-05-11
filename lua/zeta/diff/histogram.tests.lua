@@ -4,10 +4,14 @@ local histogram = require('zeta.diff.histogram')
 local inspect = require('devtools.inspect')
 local weslcs = require('zeta.diff.weslcs')
 local combined = require('zeta.diff.combined')
+local splitter = require('zeta.diff.splitter')
+
+
 function ignore(a, b)
 end
 only = it
-it = ignore  -- uncomment to run "only" tests, otherwise, comment out to run all again (regardless if marked only/it)
+-- TODO! how can I make this more elegant?
+-- it = ignore  -- uncomment to run "only" tests, otherwise, comment out to run all again (regardless if marked only/it)
 
 _describe('test using histogram diff', function()
     it('with lines', function()
@@ -55,9 +59,9 @@ _describe('test using histogram diff', function()
                 print('bar')
             end
         ]]
-        local A_words = weslcs.split(A)
+        local A_words = splitter.split_on_whitespace(A)
         -- inspect.pretty_print(A_words)
-        local B_words = weslcs.split(B)
+        local B_words = splitter.split_on_whitespace(B)
         local diff = histogram.diff(A_words, B_words)
         local expected_diff = {
             { '=', '' }, -- TODO why an empty chunk?
@@ -87,9 +91,9 @@ _describe('test using histogram diff', function()
             local function foo()]]
         local B = [[
             local function bar()]]
-        local A_words = weslcs.split(A)
+        local A_words = splitter.split_on_whitespace(A)
         -- inspect.pretty_print(A_words)
-        local B_words = weslcs.split(B)
+        local B_words = splitter.split_on_whitespace(B)
         local diff = histogram.diff(A_words, B_words)
         local expected_diff = {
             { '=', '' }, -- TODO why an empty chunk?
@@ -114,9 +118,9 @@ _describe('test using histogram diff', function()
         local B = [[
             local function bar()
                 print('bar')]]
-        local A_words = weslcs.split(A)
+        local A_words = splitter.split_on_whitespace(A)
         -- inspect.pretty_print(A_words)
-        local B_words = weslcs.split(B)
+        local B_words = splitter.split_on_whitespace(B)
         local diff = histogram.diff(A_words, B_words)
         local expected_diff = {
             { '=', '' }, -- TODO why an empty chunk?

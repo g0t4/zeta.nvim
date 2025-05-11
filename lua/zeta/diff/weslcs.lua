@@ -5,38 +5,9 @@
 --   but I would like practice with LCS so I would like to revist it
 --     probably will nag at me and make me do it tonight
 local inspect = require('devtools.inspect')
+local splitter = require('zeta.diff.splitter')
 
 local M = {}
-
------------------------------------------------------------------------------
--- Split a string into tokens.  (Adapted from Gavin Kistner's split on
--- http://lua-users.org/wiki/SplitJoin.
---
--- @param text           A string to be split.
--- @param separator      [optional] the separator pattern (defaults to any
---                       white space - %s+).
--- @param skip_separator [optional] don't include the sepator in the results.
--- @return               A list of tokens.
------------------------------------------------------------------------------
-function M.split(text, separator, skip_separator)
-    -- copied verbatim from diff.lua (thus far)
-    separator = separator or '%s+'
-    local parts = {}
-    local start = 1
-    local split_start, split_end = text:find(separator, start)
-    while split_start do
-        table.insert(parts, text:sub(start, split_start - 1))
-        if not skip_separator then
-            table.insert(parts, text:sub(split_start, split_end))
-        end
-        start = split_end + 1
-        split_start, split_end = text:find(separator, start)
-    end
-    if text:sub(start) ~= '' then
-        table.insert(parts, text:sub(start))
-    end
-    return parts
-end
 
 local zeros_until_set_row = {
     __index = function(table, key)
@@ -230,8 +201,8 @@ function M.get_token_diff(before_tokens, after_tokens)
 end
 
 function M.lcs_diff_from_text(before_text, after_text)
-    local before_tokens = M.split(before_text)
-    local after_tokens  = M.split(after_text)
+    local before_tokens = splitter.split_on_whitespace(before_text)
+    local after_tokens  = splitter.split_on_whitespace(after_text)
     -- dump.append("before_tokens", inspect(before_tokens))
     -- dump.append("after_tokens", inspect(after_tokens))
 

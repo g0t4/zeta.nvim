@@ -2,18 +2,17 @@ local _testing = require('zeta.helpers.testing')
 local inspect = require('devtools.inspect')
 local should = require('zeta.helpers.should')
 local weslcs = require('zeta.diff.weslcs')
-local SPLIT_ON_WHITESPACE = '%s+'
-local STRIP_WHITESPACE = true
+local splitter = require('zeta.diff.splitter')
 
 _describe('tiny, no shared prefix/suffix words', function()
     local before_text = 'b )'
     local after_text = 'b, c, d)'
 
     it('splits words, keep whitespace', function()
-        local before_tokens = weslcs.split(before_text)
+        local before_tokens = splitter.split_on_whitespace(before_text)
         should.be_same({ 'b', ' ', ')' }, before_tokens)
 
-        local after_tokens = weslcs.split(after_text)
+        local after_tokens = splitter.split_on_whitespace(after_text)
         should.be_same({ 'b,', ' ', 'c,', ' ', 'd)' }, after_tokens)
     end)
 end)
@@ -23,8 +22,8 @@ _describe('my paper example', function()
     -- FYI whitespace is stripped out, so its only here to make this easier to read the before/after text
     local before_text = 'C F A    D Z O    H Z C'
     local after_text = 'F A C    F H G    D C O    Z'
-    local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-    local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+    local before_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(before_text)
+    local after_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(after_text)
     local longest_seq_if_prefer_match_up = { 'C', 'F', 'D', 'O', 'Z' }
     local _longest_seq_if_prefer_match_left = { 'F', 'A', 'D', 'O', 'Z' }
 
@@ -187,8 +186,8 @@ end)
 _describe('AA in before, only one A in after', function()
     local before_text = 'D F A A H'
     local after_text = 'F A R F H'
-    local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-    local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+    local before_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(before_text)
+    local after_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(after_text)
 
     it('should have LCS FAH, not FAAH', function()
         local actual_lcs_matrix = weslcs.get_longest_common_subsequence_matrix(before_tokens, after_tokens)
@@ -229,8 +228,8 @@ _describe('strip shared suffix/prefix before LCS diff', function()
 
         it('extracts non-overlapping middle tokens', function()
             -- FYI before_tokens/after_tokens are changed in-place during suffix/prefix extraction... so must setup in each test method separatley
-            local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-            local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local before_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(before_text)
+            local after_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(after_text)
 
             -- FTR, do not need to test split again
             local expected_middle = {
@@ -248,8 +247,8 @@ _describe('strip shared suffix/prefix before LCS diff', function()
 
         it('get_diff includes shared prefix/suffix', function()
             -- FYI! before_tokens/after_tokens are changed in-place during suffix/prefix extraction... so must setup in each test method separatley
-            local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-            local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local before_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(before_text)
+            local after_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(after_text)
 
             local actual_diff = weslcs.lcs_diff_from_tokens(before_tokens, after_tokens)
             local expected_diff = {
@@ -271,8 +270,8 @@ _describe('strip shared suffix/prefix before LCS diff', function()
         it('diff works', function()
             local before_text = 'B C B'
             local after_text = 'A C A'
-            local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-            local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local before_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(before_text)
+            local after_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(after_text)
 
             local expected_diff = {
                 { 'del',  'B' },
@@ -292,8 +291,8 @@ _describe('strip shared suffix/prefix before LCS diff', function()
         it('returns all under same_suffix', function()
             local before_text = 'A B C D'
             local after_text = 'A B C D'
-            local before_tokens = weslcs.split(before_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
-            local after_tokens = weslcs.split(after_text, SPLIT_ON_WHITESPACE, STRIP_WHITESPACE)
+            local before_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(before_text)
+            local after_tokens = splitter.split_on_whitespace_then_skip_the_whitespace(after_text)
 
             local expected_middle = {
                 before_tokens = {},
@@ -327,7 +326,7 @@ _describe('can convert to sign types', function()
             { 'add',  'A' },
             { 'del',  'B' },
         }
-        local token_diff = weslcs.get_token_diff(weslcs.split(before_text), weslcs.split(after_text))
+        local token_diff = weslcs.get_token_diff(splitter.split_on_whitespace(before_text), splitter.split_on_whitespace(after_text))
         should.be_same(expected_token_diff, token_diff)
 
         -- FYI LCS is " C " which is obvious here:
