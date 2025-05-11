@@ -55,10 +55,11 @@ function WindowController0Indexed:set_cursor_position(row, column)
 end
 
 function WindowController0Indexed:buffer()
-    logs.trace('getting buffer for window ' .. self.window_id)
-    messages.append('windows: ' .. vim.inspect(vim.api.nvim_list_wins()))
-    nvim_helpers.dump_windows()
-    nvim_helpers.dump_buffers()
+    -- old troubleshooting code for some issues around invalid window_ids
+    -- logs.trace('getting buffer for window ' .. self.window_id)
+    -- messages.append('windows: ' .. vim.inspect(vim.api.nvim_list_wins()))
+    -- nvim_helpers.dump_windows()
+    -- nvim_helpers.dump_buffers()
     local buffer_number = vim.api.nvim_win_get_buf(self.window_id)
     return BufferController0Indexed:new(buffer_number)
 end
