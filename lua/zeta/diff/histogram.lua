@@ -54,13 +54,13 @@ function M.diff(a, b, diffs)
 
     local hist_a = build_histogram(a)
     local hist_b = build_histogram(b)
-    print('hist_a')
-    vim.print(hist_a)
-    print('hist_b')
-    vim.print(hist_b)
+    -- print('hist_a')
+    -- vim.print(hist_a)
+    -- print('hist_b')
+    -- vim.print(hist_b)
 
     local rarest_token = find_rarest_common_token(a, hist_a, hist_b)
-    print("rarest_token '" .. tostring(rarest_token) .. "'")
+    -- print("rarest_token '" .. tostring(rarest_token) .. "'")
 
     if not rarest_token then
         -- fallback: all tokens changed
