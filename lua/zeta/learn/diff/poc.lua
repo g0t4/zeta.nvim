@@ -6,6 +6,32 @@ local window = require('zeta.helpers.vimz.windows')
 
 local M = {}
 
+function M.show_diff_extmarks()
+    -- this was an early prototype to test showing a diff with extmarks
+    -- FYI this can be removed
+
+    messages.ensure_open()
+    -- dump.clear()
+
+    -- local before, after = files.files_difftastic_ada()
+    local before, after = files.request1_response2()
+
+    -- * PICK WHICH DIFF (combined (histogram line level => weslcs word level) or just lcs (weslcs))
+    -- local diff = combined.combined_diff(before, after)
+    local diff = weslcs.lcs_diff_with_sign_types_from_text(before, after)
+    messages.append(diff)
+    -- weslcs:   "same", "del", "add"
+    -- combined: "=",    "-",   "+"
+    local bufnr, _window_id = messages.get_ids()
+    M.extmarks_for(diff, bufnr, _window_id)
+end
+
+function M.setup()
+    vim.keymap.set('n', '<leader>z', function()
+        M.show_diff_extmarks()
+    end, {})
+end
+
 -- * highlight groups
 local hl_same = 'zeta-same'
 local hl_added = 'zeta-added'
@@ -103,32 +129,6 @@ function M.extmarks_for(diff, bufnr, _window_id)
         -- * scroll down enough to see extmarks that are past the last line of the buffer (so, moving cursor won't work to see them)
         window.set_topline(num_lines + #extmark_lines, _window_id)
     end
-end
-
-function M.show_diff_extmarks()
-    -- this was an early prototype to test showing a diff with extmarks
-    -- FYI this can be removed
-
-    messages.ensure_open()
-    -- dump.clear()
-
-    -- local before, after = files.files_difftastic_ada()
-    local before, after = files.request1_response2()
-
-    -- * PICK WHICH DIFF (combined (histogram line level => weslcs word level) or just lcs (weslcs))
-    -- local diff = combined.combined_diff(before, after)
-    local diff = weslcs.lcs_diff_with_sign_types_from_text(before, after)
-    messages.append(diff)
-    -- weslcs:   "same", "del", "add"
-    -- combined: "=",    "-",   "+"
-    local bufnr, _window_id = messages.get_ids()
-    M.extmarks_for(diff, bufnr, _window_id)
-end
-
-function M.setup()
-    vim.keymap.set('n', '<leader>z', function()
-        M.show_diff_extmarks()
-    end, {})
 end
 
 return M
