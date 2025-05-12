@@ -1,7 +1,7 @@
 local weslcs = require('zeta.diff.weslcs')
 local combined = require('zeta.diff.combined')
 local files = require('zeta.helpers.files')
-local extmarks = require('zeta.diff.extmarks')
+local extmarks = require('zeta.learn.diff.extmarks')
 local messages = require('devtools.messages')
 
 local M = {}
