@@ -85,67 +85,71 @@ function WindowWatcher:watch(trigger_prediction,
         trigger_prediction(window)
     end, 500)
 
-    vim.api.nvim_create_autocmd('InsertEnter', {
-        group = self.augroup_name,
-        -- FYI technically I don't nee the buffer filter b/c there's only ever one of these active at a time
-        buffer = self.buffer_number,
-        callback = function()
-            -- PRN immediately trigger and don't delay?
-            debounced_trigger_predictions.call()
-        end,
-    })
-    function cancel_current_request()
-        if self.displayer ~= nil then
-            self.displayer:reject()
+    if false then
+        -- TODO setting for on typing vs manual invocation
+
+        vim.api.nvim_create_autocmd('InsertEnter', {
+            group = self.augroup_name,
+            -- FYI technically I don't nee the buffer filter b/c there's only ever one of these active at a time
+            buffer = self.buffer_number,
+            callback = function()
+                -- PRN immediately trigger and don't delay?
+                debounced_trigger_predictions.call()
+            end,
+        })
+        function cancel_current_request()
+            if self.displayer ~= nil then
+                self.displayer:reject()
+            end
         end
+
+        vim.api.nvim_create_autocmd('InsertLeave', {
+            -- FYI nothing says I have to cancel it on leave... the prediction can be left visible after exit to normal mode
+            --   then on re-entry to insert mode you trigger a new prediction
+            -- one benefit to stop on exit is you can prevent the prediction by hitting escape as last key when typing
+
+            group = self.augroup_name,
+            buffer = self.buffer_number,
+            callback = function()
+                cancel_current_request()
+                debounced_trigger_predictions.cancel()
+            end,
+        })
+
+        vim.api.nvim_create_autocmd('CursorMovedI', {
+            -- PRN also trigger on TextChangedI? => merge signals into one stream>?
+            group = self.augroup_name,
+            buffer = self.buffer_number,
+            callback = function()
+                if self.paused then
+                    return
+                end
+
+                cancel_current_request()
+                -- PRN differentiate between sending request and when can show prediction
+                --   arguably, only latter (show prediction) needs debounced
+                --     to avoid interfering iwth user typing!
+                --   that said, the former (send request) could maybe have a shorter debounce intended
+                --     to avoid overwhelming the backend with requests
+                debounced_trigger_predictions.call()
+                immediate_on_cursor_moved(window)
+            end,
+        })
+
+        vim.api.nvim_create_autocmd('CursorMoved', {
+            group = self.augroup_name,
+            buffer = self.buffer_number,
+            callback = function()
+                logs.trace('CursorMoved (buffer: ' .. self.buffer_number .. ')')
+                if self.paused then
+                    return
+                end
+
+                -- PRN
+                immediate_on_cursor_moved(window)
+            end,
+        })
     end
-
-    vim.api.nvim_create_autocmd('InsertLeave', {
-        -- FYI nothing says I have to cancel it on leave... the prediction can be left visible after exit to normal mode
-        --   then on re-entry to insert mode you trigger a new prediction
-        -- one benefit to stop on exit is you can prevent the prediction by hitting escape as last key when typing
-
-        group = self.augroup_name,
-        buffer = self.buffer_number,
-        callback = function()
-            cancel_current_request()
-            debounced_trigger_predictions.cancel()
-        end,
-    })
-
-    vim.api.nvim_create_autocmd('CursorMovedI', {
-        -- PRN also trigger on TextChangedI? => merge signals into one stream>?
-        group = self.augroup_name,
-        buffer = self.buffer_number,
-        callback = function()
-            if self.paused then
-                return
-            end
-
-            cancel_current_request()
-            -- PRN differentiate between sending request and when can show prediction
-            --   arguably, only latter (show prediction) needs debounced
-            --     to avoid interfering iwth user typing!
-            --   that said, the former (send request) could maybe have a shorter debounce intended
-            --     to avoid overwhelming the backend with requests
-            debounced_trigger_predictions.call()
-            immediate_on_cursor_moved(window)
-        end,
-    })
-
-    vim.api.nvim_create_autocmd('CursorMoved', {
-        group = self.augroup_name,
-        buffer = self.buffer_number,
-        callback = function()
-            logs.trace('CursorMoved (buffer: ' .. self.buffer_number .. ')')
-            if self.paused then
-                return
-            end
-
-            -- PRN
-            immediate_on_cursor_moved(window)
-        end,
-    })
 end
 
 function WindowWatcher:unwatch()
