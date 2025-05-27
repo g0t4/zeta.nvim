@@ -9,9 +9,16 @@
     },
 
     "workspace.library": [
+        // https://github.com/LuaLS/lua-language-server/tree/master/meta/3rd
+        // bundled type defs:
+        "${3rd}/luv/library", // vim.uv
+        "${3rd}/luassert/library",
+
         "$VIMRUNTIME",
         "~/.local/share/nvim/lazy/rxlua",
         // plugin dependencies checkouts
         "~/repos/github/g0t4/devtools.nvim",
     ],
+
+    "workspace.checkThirdParty": "Disable"
 }
