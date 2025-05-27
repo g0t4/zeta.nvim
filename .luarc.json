@@ -1,4 +1,7 @@
 {
+    "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+    // example: https://github.com/LuaLS/lua-language-server/blob/master/.luarc.json
+
     "diagnostics": {
         "globals": [ "vim", "describe", "it", "assert" ],
         "disable": [
@@ -9,12 +12,13 @@
     },
 
     "workspace.library": [
+        "$VIMRUNTIME",
+
         // https://github.com/LuaLS/lua-language-server/tree/master/meta/3rd
         // bundled type defs:
         "${3rd}/luv/library", // vim.uv
         "${3rd}/luassert/library",
 
-        "$VIMRUNTIME",
         "~/.local/share/nvim/lazy/rxlua",
         // plugin dependencies checkouts
         "~/repos/github/g0t4/devtools.nvim",
