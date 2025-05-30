@@ -105,8 +105,14 @@ function PredictionRequest:send(on_response)
         local url = 'http://localhost:9000/predict_edits'
         local command = {
             'curl',
-            '-fsSL', -- -S is key to getting error messages (and not just silent failures! w/ non-zero exit code)
-            -- keep in mind, don't want verbose output normally as it will muck up receiving response body
+            '--fail-with-body', -- same as -f (sets non-zero exit code on failure, shows error message) but also shows response body on fail
+            '-sSL', -- -L == follow redirects, -s mutes progress and errors, -S adds back errors only
+            --  test w/ the following to understand what happens w/ progress/errors:
+            --     curl --fail-with-body -L -X POST "http://127.0.0.1:9000/predict_edits" | cat
+            --     curl --fail-with-body -sL -X POST "http://127.0.0.1:9000/predict_edits" | cat
+            --     curl --fail-with-body -sSL -X POST "http://127.0.0.1:9000/predict_edits" | cat
+            --
+            -- keep in mind, don't want verbose output normally as it will muck up receiving the response body
             -- FYI if want stream response, add --no-buffer to curl else it batches output
             '-H', 'Content-Type: application/json',
             '-X', 'POST',
