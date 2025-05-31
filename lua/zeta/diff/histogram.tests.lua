@@ -1,5 +1,5 @@
 require('zeta.helpers.testing')
-local should = require('zeta.helpers.should')
+local should = require('devtools.tests.should')
 local histogram = require('zeta.diff.histogram')
 local inspect = require('devtools.inspect')
 local weslcs = require('zeta.diff.weslcs')

@@ -1,6 +1,6 @@
 require('zeta.helpers.testing')
 local histogram = require('zeta.diff.histogram')
-local should = require('zeta.helpers.should')
+local should = require('devtools.tests.should')
 local files = require('zeta.helpers.files')
 local inspect = require('devtools.inspect')
 local combined = require('zeta.diff.combined')

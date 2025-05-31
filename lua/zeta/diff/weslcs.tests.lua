@@ -1,6 +1,6 @@
-local _testing = require('zeta.helpers.testing')
+require('zeta.helpers.testing')
 local inspect = require('devtools.inspect')
-local should = require('zeta.helpers.should')
+local should = require('devtools.tests.should')
 local weslcs = require('zeta.diff.weslcs')
 local splitter = require('zeta.diff.splitter')
 

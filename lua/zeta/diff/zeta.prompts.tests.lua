@@ -1,5 +1,6 @@
+require('zeta.helpers.testing')
 local tags = require('zeta.helpers.tags')
-local should = require('zeta.helpers.should')
+local should = require('devtools.tests.should')
 
 --
 -- * tests specific to the zeta model:

@@ -1,5 +1,5 @@
 -- PRN! port to use plenary test:
-local should = require('zeta.helpers.should')
+local should = require('devtools.tests.should')
 -- describe("foo scenario", function()
 --  it("should do bar", function()
 --

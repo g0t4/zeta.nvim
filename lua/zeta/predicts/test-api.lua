@@ -1,5 +1,5 @@
 local files = require('zeta.helpers.files')
-local should = require('zeta.helpers.should')
+local should = require('devtools.tests.should')
 
 -- FYI run this with plenary!
 -- :nmap <leader>u <Plug>PlenaryTestFile
