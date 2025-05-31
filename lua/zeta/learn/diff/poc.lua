@@ -1,4 +1,4 @@
-local weslcs = require('zeta.diff.weslcs')
+local weslcs = require('devtools.diff.weslcs')
 local combined = require('zeta.diff.combined')
 local files = require('zeta.helpers.files')
 local messages = require('devtools.messages')
