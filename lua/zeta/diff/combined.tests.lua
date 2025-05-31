@@ -204,9 +204,4 @@ _describe('test using combined_diff', function()
 
         should.be_same(expected, diffs)
     end)
-
-    -- it("with lines", function()
-    --     local diffs = combined_diff(old_text, new_text)
-    --     TODO!!! might be good to do one more... but, feed the LCS lines into LCS and capture output on each group... don't compute this by hand Wes!
-    -- end)
 end)
