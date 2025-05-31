@@ -1,13 +1,16 @@
 require('zeta.helpers.testing')
 local tags = require('zeta.helpers.tags')
+local histogram = require('devtools.diff.histogram')
 local should = require('devtools.tests.should')
+local files = require('zeta.helpers.files')
+local _describe = require('devtools.tests._describe')
 
 --
 -- * tests specific to the zeta model:
 --   - prompt formulation
 --   - prompt parsing
 
-describe('zeta tags', function()
+_describe('zeta tags', function()
     it('adding editable start and end tags are put on their own lines', function()
         -- * start tag:
         -- https://github.com/zed-industries/zed/blob/5872276511/crates/zeta/src/input_excerpt.rs#L86
@@ -80,4 +83,46 @@ describe('zeta tags', function()
 
 
     -- TODO! precise tests around start_of_file tag
+end)
+
+
+_describe('test using combined_diff', function()
+    local old_text = files.read_example_editable_only('01_request.json')
+    local new_text = files.read_example_editable_only('03_response.json')
+
+    it('test histogram alone', function()
+        local diffs = histogram.split_then_diff_lines(old_text, new_text)
+
+        local expected = {
+            { '=', 'local M = {}' },
+            { '=', '' },
+            { '-', 'function M.add(a, b)' },
+            { '-', '    return a + b' },
+            { '+', 'function M.adder(a, b, c)' },
+            { '+', '    return a + b + c' },
+            { '=', 'end' },
+            { '=', '' },
+            { '+', 'function M.subtract(a, b)' },
+            { '+', '    return a - b' },
+            { '+', 'end' },
+            { '=', '' },
+            { '+', 'function M.multiply(a, b)' },
+            { '+', '    return a * b' },
+            { '+', 'end' },
+            { '=', '' },
+            { '+', 'function M.divide(a, b)' },
+            { '+', '    if b == 0 then' },
+            { '+', '        error(\"Division by zero\")' },
+            { '+', '    end' },
+            { '+', '    return a / b' },
+            { '+', 'end' },
+            { '=', '' },
+            { '=', '' },
+            { '+', '' },
+            { '=', 'return M' },
+            { '=', '' },
+        }
+
+        should.be_same(expected, diffs)
+    end)
 end)
