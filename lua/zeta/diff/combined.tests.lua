@@ -2,7 +2,6 @@ require('zeta.helpers.testing')
 local histogram = require('zeta.diff.histogram')
 local should = require('devtools.tests.should')
 local files = require('zeta.helpers.files')
-local inspect = require('devtools.inspect')
 local combined = require('zeta.diff.combined')
 -- FYI some logic to limit which tests run w/o changing it on all of them:
 function ignore(a, b)
