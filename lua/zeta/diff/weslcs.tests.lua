@@ -3,6 +3,7 @@ local inspect = require('devtools.inspect')
 local should = require('devtools.tests.should')
 local weslcs = require('zeta.diff.weslcs')
 local splitter = require('zeta.diff.splitter')
+local _describe = require('devtools.tests._describe')
 
 _describe('tiny, no shared prefix/suffix words', function()
     local before_text = 'b )'

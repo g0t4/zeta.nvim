@@ -3,6 +3,7 @@ local should = require('devtools.tests.should')
 local histogram = require('zeta.diff.histogram')
 local inspect = require('devtools.inspect')
 local splitter = require('zeta.diff.splitter')
+local _describe = require('devtools.tests._describe')
 
 
 function ignore(a, b)
