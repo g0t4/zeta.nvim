@@ -22,6 +22,7 @@
         "~/.local/share/nvim/lazy/rxlua",
         // plugin dependencies checkouts
         "~/repos/github/g0t4/devtools.nvim",
+        "~/.local/share/nvim/lazy/plenary.nvim",
     ],
 
     "workspace.checkThirdParty": "Disable"

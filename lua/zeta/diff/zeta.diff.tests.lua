@@ -4,6 +4,9 @@ local histogram = require('devtools.diff.histogram')
 local should = require('devtools.tests.should')
 local files = require('zeta.helpers.files')
 local _describe = require('devtools.tests._describe')
+local busted = require('plenary.busted')
+---@diagnostic disable-next-line: unused-local
+local before_each, it, after_each, describe, assert, setup, teardown = busted.before_each, busted.it, busted.after_each, busted.describe, busted.assert, busted.setup, busted.teardown
 
 --
 -- * tests specific to the zeta model:
