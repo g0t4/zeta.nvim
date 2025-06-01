@@ -3,7 +3,7 @@
     // example: https://github.com/LuaLS/lua-language-server/blob/master/.luarc.json
 
     "diagnostics": {
-        "globals": [ "vim", "assert" ],
+        "globals": [ "vim" ],
         "disable": [
             "lowercase-global",
             "need-check-nil",
