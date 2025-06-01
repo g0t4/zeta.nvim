@@ -1,8 +1,4 @@
 local BufferController0Indexed = require('zeta.predicts.BufferController')
-local ExcerptSelector = require('zeta.predicts.ExcerptSelector')
-local logs = require('zeta.helpers.logs')
-local messages = require('devtools.messages')
-local nvim_helpers = require('devtools.nvim')
 
 ---This entire class operates on 0-indexed row and column positions
 ---   or if that seems wrong I'll go to all 1-indexed
