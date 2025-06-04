@@ -1,5 +1,5 @@
 local weslcs = require('devtools.diff.weslcs')
-local combined = require('zeta.diff.combined')
+local combined = require('devtools.diff.combined')
 local files = require('zeta.helpers.files')
 local messages = require('devtools.messages')
 local window = require('zeta.helpers.vimz.windows')
@@ -45,7 +45,7 @@ vim.api.nvim_set_hl(0, hl_added, { fg = '#81c8be', }) -- ctermfg = "green"
 vim.api.nvim_set_hl(0, hl_deleted, { fg = '#ff6b6b', }) -- ctermfg = "red"
 -- vim.api.nvim_set_hl(0, hl_deleted, { fg = "#e06c75", }) -- ctermfg = "red"
 
-local extmark_ns_id = vim.api.nvim_create_namespace('zeta_diff')
+local extmark_ns_id = vim.api.nvim_create_namespace('devtools.diff')
 
 function M.extmarks_for(diff, bufnr, _window_id)
     local extmark_lines = vim.iter(diff):fold({ {} }, function(accum, chunk)

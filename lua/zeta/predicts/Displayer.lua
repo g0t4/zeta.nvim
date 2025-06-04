@@ -1,5 +1,5 @@
 local tags = require('zeta.helpers.tags')
-local combined = require('zeta.diff.combined')
+local combined = require('devtools.diff.combined')
 local messages = require('devtools.messages')
 local inspect = require('devtools.inspect')
 local ExtmarksSet = require('zeta.predicts.ExtmarksSet')
