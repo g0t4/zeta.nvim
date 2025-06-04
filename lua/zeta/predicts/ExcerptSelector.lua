@@ -124,7 +124,8 @@ function ExcerptSelector:excerpt_at_position(cursor_row_0i, cursor_column_0i)
         return nil
     end
 
-    local text_lines = self.buffer:get_lines(editable_start_line_0i, editable_end_line_0i + 1)
+    local editable_end_line_exclusive_0i = editable_end_line_0i + 1
+    local text_lines = self.buffer:get_lines(editable_start_line_0i, editable_end_line_exclusive_0i)
 
     -- * mark cursor position
     local cursor_offset_row = cursor_row_0i - editable_start_line_0i

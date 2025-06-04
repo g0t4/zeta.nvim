@@ -24,9 +24,9 @@ function keymap_fake_prediction()
     local num_lines_0i = buffer:num_lines() - 1
     -- take up to 10 lines after cursor row
     local end_row_0i = math.min(row_0i + 10, num_lines_0i)
-    local end_row_not_included_0i = end_row_0i + 1 --
-    local lines = buffer:get_lines(row_0i, end_row_not_included_0i)
-    messages.append("row_0i: " .. row_0i .. ", end_row_0i: " .. end_row_0i .. ", end_row_not_included_0i: " .. end_row_not_included_0i)
+    local editable_end_line_exclusive_0i = end_row_0i + 1
+    local lines = buffer:get_lines(row_0i, editable_end_line_exclusive_0i)
+    messages.append('row_0i: ' .. row_0i .. ', end_row_0i: ' .. end_row_0i .. ', end_row_not_included_0i: ' .. editable_end_line_exclusive_0i)
 
     -- * setup prediction to delete 5th line
     -- skip 5th line
