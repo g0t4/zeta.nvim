@@ -108,7 +108,11 @@ end
 function ExcerptSelector:excerpt_at_position(cursor_row_0i, cursor_column_0i)
     local editable_start_line_0i, editable_end_line_0i
     if self.has_treesitter then
-        editable_start_line_0i, editable_end_line_0i = self:line_range_with_treesitter(cursor_row_0i, cursor_column_0i)
+        local ts_editable_start_line_0i, ts_editable_end_line_exclusive_0i = self:line_range_with_treesitter(cursor_row_0i, cursor_column_0i)
+        editable_start_line_0i = ts_editable_start_line_0i
+        editable_end_line_0i = ts_editable_end_line_exclusive_0i - 1
+        -- TODO verify that editable_end_line_0i is END EXCLUSIVE and 0i...
+        --   it appears to be... and so it will be a line # in 0i that does not exist
         messages.append('editable_start_line_0i: ' .. editable_start_line_0i ..
             ', editable_end_line_0i: ' .. editable_end_line_0i)
     else
