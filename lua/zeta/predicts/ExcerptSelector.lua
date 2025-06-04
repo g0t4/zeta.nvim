@@ -111,11 +111,11 @@ function ExcerptSelector:excerpt_at_position(cursor_row_0i, cursor_column_0i)
         editable_start_line_0i, editable_end_line_0i = self:line_range_with_treesitter(cursor_row_0i, cursor_column_0i)
     else
         -- not treesitter, just take up to 10 lines back / forward for now
-        local ten_lines_back = cursor_row_0i - 10
-        local ten_lines_forward = cursor_row_0i + 10
-        editable_start_line_0i = math.max(0, ten_lines_back)
+        local ten_lines_back_0i = cursor_row_0i - 10
+        local ten_lines_forward_0i = cursor_row_0i + 10
+        editable_start_line_0i = math.max(0, ten_lines_back_0i)
         local num_lines_0i = self.buffer:num_lines() - 1
-        editable_end_line_0i = math.min(num_lines_0i, ten_lines_forward)
+        editable_end_line_0i = math.min(num_lines_0i, ten_lines_forward_0i)
         -- FYI test w/ zsh and txt files
         -- TODO add better logic to expand editable range / context range
     end
