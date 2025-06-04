@@ -26,6 +26,7 @@ function keymap_fake_prediction()
     local end_row_0i = math.min(row_0i + 10, num_lines_0i)
     local end_row_not_included_0i = end_row_0i + 1 --
     local lines = buffer:get_lines(row_0i, end_row_not_included_0i)
+    messages.append("row_0i: " .. row_0i .. ", end_row_0i: " .. end_row_0i .. ", end_row_not_included_0i: " .. end_row_not_included_0i)
 
     -- * setup prediction to delete 5th line
     -- skip 5th line

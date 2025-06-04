@@ -73,19 +73,19 @@ function BufferController0Indexed:get_node_at_position(row, column)
     --   and convenient (i.e. class tracks buffer number)
 end
 
----@param start_row integer 0-indexed, set start=end to insert new_lines
----@param end_row integer 0-indexed, end-EXCLUSIV
+---@param start_row_0i integer 0-indexed, set start=end to insert new_lines
+---@param end_row_exclusive_0i integer 0-indexed, end-EXCLUSIV
 ---@param new_lines string[]
-function BufferController0Indexed:replace_lines(start_row, end_row, new_lines)
-    if end_row >= self:num_lines() then
-        -- FYI this happens when testing fake prediction if you trigger it near the end of the buffer
-        --   and the fake prediction is longer than the rest of the buffer
-        messages.append('end_row is past end of buffer, clamping to end of buffer')
-        end_row = self:num_lines() - 1
+function BufferController0Indexed:replace_lines(start_row_0i, end_row_exclusive_0i, new_lines)
+    -- FYI I take exclusive just to keep consistent interface with get_lines (et al)
+    local end_row_inclusive_0i = end_row_exclusive_0i - 1
+    if end_row_inclusive_0i >= self:num_lines() then
+        -- num_lines is 1-indexed... so that's why inclusive must be < num_lines
+        error('end_row is past end of buffer, end_row_inclusive_0i: ' .. end_row_inclusive_0i)
     end
     vim.api.nvim_buf_set_text(self.buffer_number,
-        start_row, 0,
-        end_row, 0,
+        start_row_0i, 0,
+        end_row_inclusive_0i, 0,
         new_lines)
 end
 

@@ -235,10 +235,6 @@ function Displayer:on_response(request, response_body_stdout)
     --   I kinda like how that approach pushes the original down for easy reference too
     --   OR, popup window w/ diff?
 
-    -- make 0-indexed explicit since I am working with extmarks here
-    local start_line_0i = request.details.editable_start_line
-    local end_line_0i = request.details.editable_end_line
-
     self:pause_watcher()
 
     -- ?? switch to incremental diff presentation (not AIO), and with it partial accept/reject?!
@@ -249,10 +245,15 @@ function Displayer:on_response(request, response_body_stdout)
         messages.append(vim.inspect(v))
     end
 
+    -- make 0-indexed explicit since I am working with extmarks here
+    local start_line_0i = request.details.editable_start_line
+    local end_line_0i = request.details.editable_end_line
+    local end_line_0i_exclusive = end_line_0i + 1
+    --
     -- delete original lines (that way only diff shows in extmarks)
-    self.original_lines = self.window:buffer():get_lines(start_line_0i, end_line_0i)
-    -- table.insert(self.original_lines, '') -- TODO! do I need this anymore?
-    self.window:buffer():replace_lines(start_line_0i, end_line_0i,
+    self.original_lines = self.window:buffer():get_lines(start_line_0i, end_line_0i_exclusive)
+
+    self.window:buffer():replace_lines(start_line_0i, end_line_0i_exclusive,
         -- insert a blank line, to overlay first_extmark_line, then rest of extmark_lines are below it
         { '', '' })
 
