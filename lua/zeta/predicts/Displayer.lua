@@ -70,12 +70,6 @@ function Displayer:accept()
 
     local lines = vim.fn.split(self.rewritten_editable, '\n')
 
-    -- TODO think through why I need an empty last line here?
-    --   without one empty last line...
-    --   the last line of the rewritten text is inserted
-    --   infront of the next line (just ater the editable region)
-    table.insert(lines, '')
-
     self.window:buffer():replace_lines(
         self.current_request.details.editable_start_line,
         self.current_request.details.editable_start_line,
