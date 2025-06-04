@@ -19,12 +19,13 @@ local toggle_highlighting = false
 function keymap_fake_prediction()
     local window = WindowController0Indexed:new_from_current_window()
 
-    local row = window:get_cursor_row()
+    local row_0i = window:get_cursor_row()
     local buffer = window:buffer()
-    local num_lines = buffer:num_lines()
+    local num_lines_0i = buffer:num_lines() - 1
     -- take up to 10 lines after cursor row
-    local end_row = math.min(row + 10, num_lines)
-    local lines = buffer:get_lines(row, end_row)
+    local end_row_0i = math.min(row_0i + 10, num_lines_0i)
+    local end_row_not_included_0i = end_row_0i + 1 --
+    local lines = buffer:get_lines(row_0i, end_row_not_included_0i)
 
     -- * setup prediction to delete 5th line
     -- skip 5th line
@@ -75,8 +76,8 @@ function keymap_fake_prediction()
         body = fake_request_body,
 
         -- make up a position for now using cursor in current file, doesn't matter what that file has in it
-        editable_start_line = row,
-        editable_end_line = end_row,
+        editable_start_line = row_0i,
+        editable_end_line = end_row_0i,
     }
     local fake_request           = PredictionRequest:new_fake_request(window, fake_details)
 
