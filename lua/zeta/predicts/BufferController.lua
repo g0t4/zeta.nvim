@@ -77,15 +77,14 @@ end
 ---@param end_row_exclusive_0i integer 0-indexed, end-EXCLUSIV
 ---@param new_lines string[]
 function BufferController0Indexed:replace_lines(start_row_0i, end_row_exclusive_0i, new_lines)
-    -- FYI I take exclusive just to keep consistent interface with get_lines (et al)
-    local end_row_inclusive_0i = end_row_exclusive_0i - 1
-    if end_row_inclusive_0i >= self:num_lines() then
+    if end_row_exclusive_0i > self:num_lines() then
         -- num_lines is 1-indexed... so that's why inclusive must be < num_lines
-        error('end_row is past end of buffer, end_row_inclusive_0i: ' .. end_row_inclusive_0i)
+        error('end_row is past end of buffer, end_row_inclusive_0i: ' .. end_row_exclusive_0i)
     end
-    vim.api.nvim_buf_set_text(self.buffer_number,
-        start_row_0i, 0,
-        end_row_inclusive_0i, 0,
+    vim.api.nvim_buf_set_lines(self.buffer_number,
+        start_row_0i,
+        end_row_exclusive_0i,
+        true,
         new_lines)
 end
 
