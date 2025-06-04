@@ -162,7 +162,7 @@ function Displayer:on_response(request, response_body_stdout)
         if chunk == nil then
             messages.append('nil chunk: ' .. tostring(chunk))
         else
-            -- each chunk has has two strings: { "text\nfoo\nbar", "type" }
+            -- each chunk has has two strings: { "type", "text\nfoo\nbar" }
             --   type == "same", "add", "del"
             -- text must be split on new line into an array
             --  when \n is encountered, start a new line in the accum
@@ -190,17 +190,17 @@ function Displayer:on_response(request, response_body_stdout)
                     table.insert(current_line, { text, type_hlgroup })
                 end
             else
-                local splits = vim.split(text, '\n')
+                local split_lines = vim.split(text, '\n')
                 messages.header('splits:')
-                messages.append(inspect(splits))
-                for i, piece in ipairs(splits) do
+                messages.append(inspect(split_lines))
+                for i, piece in ipairs(split_lines) do
                     -- FYI often v will be empty (i.e. a series of newlines)... do not exclude these empty lines!
                     local len_text = #piece
                     if len_text > 0 then
                         -- don't add empty pieces, just make sure we add the lines (even if empty)
                         table.insert(current_line, { piece, type_hlgroup })
                     end
-                    if i < #splits then
+                    if i < #split_lines then
                         -- start a new, empty line (even if last piece was empty)
                         current_line = {}
                         accum[#accum + 1] = current_line
@@ -241,8 +241,9 @@ function Displayer:on_response(request, response_body_stdout)
     --   I kinda like how that approach pushes the original down for easy reference too
     --   OR, popup window w/ diff?
 
-    local start_line = request.details.editable_start_line
-    local end_line = request.details.editable_end_line
+    -- make 0-indexed explicit since I am working with extmarks here
+    local start_line_0i = request.details.editable_start_line
+    local end_line_0i = request.details.editable_end_line
 
     self:pause_watcher()
 
@@ -254,20 +255,22 @@ function Displayer:on_response(request, response_body_stdout)
         messages.append(vim.inspect(v))
     end
 
+    -- delete original lines (that way only diff shows in extmarks)
+    self.original_lines = self.window:buffer():get_lines(start_line_0i, end_line_0i)
+    -- table.insert(self.original_lines, '') -- TODO! do I need this anymore?
+    self.window:buffer():replace_lines(start_line_0i, end_line_0i,
+        -- insert a blank line, to overlay first_extmark_line, then rest of extmark_lines are below it
+        { '', '' })
+
+    local first_extmark_line = table.remove(extmark_lines, 1)
 
     self.marks:set(select_excerpt_mark_id, {
-        start_line = start_line - 1, -- that way first virt_line is in line below == start_line
+        start_line = start_line_0i,
         start_col = 0,
-        -- virt_text = first_extmark_line, -- leave first line unchanged (its the line before the changes)
-        id = select_excerpt_mark_id,
-        virt_lines = extmark_lines, -- all changes appear under the line above the diff
+        virt_text = first_extmark_line,
+        virt_lines = extmark_lines,
         virt_text_pos = 'overlay',
     })
-
-    -- delete original lines (that way only diff shows in extmarks)
-    self.original_lines = self.window:buffer():get_lines(start_line, end_line)
-    table.insert(self.original_lines, '') -- add empty line (why?)
-    self.window:buffer():replace_lines(start_line, end_line, {})
 
     -- PRN... register event handler that fires once ... on user typing, to undo and put stuff back
     --    this works-ish... feels wrong direction but...
