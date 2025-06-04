@@ -255,7 +255,7 @@ function Displayer:on_response(request, response_body_stdout)
 
     self.window:buffer():replace_lines(start_line_0i, end_line_0i_exclusive,
         -- insert a blank line, to overlay first_extmark_line, then rest of extmark_lines are below it
-        { '', '' })
+        { '' })
 
     local first_extmark_line = table.remove(extmark_lines, 1)
 
