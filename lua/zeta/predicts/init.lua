@@ -22,9 +22,8 @@ function keymap_fake_prediction()
     local row = window:get_cursor_row()
     local buffer = window:buffer()
     local num_lines = buffer:num_lines()
-    -- take up to 10 lines in fake scenario
+    -- take up to 10 lines after cursor row
     local end_row = math.min(row + 10, num_lines)
-    -- take 10 lines after cursor
     local lines = buffer:get_lines(row, end_row)
 
     -- * setup prediction to delete 5th line
