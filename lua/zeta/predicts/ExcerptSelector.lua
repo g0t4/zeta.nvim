@@ -102,31 +102,31 @@ end
 
 --- the row/col are interpeted as cursor position though they obviously don't have to be
 ---   this is where the cursor tag is inserted
----@param cursor_row integer 0-indexed
----@param cursor_column integer 0-indexed
+---@param cursor_row_0i integer 0-indexed
+---@param cursor_column_0i integer 0-indexed
 ---@return Excerpt|nil
-function ExcerptSelector:excerpt_at_position(cursor_row, cursor_column)
-    local editable_start_line, editable_end_line
+function ExcerptSelector:excerpt_at_position(cursor_row_0i, cursor_column_0i)
+    local editable_start_line_0i, editable_end_line_0i
     if self.has_treesitter then
-        editable_start_line, editable_end_line = self:line_range_with_treesitter(cursor_row, cursor_column)
+        editable_start_line_0i, editable_end_line_0i = self:line_range_with_treesitter(cursor_row_0i, cursor_column_0i)
     else
         -- not treesitter, just take up to 10 lines back / forward for now
-        local ten_lines_back = cursor_row - 10
-        local ten_lines_forward = cursor_row + 10
-        editable_start_line = math.max(0, ten_lines_back)
-        editable_end_line = math.min(self.buffer:num_lines(), ten_lines_forward)
+        local ten_lines_back = cursor_row_0i - 10
+        local ten_lines_forward = cursor_row_0i + 10
+        editable_start_line_0i = math.max(0, ten_lines_back)
+        editable_end_line_0i = math.min(self.buffer:num_lines(), ten_lines_forward)
         -- FYI test w/ zsh and txt files
         -- TODO add better logic to expand editable range / context range
     end
 
-    if editable_start_line == nil or editable_end_line == nil then
+    if editable_start_line_0i == nil or editable_end_line_0i == nil then
         return nil
     end
 
-    local text_lines = self.buffer:get_lines(editable_start_line, editable_end_line + 1)
+    local text_lines = self.buffer:get_lines(editable_start_line_0i, editable_end_line_0i + 1)
 
     -- * mark cursor position
-    local cursor_offset_row = cursor_row - editable_start_line
+    local cursor_offset_row = cursor_row_0i - editable_start_line_0i
     local cursor_offset_row_1indexed = cursor_offset_row + 1
     local original_cursor_line = text_lines[cursor_offset_row_1indexed] -- 1-indexed arrays
     -- cursor is literally between cursor_column and cursor_column + 1 => visually it sits on cursor_column + 1
@@ -134,7 +134,7 @@ function ExcerptSelector:excerpt_at_position(cursor_row, cursor_column)
     --   cursor_column + 1 is right of cursor position
     --   physically, the cursor shows on top of the cursor_column + 1 char
 
-    local tagged_cursor_line = tags.insert_cursor_tag(original_cursor_line, cursor_column)
+    local tagged_cursor_line = tags.insert_cursor_tag(original_cursor_line, cursor_column_0i)
 
     text_lines[cursor_offset_row_1indexed] = tagged_cursor_line
 
@@ -143,7 +143,7 @@ function ExcerptSelector:excerpt_at_position(cursor_row, cursor_column)
     -- TODO make sure lines are joined correctly...
     --   that w/ serialization we get \n as appropriate (vs new lines)... not sure just check what is needed for model's template and what I have here (for fake and real requests)
     text = table.concat(text_lines, '\n')
-    return Excerpt:new(text, editable_start_line, editable_end_line)
+    return Excerpt:new(text, editable_start_line_0i, editable_end_line_0i)
 end
 
 return ExcerptSelector
