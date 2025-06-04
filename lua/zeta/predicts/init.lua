@@ -20,8 +20,12 @@ function keymap_fake_prediction()
     local window = WindowController0Indexed:new_from_current_window()
 
     local row = window:get_cursor_row()
+    local buffer = window:buffer()
+    local num_lines = buffer:num_lines()
+    -- take up to 10 lines in fake scenario
+    local end_row = math.min(row + 10, num_lines)
     -- take 10 lines after cursor
-    local lines = window:buffer():get_lines(row, row + 10)
+    local lines = buffer:get_lines(row, end_row)
 
     -- * setup prediction to delete 5th line
     -- skip 5th line
@@ -73,7 +77,7 @@ function keymap_fake_prediction()
 
         -- make up a position for now using cursor in current file, doesn't matter what that file has in it
         editable_start_line = row,
-        editable_end_line = row + 10, -- right now this is not used
+        editable_end_line = end_row,
     }
     local fake_request           = PredictionRequest:new_fake_request(window, fake_details)
 
