@@ -114,7 +114,8 @@ function ExcerptSelector:excerpt_at_position(cursor_row_0i, cursor_column_0i)
         local ten_lines_back = cursor_row_0i - 10
         local ten_lines_forward = cursor_row_0i + 10
         editable_start_line_0i = math.max(0, ten_lines_back)
-        editable_end_line_0i = math.min(self.buffer:num_lines(), ten_lines_forward)
+        local num_lines_0i = self.buffer:num_lines() - 1
+        editable_end_line_0i = math.min(num_lines_0i, ten_lines_forward)
         -- FYI test w/ zsh and txt files
         -- TODO add better logic to expand editable range / context range
     end
