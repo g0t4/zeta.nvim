@@ -73,21 +73,21 @@ local function get_enclosing_function_node(node, filetype)
     end
 end
 
----@param row integer 0-indexed
----@param column integer 0-indexed
+---@param row_0i integer 0-indexed
+---@param column_0i integer 0-indexed
 ---@return integer|nil, integer|nil # start_line, end_line 0-indexed (end exclusive?)
-function ExcerptSelector:line_range_with_treesitter(row, column)
-    local node = self.buffer:get_node_at_position(row, column)
+function ExcerptSelector:line_range_with_treesitter(row_0i, column_0i)
+    local node = self.buffer:get_node_at_position(row_0i, column_0i)
     if node == nil then
         -- FYI can happen when first enter a buffer (IIAC treesitter is not ready?)
-        logs.trace('no node found at position: ' .. row .. ', ' .. column)
+        logs.trace('no node found at position: ' .. row_0i .. ', ' .. column_0i)
         return nil, nil
     end
 
     -- find closest enclosing node (to start search for excerpt range)
     local enclosing = get_enclosing_function_node(node, self.buffer:filetype())
     if enclosing == nil then
-        logs.trace('no enclosing node found at position: ' .. row .. ', ' .. column)
+        logs.trace('no enclosing node found at position: ' .. row_0i .. ', ' .. column_0i)
         return nil, nil
     end
 
@@ -109,6 +109,8 @@ function ExcerptSelector:excerpt_at_position(cursor_row_0i, cursor_column_0i)
     local editable_start_line_0i, editable_end_line_0i
     if self.has_treesitter then
         editable_start_line_0i, editable_end_line_0i = self:line_range_with_treesitter(cursor_row_0i, cursor_column_0i)
+        messages.append('editable_start_line_0i: ' .. editable_start_line_0i ..
+            ', editable_end_line_0i: ' .. editable_end_line_0i)
     else
         -- not treesitter, just take up to 10 lines back / forward for now
         local ten_lines_back_0i = cursor_row_0i - 10
