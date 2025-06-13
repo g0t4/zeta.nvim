@@ -7,7 +7,7 @@ local json = vim.fn.json_encode and vim.fn.json_decode and {
     decode = vim.fn.json_decode,
 } or require('vim.json')
 
-local config_path = vim.fn.stdpath('data') .. '/zeta/config.json'
+local config_path = vim.fn.stdpath('data') .. '/zeta.nvim/config.json'
 
 local function file_exists(path)
     local file = io.open(path, 'r')
