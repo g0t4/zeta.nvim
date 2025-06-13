@@ -117,7 +117,7 @@ function PredictionRequest:send(on_response)
             '-H', 'Content-Type: application/json',
             '-X', 'POST',
             '-s', url,
-            '-d', vim.fn.json_encode(self.details.body)
+            '-d', vim.json.encode(self.details.body)
         }
 
         messages.header('curl command')

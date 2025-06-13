@@ -15,14 +15,14 @@ describe('test sending 01_request.json', function()
             '-H', 'Content-Type: application/json',
             '-X', 'POST',
             '-s', url,
-            -- "-d", vim.fn.json_encode(request_body)
+            -- "-d", vim.json.encode(request_body)
             '-d', body_json_serialized
         })
         print('## result:')
         print(result)
         print()
 
-        local decoded = vim.fn.json_decode(result)
+        local decoded = vim.json.decode(result)
         local output_excerpt = decoded.output_excerpt
         assert(output_excerpt ~= nil, 'output_excerpt should not be nil')
 

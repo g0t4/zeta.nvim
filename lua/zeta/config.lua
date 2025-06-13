@@ -2,11 +2,6 @@ local M = {}
 
 local config = nil
 
-local json = vim.fn.json_encode and vim.fn.json_decode and {
-    encode = vim.fn.json_encode,
-    decode = vim.fn.json_decode,
-} or require('vim.json')
-
 local config_path = vim.fn.stdpath('data') .. '/zeta.nvim/config.json'
 
 local function file_exists(path)
@@ -27,7 +22,7 @@ local function load_config()
 
     if file_exists(config_path) then
         local content = io.open(config_path, 'r'):read('*a')
-        local ok, parsed = pcall(json.decode, content)
+        local ok, parsed = pcall(vim.json.decode, content)
         if ok and type(parsed) == 'table' then
             return vim.tbl_deep_extend('force', default, parsed)
         end
@@ -41,7 +36,7 @@ end
 local function save_config(data)
     local file = io.open(config_path, 'w')
     if file then
-        file:write(json.encode(data))
+        file:write(vim.json.encode(data))
         file:close()
     end
 end

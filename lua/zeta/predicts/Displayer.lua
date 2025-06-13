@@ -120,7 +120,7 @@ function Displayer:on_response(request, response_body_stdout)
     self.current_request = request
     self.current_response_body_stdout = response_body_stdout
 
-    local decoded = vim.fn.json_decode(response_body_stdout)
+    local decoded = vim.json.decode(response_body_stdout)
     messages.header('response_body_stdout:')
     messages.append(inspect(decoded))
     assert(decoded ~= nil, 'decoded reponse body should not be nil')
