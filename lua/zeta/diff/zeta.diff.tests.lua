@@ -3,7 +3,7 @@ local tags = require('zeta.helpers.tags')
 local histogram = require('devtools.diff.histogram')
 local should = require('devtools.tests.should')
 local files = require('zeta.helpers.files')
-local _describe = require('devtools.tests._describe')
+local _describe = require('devtools.tests.define.describe')
 
 --
 -- * tests specific to the zeta model:
