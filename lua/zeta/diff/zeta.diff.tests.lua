@@ -3,14 +3,14 @@ local tags = require('zeta.helpers.tags')
 local histogram = require('devtools.diff.histogram')
 local should = require('devtools.tests.should')
 local files = require('zeta.helpers.files')
-local _describe = require('devtools.tests.define.describe')
+local describe = require('devtools.tests.define.describe')
 
 --
 -- * tests specific to the zeta model:
 --   - prompt formulation
 --   - prompt parsing
 
-_describe('zeta tags', function()
+describe('zeta tags', function()
     it('adding editable start and end tags are put on their own lines', function()
         -- * start tag:
         -- https://github.com/zed-industries/zed/blob/5872276511/crates/zeta/src/input_excerpt.rs#L86
@@ -86,7 +86,7 @@ _describe('zeta tags', function()
 end)
 
 
-_describe('test using combined_diff', function()
+describe('test using combined_diff', function()
     local old_text = files.read_example_editable_only('01_request.json')
     local new_text = files.read_example_editable_only('03_response.json')
 
